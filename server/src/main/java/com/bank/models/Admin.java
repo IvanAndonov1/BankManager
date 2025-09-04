@@ -4,9 +4,9 @@ import com.bank.enums.Role;
 
 public class Admin extends User {
 
-    public Admin(String name, String password, String firstName, String lastName, String email) {
+    public Admin(String username, String password, String firstName, String lastName, String email) {
 
-        super(name, password, firstName, lastName, email);
+        super(username, password, firstName, lastName, email);
         this.setRole(Role.ADMIN);
 
     }

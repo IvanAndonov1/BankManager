@@ -28,38 +28,40 @@ public class Account {
         return balance;
     }
 
-    public void deposit(BigDecimal amount){
+    // will be transferred to the service layer
 
-        if(amount.compareTo(BigDecimal.ZERO) > 0) {
-
-            balance = balance.add(amount);
-            transactionList.add(new Transaction(TransactionType.DEPOSIT, amount, "Deposit to account" + accountNumber));
-
-        }
-
-    }
-
-    public boolean withdraw (BigDecimal amount){
-
-        if(amount.compareTo(BigDecimal.ZERO) > 0 && balance.compareTo(amount) >= 0){
-
-            balance = balance.subtract(amount);
-           transactionList.add(new Transaction(TransactionType.WITHDRAW, amount, "Withdraw from account " + accountNumber));
-
-        }
-
-        return false;
-
-    }
-
-    public void transferTo(Account target, BigDecimal amount){
-
-        if(withdraw(amount)){
-
-            target.deposit(amount);
-            transactionList.add(new Transaction(TransactionType.TRANSFER, amount, "Transfer to account " + target.getAccountNumber()));
-        }
-
-    }
+//    public void deposit(BigDecimal amount){
+//
+//        if(amount.compareTo(BigDecimal.ZERO) > 0) {
+//
+//            balance = balance.add(amount);
+//            transactionList.add(new Transaction(TransactionType.DEPOSIT, amount, "Deposit to account" + accountNumber));
+//
+//        }
+//
+//    }
+//
+//    public boolean withdraw (BigDecimal amount){
+//
+//        if(amount.compareTo(BigDecimal.ZERO) > 0 && balance.compareTo(amount) >= 0){
+//
+//            balance = balance.subtract(amount);
+//           transactionList.add(new Transaction(TransactionType.WITHDRAW, amount, "Withdraw from account " + accountNumber));
+//
+//        }
+//
+//        return false;
+//
+//    }
+//
+//    public void transferTo(Account target, BigDecimal amount){
+//
+//        if(withdraw(amount)){
+//
+//            target.deposit(amount);
+//            transactionList.add(new Transaction(TransactionType.TRANSFER, amount, "Transfer to account " + target.getAccountNumber()));
+//        }
+//
+//    }
 
 }
