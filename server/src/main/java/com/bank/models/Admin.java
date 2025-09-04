@@ -1,16 +1,13 @@
 package com.bank.models;
 
-public class Employee  {
-
-
+public class Admin {
     private String username;
     private String password;
-
     private String firstName;
     private String lastName;
     private String email;
 
-    public Employee(String username, String password, String firstName, String lastName, String email) {
+    public Admin(String username, String password, String firstName, String lastName, String email) {
 
         setUsername(username);
         setPassword(password);
@@ -59,7 +56,4 @@ public class Employee  {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
-
-
-
 }
