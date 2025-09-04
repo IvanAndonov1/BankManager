@@ -4,12 +4,15 @@ import com.bank.enums.TransactionType;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 // сметка
 public class Account {
 
+    private UUID id;
     private String accountNumber;
     private BigDecimal balance;
+    private UUID ownerId;
 
     private List<Transaction> transactionList;
 

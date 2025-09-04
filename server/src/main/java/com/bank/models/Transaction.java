@@ -4,10 +4,12 @@ import com.bank.enums.TransactionType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public class Transaction {
 
-    private String id;
+    private UUID id;
+    private UUID accountId;
     private TransactionType type;
     private BigDecimal amount;
     private LocalDateTime dateTime;
@@ -23,7 +25,7 @@ public class Transaction {
 
     }
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 

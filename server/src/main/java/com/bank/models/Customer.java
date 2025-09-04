@@ -17,13 +17,15 @@ public class Customer extends User{
 
     }
 
-    public void addAccount (Account account){
-        accountList.add(account);
-    }
+    // to be transfered to the service layer
 
-    public List<Account> getAccountList(){
-        return accountList;
-    }
+//    public void addAccount (Account account){
+//        accountList.add(account);
+//    }
+//
+//    public List<Account> getAccountList(){
+//        return accountList;
+//    }
 
 }
 

@@ -23,7 +23,7 @@ CREATE TABLE transactions (
     account_id UUID NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
     type VARCHAR(16) NOT NULL CHECK (type IN ('DEPOSIT','WITHDRAW','TRANSFER')),
     amount NUMERIC(19,4) NOT NULL,
-    occurred_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    occurred_at TIMESTAMP NOT NULL DEFAULT NOW(),
     description TEXT
 );
 

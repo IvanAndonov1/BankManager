@@ -2,8 +2,11 @@ package com.bank.models;
 
 import com.bank.enums.Role;
 
+import java.util.UUID;
+
 public abstract class User {
 
+    private UUID id;
     private String username;
     private String password;
 
@@ -22,6 +25,8 @@ public abstract class User {
         this.email = email;
 
     }
+
+    public User() {}
 
     public String getUsername() {
         return username;
