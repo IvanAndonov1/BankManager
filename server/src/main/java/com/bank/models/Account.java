@@ -1,7 +1,5 @@
 package com.bank.models;
 
-import com.bank.enums.TransactionType;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
@@ -14,12 +12,24 @@ public class Account {
     private BigDecimal balance;
     private UUID ownerId;
 
-    private List<Transaction> transactionList;
-
-    public Account(){
-
-        // accountNumber ???
+    public Account() {
         this.balance = BigDecimal.ZERO;
+    }
+
+    public Account(String accountNumber, UUID ownerId) {
+
+        this.accountNumber = accountNumber;
+        this.ownerId = ownerId;
+        this.balance = BigDecimal.ZERO;
+
+    }
+
+    public Account(UUID id, String accountNumber, BigDecimal balance, UUID ownerId) {
+
+        this.id = id;
+        this.accountNumber = accountNumber;
+        this.balance = balance;
+        this.ownerId = ownerId;
 
     }
 
