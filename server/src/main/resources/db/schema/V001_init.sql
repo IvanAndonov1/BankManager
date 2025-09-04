@@ -1,6 +1,6 @@
 -- not the final tables just for the setup !!!!
 
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     username VARCHAR(64) NOT NULL UNIQUE,
     password_hash VARCHAR(100) NOT NULL,
@@ -10,7 +10,7 @@ CREATE TABLE users (
     role VARCHAR(16) NOT NULL CHECK (role IN ('CUSTOMER','EMPLOYEE','ADMIN'))
 );
 
-CREATE TABLE accounts (
+CREATE TABLE IF NOT EXISTS accounts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     account_number VARCHAR(34) NOT NULL UNIQUE,
     balance NUMERIC(19,4) NOT NULL DEFAULT 0,
@@ -18,7 +18,7 @@ CREATE TABLE accounts (
     version BIGINT NOT NULL DEFAULT 0
 );
 
-CREATE TABLE transactions (
+CREATE TABLE IF NOT EXISTS transactions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     account_id UUID NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
     type VARCHAR(16) NOT NULL CHECK (type IN ('DEPOSIT','WITHDRAW','TRANSFER')),
