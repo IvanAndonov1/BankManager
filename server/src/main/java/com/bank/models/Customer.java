@@ -1,70 +1,28 @@
 package com.bank.models;
 
+import com.bank.enums.Role;
+
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Customer {
+public class Customer extends User{
 
-    private String username;
-    private String password;
+    private List<Account> accountList = new ArrayList<>();
 
-    private String firstName;
-    private String lastName;
-    private String email;
+    public Customer(String username, String password, String firstName, String lastName, String email){
 
-    private BigDecimal balance;
-
-    public Customer(String username, String password, String firstName, String lastName, String email) {
-
-        setUsername(username);
-        setPassword(password);
-        setFirstName(firstName);
-        setLastName(lastName);
-        setEmail(email);
+        super(username, password, firstName, lastName, email);
+        this.setRole(Role.CUSTOMER);
 
     }
 
-    public String getUsername() {
-        return username;
+    public void addAccount (Account account){
+        accountList.add(account);
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public BigDecimal getBalance() {
-        return balance;
+    public List<Account> getAccountList(){
+        return accountList;
     }
 
 }
