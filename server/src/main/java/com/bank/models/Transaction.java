@@ -15,12 +15,23 @@ public class Transaction {
     private LocalDateTime dateTime;
     private String description;
 
-    public Transaction(TransactionType type, BigDecimal amount, String description) {
+    public Transaction(UUID accountId, TransactionType type, BigDecimal amount, String description) {
 
-        //this.id = id;
+        this.accountId = accountId;
         this.type = type;
         this.amount = amount;
         this.dateTime = LocalDateTime.now();
+        this.description = description;
+
+    }
+
+    public Transaction(UUID id, UUID accountId, TransactionType type, BigDecimal amount, LocalDateTime dateTime, String description) {
+
+        this.id = id;
+        this.accountId = accountId;
+        this.type = type;
+        this.amount = amount;
+        this.dateTime = dateTime;
         this.description = description;
 
     }
