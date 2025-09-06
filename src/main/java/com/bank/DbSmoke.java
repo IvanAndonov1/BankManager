@@ -1,20 +1,22 @@
 package com.bank;
 
-import com.bank.models.Customer;
-import com.bank.models.CustomerRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 @Configuration
 public class DbSmoke {
     @Bean
-    CommandLineRunner smoke(CustomerRepository repo) {
+    CommandLineRunner smoke(NamedParameterJdbcTemplate jdbc) {
         return args -> {
-            if (repo.count() == 0) {
-                repo.save(Customer.builder().username("first").build());
-            }
-            System.out.println("Customers in DB: " + repo.count());
+            Long cnt = jdbc.queryForObject(
+                    "SELECT COUNT(*) FROM customers",
+                    new MapSqlParameterSource(),
+                    Long.class
+            );
+            System.out.println("Customers in DB: " + cnt);
         };
     }
 }

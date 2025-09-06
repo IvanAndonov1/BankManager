@@ -1,17 +1,30 @@
 package com.bank.models;
 
-import jakarta.persistence.*;
-import lombok.*;
+import com.bank.enums.Role;
 
-@Entity
-@Table(name = "customer")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor @Builder
-public class Customer {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
-    @Column(nullable = false, unique = true, length = 120)
-    private String username;
+public class Customer extends User{
+
+    private List<Account> accountList = new ArrayList<>();
+
+    public Customer(String username, String password, String firstName, String lastName, String email){
+
+        super(username, password, firstName, lastName, email);
+        this.setRole(Role.CUSTOMER);
+
+    }
+
+    // to be transfered to the service layer
+
+//    public void addAccount (Account account){
+//        accountList.add(account);
+//    }
+//
+//    public List<Account> getAccountList(){
+//        return accountList;
+//    }
+
 }

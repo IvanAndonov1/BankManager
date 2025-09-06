@@ -1,9 +1,0 @@
-CREATE TABLE IF NOT EXISTS orders (
-                                      id BIGSERIAL PRIMARY KEY,
-                                      customer_id BIGINT NOT NULL,
-                                      product_name VARCHAR(120) NOT NULL,
-    created_at TIMESTAMPTZ DEFAULT now(),
-
-    CONSTRAINT fk_orders_customer FOREIGN KEY (customer_id)
-    REFERENCES customer (id)
-    );
