@@ -31,7 +31,7 @@ public class LoanController {
      *   "productType": "CONSUMER",
      *   "requestedAmount": 5000,
      *   "termMonths": 24,
-     *   "employerStartDate": "2024-01-01",
+     *   "currentJobStartDate": "2024-01-01",
      *   "netSalary": 2500.00
      * }
      */
@@ -42,7 +42,7 @@ public class LoanController {
                 (String) body.get("productType"),
                 new BigDecimal(body.get("requestedAmount").toString()),
                 Integer.parseInt(body.get("termMonths").toString()),
-                LocalDate.parse(body.get("employerStartDate").toString()),
+                LocalDate.parse(body.get("currentJobStartDate").toString()),
                 new BigDecimal(body.get("netSalary").toString())
         );
         return Map.of("id", id);
