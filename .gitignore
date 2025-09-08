@@ -1,33 +1,58 @@
-HELP.md
-target/
-.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+# --- OS junk ---
+.DS_Store
+Thumbs.db
 
-### STS ###
+# --- Logs & temp ---
+*.log
+*.tmp
+*.swp
+*.swo
+
+# --- Build output (all modules) ---
+**/target/
+**/build/
+
+# --- Maven wrapper (KEEP tracked) ---
+# Do NOT ignore the wrapper; we want it in git
+# (no rule here intentionally)
+# .mvn/** stays tracked
+
+# --- IDEs ---
+# Eclipse / STS
 .apt_generated
 .classpath
 .factorypath
 .project
-.settings
+.settings/
 .springBeans
-.sts4-cache
-
-### IntelliJ IDEA ###
-.idea
+.sts4-cache/
+# IntelliJ
+.idea/
 *.iws
 *.iml
 *.ipr
-
-### NetBeans ###
+# NetBeans
 /nbproject/private/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
-
-### VS Code ###
+# VS Code
 .vscode/
+
+# --- App secrets & local configs ---
+# Spring Boot app configs (keep examples tracked instead)
+**/src/main/resources/application.properties
+**/src/main/resources/application.yml
+**/src/main/resources/application.yaml
+
+# Dotenv
+.env
+.env.*
+
+# --- H2 / local dev data (optional) ---
+*.mv.db
+*.h2.db
+/data/
+
+BankManager.zip
