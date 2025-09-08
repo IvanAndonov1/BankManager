@@ -8,22 +8,15 @@ export default function Dashboard() {
 
 	return (
 		<div className="min-h-screen flex bg-gray-100">
-			{/* Sidebar gradient */}
 			<Sidebar />
 
-			{/* Main content */}
 			<div className="flex-1 p-6 space-y-6">
-				{/* Header */}
 				<EmployeeHeader />
 
-				{/* Filter Card */}
 				<div className="bg-white rounded-xl shadow p-6 space-y-6">
-					{/* Header: icon + title (left) / segmented toggle (right) */}
 					<FilterCard />
 				</div>
 
-
-				{/* Table */}
 				<div className="bg-white rounded-xl shadow p-4 overflow-x-auto">
 					<table className="w-full text-left text-sm">
 						<thead className="text-gray-600">

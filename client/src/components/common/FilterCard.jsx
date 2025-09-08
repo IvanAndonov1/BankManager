@@ -14,9 +14,7 @@ function FilterCard() {
 					<span>Filter</span>
 				</div>
 
-				{/* Debit / Credit dummy toggle (правилен) */}
 				<div className="inline-flex items-center rounded-full p-1 shadow-sm ring-1 ring-black/10 bg-white">
-					{/* Debit */}
 					<label className="cursor-pointer">
 						<input type="radio" name="accountType" defaultChecked className="hidden peer" />
 						<span
@@ -30,10 +28,8 @@ function FilterCard() {
 						</span>
 					</label>
 
-					{/* spacing между бутоните */}
 					<div className="w-2" />
 
-					{/* Credit */}
 					<label className="cursor-pointer">
 						<input type="radio" name="accountType" className="hidden peer" />
 						<span
@@ -67,7 +63,6 @@ function FilterCard() {
 				/>
 			</div>
 
-			{/* Bottom row: spacer / Filter button right */}
 			<div className="flex items-center justify-end">
 				<button className="cursor-pointer px-5 py-2 rounded-full text-white shadow"
 					style={{ backgroundColor: "#351F78" }}>
