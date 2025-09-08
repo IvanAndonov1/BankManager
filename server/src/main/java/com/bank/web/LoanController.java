@@ -1,6 +1,7 @@
 package com.bank.web;
 
 import com.bank.dao.LoanApplicationDao;
+import com.bank.dto.EvaluationBreakdown;
 import com.bank.dto.EvaluationResult;
 import com.bank.dto.LoanApplicationDto;
 import com.bank.service.CreditEvaluationService;
@@ -48,7 +49,7 @@ public class LoanController {
     }
 
     @PostMapping("/applications/{id}/evaluate")
-    public EvaluationResult evaluate(@PathVariable Long id) {
+    public EvaluationBreakdown evaluate(@PathVariable Long id) {
         return evaluator.evaluate(id);
     }
 

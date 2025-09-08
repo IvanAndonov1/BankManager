@@ -73,6 +73,46 @@ public class LoanApplicationDao {
         return jdbc.query(sql, Map.of("c", customerId),
                 rs -> rs.next() ? rs.getBigDecimal(1) : BigDecimal.ZERO);
     }
+    public int latePaymentsLast12m(Long customerId) {
+        String sql = """
+      SELECT COUNT(*) FROM payment_history
+      WHERE customer_id=:c AND was_late
+        AND occurred_at >= (CURRENT_DATE - INTERVAL '12 months')
+    """;
+        return jdbc.queryForObject(sql, Map.of("c", customerId), Integer.class);
+    }
+
+    public int distinctApprovedProductTypes(Long customerId) {
+        String sql = """
+      SELECT COUNT(DISTINCT product_type)
+      FROM loan_applications
+      WHERE customer_id=:c AND status='APPROVED'
+    """;
+        return jdbc.queryForObject(sql, Map.of("c", customerId), Integer.class);
+    }
+    public int approvedInLast6Months(Long customerId) {
+        String sql = """
+      SELECT COUNT(*) FROM loan_applications
+      WHERE customer_id=:c
+        AND status='APPROVED'
+        AND created_at >= (now() - INTERVAL '6 months')
+    """;
+        return jdbc.queryForObject(sql, Map.of("c", customerId), Integer.class);
+    }
+    public long oldestAccountAgeMonths(Long customerId) {
+        String sql = "SELECT MIN(created_at) FROM accounts WHERE customer_id=:c";
+        var min = jdbc.query(sql, Map.of("c", customerId),
+                rs -> rs.next() ? rs.getObject(1, java.time.OffsetDateTime.class) : null);
+        if (min == null) return 0L;
+        return java.time.Period.between(min.toLocalDate(), java.time.LocalDate.now()).toTotalMonths();
+    }
+
+    public java.math.BigDecimal totalCurrentBalance(Long customerId) {
+        String sql = "SELECT COALESCE(SUM(balance),0) FROM accounts WHERE customer_id=:c";
+        var v = jdbc.query(sql, Map.of("c", customerId),
+                rs -> rs.next() ? rs.getBigDecimal(1) : java.math.BigDecimal.ZERO);
+        return v == null ? java.math.BigDecimal.ZERO : v;
+    }
 
     public boolean hasLateInLast12Months(Long customerId) {
         String sql = """
@@ -84,6 +124,7 @@ public class LoanApplicationDao {
                   AND occurred_at >= (CURRENT_DATE - INTERVAL '12 months')
             )
         """;
+
         return Boolean.TRUE.equals(jdbc.queryForObject(sql, Map.of("c", customerId), Boolean.class));
     }
 }
