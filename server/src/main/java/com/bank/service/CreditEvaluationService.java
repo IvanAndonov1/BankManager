@@ -39,8 +39,8 @@ public class CreditEvaluationService {
             loanDao.updateStatusAndScore(loanId, "DECLINED", 0, reasons);
             return new EvaluationBreakdown("DECLINED", reasons, 0,0,0,0,0,0,0);
         }
-        if (loan.employerStartDate() == null || loan.netSalary() == null) {
-            reasons.add("employerStartDate and netSalary are required");
+        if (loan.currentJobStartDate() == null || loan.netSalary() == null) {
+            reasons.add("currentJobStartDate and netSalary are required");
             loanDao.updateStatusAndScore(loanId, "DECLINED", 0, reasons);
             return new EvaluationBreakdown("DECLINED", reasons, 0,0,0,0,0,0,0);
         }
@@ -51,7 +51,7 @@ public class CreditEvaluationService {
         }
 
         // --- Derived values
-        long tenureMonths = Period.between(loan.employerStartDate(), LocalDate.now()).toTotalMonths();
+        long tenureMonths = Period.between(loan.currentJobStartDate(), LocalDate.now()).toTotalMonths();
 
         BigDecimal newInstallment = loan.requestedAmount()
                 .divide(BigDecimal.valueOf(loan.termMonths()), RoundingMode.HALF_UP);

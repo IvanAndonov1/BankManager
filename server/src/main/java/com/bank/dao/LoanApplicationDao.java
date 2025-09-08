@@ -23,7 +23,7 @@ public class LoanApplicationDao {
                        String productType,
                        BigDecimal amount,
                        int termMonths,
-                       LocalDate employerStartDate,
+                       LocalDate currentJobStartDate,
                        BigDecimal netSalary) {
         String sql = """
             INSERT INTO loan_applications
@@ -37,7 +37,7 @@ public class LoanApplicationDao {
                 .addValue("p", productType)
                 .addValue("a", amount)
                 .addValue("t", termMonths)
-                .addValue("esd", employerStartDate)
+                .addValue("cjsd", currentJobStartDate)
                 .addValue("ns", netSalary);
 
         return jdbc.queryForObject(sql, params, Long.class);

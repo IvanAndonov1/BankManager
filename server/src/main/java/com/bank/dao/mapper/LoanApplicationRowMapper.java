@@ -27,7 +27,7 @@ public class LoanApplicationRowMapper implements RowMapper<LoanApplicationDto> {
                 rs.getInt("term_months"),
                 rs.getString("status"),
                 reasons,
-                rs.getObject("employer_start_date", LocalDate.class),
+                rs.getObject("current_job_start_date", LocalDate.class),
                 rs.getBigDecimal("net_salary"),
                 rs.getObject("created_at", OffsetDateTime.class),
                 rs.getObject("updated_at", OffsetDateTime.class)
