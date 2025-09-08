@@ -2,6 +2,7 @@ package com.bank.dao;
 
 import com.bank.dao.mapper.LoanApplicationRowMapper;
 import com.bank.dto.LoanApplicationDto;
+import com.bank.enums.LoanApplicationStatus;
 import org.springframework.jdbc.core.namedparam.*;
 import org.springframework.stereotype.Repository;
 
@@ -66,6 +67,21 @@ public class LoanApplicationDao {
                 .addValue("sc", score)
                 .addValue("r", reasons.toArray(new String[0]))
                 .addValue("id", id));
+    }
+
+    public int decide(Long id, Long userId, LoanApplicationStatus finalStatus){
+
+        String sql = """
+                UPDATE loan_applications
+                SET status=:st, decided_by_user_id=:uid, decided_at=now(), updated_at=now()
+                WHERE id=:id AND status='PENDING'
+                """;
+
+        return jdbc.update(sql, new MapSqlParameterSource()
+                .addValue("st", finalStatus.name())
+                .addValue("uid", userId)
+                .addValue("id", id));
+
     }
 
     public BigDecimal currentMonthlyInstallments(Long customerId) {
