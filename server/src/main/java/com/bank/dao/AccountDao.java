@@ -1,5 +1,5 @@
 // was: package com.bank.dao.mapper;
-package com.bank.dao.mapper;
+package com.bank.dao;
 
 import com.bank.dto.AccountDto;
 import com.bank.dao.mapper.AccountMapper;
