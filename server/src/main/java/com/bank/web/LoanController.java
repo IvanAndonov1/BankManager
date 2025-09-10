@@ -41,14 +41,15 @@ public class LoanController {
      */
     @PostMapping("/applications")
     public Map<String, Object> create(@RequestBody Map<String, Object> body) {
+
         Long id = dao.create(
                 Long.valueOf(body.get("customerId").toString()),
-                (String) body.get("productType"),
                 new BigDecimal(body.get("requestedAmount").toString()),
                 Integer.parseInt(body.get("termMonths").toString()),
                 LocalDate.parse(body.get("currentJobStartDate").toString()),
                 new BigDecimal(body.get("netSalary").toString())
         );
+
         return Map.of("id", id, "status", LoanApplicationStatus.PENDING.name());
     }
 

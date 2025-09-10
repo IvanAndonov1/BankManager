@@ -23,7 +23,6 @@ public class LoanApplicationRowMapper implements RowMapper<LoanApplicationDto> {
         return new LoanApplicationDto(
                 rs.getLong("id"),
                 rs.getLong("customer_id"),
-                rs.getString("product_type"),
                 rs.getBigDecimal("requested_amount"),
                 rs.getInt("term_months"),
                 LoanApplicationStatus.valueOf(rs.getString("status")),

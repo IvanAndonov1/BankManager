@@ -21,21 +21,19 @@ public class LoanApplicationDao {
     }
 
     public Long create(Long customerId,
-                       String productType,
                        BigDecimal amount,
                        int termMonths,
                        LocalDate currentJobStartDate,
                        BigDecimal netSalary) {
         String sql = """
             INSERT INTO loan_applications
-              (customer_id, product_type, requested_amount, term_months, employer_start_date, net_salary)
-            VALUES(:c,:p,:a,:t,:esd,:ns)
+              (customer_id, requested_amount, term_months, employer_start_date, net_salary)
+            VALUES(:c,:a,:t,:esd,:ns)
             RETURNING id
         """;
 
         var params = new MapSqlParameterSource()
                 .addValue("c", customerId)
-                .addValue("p", productType)
                 .addValue("a", amount)
                 .addValue("t", termMonths)
                 .addValue("cjsd", currentJobStartDate)
