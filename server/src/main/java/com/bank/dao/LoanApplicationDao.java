@@ -67,6 +67,31 @@ public class LoanApplicationDao {
                 .addValue("id", id));
     }
 
+    public int updatePricing(Long id,
+                             String currency,
+                             BigDecimal annualRate,
+                             BigDecimal monthlyPayment,
+                             BigDecimal totalPayable) {
+
+        String sql = """
+            UPDATE loan_applications
+            SET currency=:cur,
+                nominal_annual_rate=:rate,
+                monthly_payment=:mp,
+                total_payable=:tp,
+                updated_at=now()
+            WHERE id=:id
+        """;
+
+        return jdbc.update(sql, new MapSqlParameterSource()
+                .addValue("cur", currency)
+                .addValue("rate", annualRate)
+                .addValue("mp", monthlyPayment)
+                .addValue("tp", totalPayable)
+                .addValue("id", id));
+
+    }
+
     public int decide(Long id, Long userId, LoanApplicationStatus finalStatus){
 
         String sql = """
