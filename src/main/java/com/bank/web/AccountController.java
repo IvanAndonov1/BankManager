@@ -1,8 +1,7 @@
 package com.bank.web;
 
-import com.bank.dao.mapper.AccountDao;
+import com.bank.dao.AccountDao;
 import com.bank.dto.AccountDto;
-import com.bank.dao.mapper.AccountMapper;
 import com.bank.service.AccountService;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,0 +1,11 @@
+# Ignore build
+/target/
+**/target/
+
+# IDE
+/.idea/
+/*.iml
+
+# OS / misc
+*.log
+*.zip
