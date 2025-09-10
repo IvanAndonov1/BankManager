@@ -10,7 +10,6 @@ import java.util.List;
 public record LoanApplicationDto(
         Long id,
         Long customerId,
-        String productType,
         BigDecimal requestedAmount,
         Integer termMonths,
         LoanApplicationStatus status,
