@@ -4,7 +4,9 @@ import com.bank.dao.LoanApplicationDao;
 import com.bank.dto.EvaluationBreakdown;
 import com.bank.dto.EvaluationResult;
 import com.bank.dto.LoanApplicationDto;
+import com.bank.enums.LoanApplicationStatus;
 import com.bank.service.CreditEvaluationService;
+import com.bank.service.LoanDecisionService;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -17,10 +19,12 @@ public class LoanController {
 
     private final LoanApplicationDao dao;
     private final CreditEvaluationService evaluator;
+    private final LoanDecisionService decisionService;
 
-    public LoanController(LoanApplicationDao dao, CreditEvaluationService evaluator) {
+    public LoanController(LoanApplicationDao dao, CreditEvaluationService evaluator, LoanDecisionService decisionService) {
         this.dao = dao;
         this.evaluator = evaluator;
+        this.decisionService = decisionService;
     }
 
     /**
@@ -45,7 +49,22 @@ public class LoanController {
                 LocalDate.parse(body.get("currentJobStartDate").toString()),
                 new BigDecimal(body.get("netSalary").toString())
         );
-        return Map.of("id", id);
+        return Map.of("id", id, "status", LoanApplicationStatus.PENDING.name());
+    }
+
+    @PostMapping("applications/{id}/decision")
+    public Map<String, Object> decide (@PathVariable Long id,
+                                       @RequestParam  Long userId,
+                                       @RequestParam boolean approve){
+
+        boolean ok = decisionService.decide(id, userId, approve);
+        LoanApplicationDto dto = dao.findById(id);
+
+        return Map.of(
+                "ok", ok,
+                "status", dto.status().name()
+        );
+
     }
 
     @PostMapping("/applications/{id}/evaluate")
