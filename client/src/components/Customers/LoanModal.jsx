@@ -27,12 +27,12 @@ export default function Modal({ isOpen, onClose, children }) {
           </button>
         </div>
 
-        <LineSlider />
+        <LineSlider details="EUR" />
         <div className="w-full flex justify-between items-center">
           <p className="text-sm">500 EUR</p>
           <p className="text-sm text-right">100 000 EUR</p>
         </div>
-        <LineSlider />
+        <LineSlider details="months" />
         <div className="w-full flex justify-between items-center">
           <p className="text-sm">6 month</p>
           <p className="text-sm text-right">120 month</p>
