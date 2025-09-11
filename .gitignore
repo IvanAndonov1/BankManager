@@ -1,0 +1,13 @@
+@"
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+"@ | Out-File -Encoding utf8 .gitignore
+
+git add .gitignore
+git commit -m "chore: ignore IDE/OS files"

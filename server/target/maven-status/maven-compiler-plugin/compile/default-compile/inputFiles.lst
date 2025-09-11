@@ -15,6 +15,8 @@ C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\co
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\dto\LoanApplicationDto.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\dto\LoanQuoteRequestDto.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\dto\LoanQuoteResponseDto.java
+C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\dto\RegisterRequestDto.java
+C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\dto\RegisterResponseDto.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\dto\TransactionDto.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\enums\LoanApplicationStatus.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\enums\Role.java
@@ -33,4 +35,5 @@ C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\co
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\service\LoanPricingService.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\web\AccountController.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\web\ApiExceptionHandler.java
+C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\web\AuthController.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\web\LoanController.java
