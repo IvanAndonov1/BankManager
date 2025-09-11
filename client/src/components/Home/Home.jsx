@@ -1,13 +1,15 @@
+import { Link } from 'react-router-dom';
+
 export default function Home() {
 	return (
 		<main className="fixed inset-0 overflow-hidden">
 			<div className="relative w-full h-full bg-gradient-to-br from-[#6a1ea1] via-[#4a46c1] to-[#0b84b9]">
 
-				<button className="cursor-pointer absolute top-6 right-6 z-30 px-6 h-10 rounded-full text-white font-medium
+				<Link to="/register" className="cursor-pointer absolute top-8 right-6 z-30 px-7 h-10 rounded-full text-white font-medium
                            bg-gradient-to-r from-[#351F78] to-[#0b84b9] ring-1 ring-white/20
-                           shadow-[0_8px_24px_-6px_rgba(0,0,0,.35)]">
+                           shadow-[0_8px_24px_-6px_rgba(0,0,0,.35)] inline-flex items-center justify-center">
 					Sign in
-				</button>
+				</Link>
 
 				<div className="absolute -left-20 -top-24 w-64 h-64 rounded-full
                         bg-[radial-gradient(circle_at_30%_30%,#8a2c9a, #5b1d91_60%, #2b0b3f_100%)]
@@ -33,12 +35,12 @@ export default function Home() {
 						A short description of what this website is about. A short description
 						of what this website is about.
 					</p>
-					<button className="cursor-pointer mt-6 inline-flex items-center justify-center px-5 h-10 rounded-full
+					<Link to="/login" className="cursor-pointer mt-6 inline-flex items-center justify-center px-5 h-10 rounded-full
                              bg-white/22 text-white ring-1 ring-white/35 backdrop-blur
                              shadow-[inset_0_0_0_1px_rgba(255,255,255,.15)]
                              hover:bg-white/30">
 						Get Started
-					</button>
+					</Link>
 				</section>
 
 				<div className="pointer-events-none absolute right-[12%] top-[18%] rotate-[24deg]">
