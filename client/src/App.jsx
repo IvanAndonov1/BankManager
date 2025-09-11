@@ -1,14 +1,18 @@
 import { Routes, Route } from 'react-router';
-import Dashboard from './components/Employees/Dashboard/Dashboard';
-import CustomerMoreInfo from './components/Employees/Customer/Details/Details';
+import Loans from './components/Customers/Loans';
+import Transactions from './components/Customers/Transactions';
+import Dashboard from './components/Customers/Dashboard';
 
 
 function App() {
 	return (
 		<>
 			<Routes>
-				<Route path="/employee" element={<Dashboard />} />
-				<Route path="/customer-details/:employeeId" element={<CustomerMoreInfo />} />
+				<Route path='/customer-loans' element={<Loans />} />
+				<Route path="/customer-dashboard" element={<Dashboard />} />
+				<Route path='/customer-transactions' element={<Transactions />} />
+				
+				
 			</Routes>
 		</>
 	)
