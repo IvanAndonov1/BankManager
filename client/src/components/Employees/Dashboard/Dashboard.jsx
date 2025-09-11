@@ -4,7 +4,7 @@ import Sidebar from "../../common/Sidebar";
 import EmployeeTableRow from "./EmployeeTableRow";
 import DataTable from "../../common/DataTable";
 
-export default function Dashboard() {
+export default function EmployeeDashboard() {
 	let data = { name: 'Name 1', date: '04/12/2020', status: 'active' };
 
 	return (
