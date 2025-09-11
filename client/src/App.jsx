@@ -18,11 +18,10 @@ function App() {
 	return (
 		<>
 			<Routes>
-
 				<Route path='/customer-loans' element={<Loans />} />
 				<Route path="/customer-dashboard" element={<Dashboard />} />
-				<Route path='/customer-transactions' element={<Transactions />
-                                                      
+				<Route path='/customer-transactions' element={<Transactions/>} />
+                                               
 				<Route path="/" element={<Home />} />
 				<Route path="/login" element={<Login />} />
 				<Route path="/register" element={<Register />} />
@@ -30,7 +29,6 @@ function App() {
 				<Route path="/customer-details/:employeeId" element={<CustomerMoreInfo />} />
 				<Route path="/admin" element={<AdminDashboard />} />
 				<Route path="/admin/employee/:employeeId" element={<AdminEmployeeDetails />} />
-
 			</Routes>
 		</>
 	)
