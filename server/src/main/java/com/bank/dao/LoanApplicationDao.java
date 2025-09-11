@@ -2,6 +2,7 @@ package com.bank.dao;
 
 import com.bank.dao.mapper.LoanApplicationRowMapper;
 import com.bank.dto.LoanApplicationDto;
+import com.bank.enums.LoanApplicationStatus;
 import org.springframework.jdbc.core.namedparam.*;
 import org.springframework.stereotype.Repository;
 
@@ -20,21 +21,19 @@ public class LoanApplicationDao {
     }
 
     public Long create(Long customerId,
-                       String productType,
                        BigDecimal amount,
                        int termMonths,
                        LocalDate currentJobStartDate,
                        BigDecimal netSalary) {
         String sql = """
             INSERT INTO loan_applications
-              (customer_id, product_type, requested_amount, term_months, employer_start_date, net_salary)
-            VALUES(:c,:p,:a,:t,:esd,:ns)
+              (customer_id, requested_amount, term_months, employer_start_date, net_salary)
+            VALUES(:c,:a,:t,:esd,:ns)
             RETURNING id
         """;
 
         var params = new MapSqlParameterSource()
                 .addValue("c", customerId)
-                .addValue("p", productType)
                 .addValue("a", amount)
                 .addValue("t", termMonths)
                 .addValue("cjsd", currentJobStartDate)
@@ -66,6 +65,46 @@ public class LoanApplicationDao {
                 .addValue("sc", score)
                 .addValue("r", reasons.toArray(new String[0]))
                 .addValue("id", id));
+    }
+
+    public int updatePricing(Long id,
+                             String currency,
+                             BigDecimal annualRate,
+                             BigDecimal monthlyPayment,
+                             BigDecimal totalPayable) {
+
+        String sql = """
+            UPDATE loan_applications
+            SET currency=:cur,
+                nominal_annual_rate=:rate,
+                monthly_payment=:mp,
+                total_payable=:tp,
+                updated_at=now()
+            WHERE id=:id
+        """;
+
+        return jdbc.update(sql, new MapSqlParameterSource()
+                .addValue("cur", currency)
+                .addValue("rate", annualRate)
+                .addValue("mp", monthlyPayment)
+                .addValue("tp", totalPayable)
+                .addValue("id", id));
+
+    }
+
+    public int decide(Long id, Long userId, LoanApplicationStatus finalStatus){
+
+        String sql = """
+                UPDATE loan_applications
+                SET status=:st, decided_by_user_id=:uid, decided_at=now(), updated_at=now()
+                WHERE id=:id AND status='PENDING'
+                """;
+
+        return jdbc.update(sql, new MapSqlParameterSource()
+                .addValue("st", finalStatus.name())
+                .addValue("uid", userId)
+                .addValue("id", id));
+
     }
 
     public BigDecimal currentMonthlyInstallments(Long customerId) {

@@ -1,6 +1,7 @@
 package com.bank.dao.mapper;
 
 import com.bank.dto.LoanApplicationDto;
+import com.bank.enums.LoanApplicationStatus;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
@@ -22,13 +23,16 @@ public class LoanApplicationRowMapper implements RowMapper<LoanApplicationDto> {
         return new LoanApplicationDto(
                 rs.getLong("id"),
                 rs.getLong("customer_id"),
-                rs.getString("product_type"),
                 rs.getBigDecimal("requested_amount"),
                 rs.getInt("term_months"),
-                rs.getString("status"),
+                LoanApplicationStatus.valueOf(rs.getString("status")),
                 reasons,
                 rs.getObject("current_job_start_date", LocalDate.class),
                 rs.getBigDecimal("net_salary"),
+                rs.getString("currency"),
+                rs.getBigDecimal("nominal_annual_rate"),
+                rs.getBigDecimal("monthly_payment"),
+                rs.getBigDecimal("total_payable"),
                 rs.getObject("created_at", OffsetDateTime.class),
                 rs.getObject("updated_at", OffsetDateTime.class)
         );

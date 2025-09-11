@@ -52,7 +52,7 @@ export default function Register() {
 
 				<div className="relative mt-6">
 					<form
-						onSubmit={handleSubmit}
+						onSubmit={(e) => handleSubmit(e)}
 						className="mx-auto rounded-xl bg-white/15 backdrop-blur-md shadow-xl text-white p-8 w-[680px] max-w-[90vw] border border-white/20"
 					>
 						<StepComponent values={values} onChange={handleChange} />

@@ -2,7 +2,9 @@ package com.bank.service;
 
 import com.bank.dao.LoanApplicationDao;
 import com.bank.dto.EvaluationBreakdown;
+import com.bank.dto.EvaluationResult;
 import com.bank.dto.LoanApplicationDto;
+import com.bank.enums.LoanApplicationStatus;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -15,6 +17,8 @@ import java.util.List;
 @Service
 public class CreditEvaluationService {
 
+    private final LoanPricingService pricingService;
+
     private static final BigDecimal ZERO = BigDecimal.ZERO;
 
     // Income level bands (adjust if needed)
@@ -25,8 +29,9 @@ public class CreditEvaluationService {
 
     private final LoanApplicationDao loanDao;
 
-    public CreditEvaluationService(LoanApplicationDao loanDao) {
+    public CreditEvaluationService(LoanApplicationDao loanDao, LoanPricingService pricingService) {
         this.loanDao = loanDao;
+        this.pricingService = pricingService;
     }
 
     public EvaluationBreakdown evaluate(Long loanId) {
@@ -36,25 +41,26 @@ public class CreditEvaluationService {
         // --- Basic input validation
         if (loan.termMonths() == null || loan.termMonths() <= 0) {
             reasons.add("termMonths must be > 0");
-            loanDao.updateStatusAndScore(loanId, "DECLINED", 0, reasons);
-            return new EvaluationBreakdown("DECLINED", reasons, 0,0,0,0,0,0,0);
+            return new EvaluationBreakdown(LoanApplicationStatus.PENDING, reasons, 0,0,0,0,0,0,0);
         }
         if (loan.currentJobStartDate() == null || loan.netSalary() == null) {
             reasons.add("currentJobStartDate and netSalary are required");
-            loanDao.updateStatusAndScore(loanId, "DECLINED", 0, reasons);
-            return new EvaluationBreakdown("DECLINED", reasons, 0,0,0,0,0,0,0);
+            return new EvaluationBreakdown(LoanApplicationStatus.PENDING, reasons, 0,0,0,0,0,0,0);
         }
         if (loan.netSalary().compareTo(ZERO) <= 0) {
             reasons.add("netSalary must be > 0");
-            loanDao.updateStatusAndScore(loanId, "DECLINED", 0, reasons);
-            return new EvaluationBreakdown("DECLINED", reasons, 0,0,0,0,0,0,0);
+            return new EvaluationBreakdown(LoanApplicationStatus.PENDING, reasons, 0,0,0,0,0,0,0);
         }
 
         // --- Derived values
         long tenureMonths = Period.between(loan.currentJobStartDate(), LocalDate.now()).toTotalMonths();
 
-        BigDecimal newInstallment = loan.requestedAmount()
-                .divide(BigDecimal.valueOf(loan.termMonths()), RoundingMode.HALF_UP);
+        var annualRate = pricingService.rateForTermMonths(loan.termMonths());
+        BigDecimal newInstallment = pricingService.annuityPayment(
+                loan.requestedAmount(),
+                loan.termMonths(),
+                annualRate
+        );
 
         BigDecimal currentMonthly = loanDao.currentMonthlyInstallments(loan.customerId());
         BigDecimal totalMonthly = currentMonthly.add(newInstallment);
@@ -99,22 +105,23 @@ public class CreditEvaluationService {
         // --- H) Recent new debt (approved in last 6 months)
         int recentDebtScore = bandRecentNewDebt(loanDao.approvedInLast6Months(loan.customerId()));
 
-        // --- Final decision
-        boolean hardFail = tenureMonths < 6
-                || loan.netSalary().multiply(new BigDecimal("0.5")).compareTo(totalMonthly) < 0
-                || late12m > 0;
+//        // --- Final decision
+//        boolean hardFail = tenureMonths < 6
+//                || loan.netSalary().multiply(new BigDecimal("0.5")).compareTo(totalMonthly) < 0
+//                || late12m > 0;
 
         int composite = (tenureScore + dtiScore + incomeScore + accountAgeScore + cushionScore + recentDebtScore) / 6;
 
-        String finalStatus = hardFail ? "DECLINED" : (composite >= 70 ? "APPROVED" : "DECLINED");
-        if (!hardFail && composite < 70 && reasons.isEmpty()) {
-            reasons.add("Composite score below threshold (>= 70 required)");
-        }
-
-        loanDao.updateStatusAndScore(loanId, finalStatus, composite, reasons);
+//        String finalStatus = hardFail ? "DECLINED" : (composite >= 70 ? "APPROVED" : "DECLINED");
+//        if (!hardFail && composite < 70 && reasons.isEmpty()) {
+//            reasons.add("Composite score below threshold (>= 70 required)");
+//        }
+//
+//        loanDao.updateStatusAndScore(loanId, finalStatus, composite, reasons);
 
         return new EvaluationBreakdown(
-                finalStatus, reasons,
+                LoanApplicationStatus.PENDING,
+                reasons,
                 tenureScore, dtiScore, incomeScore, accountAgeScore, cushionScore, recentDebtScore,
                 composite
         );
