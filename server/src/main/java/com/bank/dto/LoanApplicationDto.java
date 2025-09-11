@@ -8,6 +8,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 public record LoanApplicationDto(
+
         Long id,
         Long customerId,
         BigDecimal requestedAmount,
@@ -15,9 +16,14 @@ public record LoanApplicationDto(
         LoanApplicationStatus status,
         List<String> reasons,
         LocalDate currentJobStartDate,      // NEW
-        BigDecimal netSalary,             // NEW
+        BigDecimal netSalary,
+        String currency,
+        BigDecimal nominalAnnualRate,
+        BigDecimal monthlyPayment,
+        BigDecimal totalPayable,// NEW
         OffsetDateTime createdAt,
         OffsetDateTime updatedAt
+
 ) {}
 
 

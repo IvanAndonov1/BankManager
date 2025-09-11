@@ -17,6 +17,8 @@ import java.util.List;
 @Service
 public class CreditEvaluationService {
 
+    private final LoanPricingService pricingService;
+
     private static final BigDecimal ZERO = BigDecimal.ZERO;
 
     // Income level bands (adjust if needed)
@@ -27,8 +29,9 @@ public class CreditEvaluationService {
 
     private final LoanApplicationDao loanDao;
 
-    public CreditEvaluationService(LoanApplicationDao loanDao) {
+    public CreditEvaluationService(LoanApplicationDao loanDao, LoanPricingService pricingService) {
         this.loanDao = loanDao;
+        this.pricingService = pricingService;
     }
 
     public EvaluationBreakdown evaluate(Long loanId) {
@@ -52,8 +55,12 @@ public class CreditEvaluationService {
         // --- Derived values
         long tenureMonths = Period.between(loan.currentJobStartDate(), LocalDate.now()).toTotalMonths();
 
-        BigDecimal newInstallment = loan.requestedAmount()
-                .divide(BigDecimal.valueOf(loan.termMonths()), RoundingMode.HALF_UP);
+        var annualRate = pricingService.rateForTermMonths(loan.termMonths());
+        BigDecimal newInstallment = pricingService.annuityPayment(
+                loan.requestedAmount(),
+                loan.termMonths(),
+                annualRate
+        );
 
         BigDecimal currentMonthly = loanDao.currentMonthlyInstallments(loan.customerId());
         BigDecimal totalMonthly = currentMonthly.add(newInstallment);
