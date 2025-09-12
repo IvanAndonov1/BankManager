@@ -11,6 +11,12 @@ const initialState = {
 	message: ""
 };
 
+const roles = {
+	'CUSTOMER': '/customer-dashboard',
+	'EMPLOYEE': '/employee',
+	'ADMIN': '/admin'
+};
+
 export default function Login() {
 	const { userLogin } = use(AuthContext);
 	const [showPass, setShowPass] = useState(false);
@@ -33,9 +39,9 @@ export default function Login() {
 			}
 
 			loginUser({ username, password })
-				.then(data => {
-					userLogin(data);
-					navigate('/customer-dashboard');
+				.then(user => {
+					userLogin(user);
+					navigate(roles[user.role]);
 				});
 
 			return {
