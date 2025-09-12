@@ -20,4 +20,28 @@ const requester = {
 			return err.message;
 		}
 	},
+	post: async (url, data = {}, headers = {}) => {
+		try {
+			const res = await fetch(url, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					...headers
+				},
+				body: JSON.stringify(data)
+			});
+
+			if (!res.ok) {
+				throw new Error(`Request failed with status: ${res.status}`);
+			} else {
+				if (res.url.includes('download')) {
+					return res.blob();
+				} else {
+					return res.json();
+				}
+			}
+		} catch (err) {
+			return err;
+		}
+	},
 };
