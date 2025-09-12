@@ -64,4 +64,22 @@ const requester = {
 			return err;
 		}
 	},
+	delete: async (url, headers = {}) => {
+		try {
+			const res = await fetch(url, {
+				method: 'DELETE',
+				headers: {
+					...headers
+				}
+			});
+
+			if (!res.ok) {
+				throw new Error(`Request failed with status: ${res.status}`);
+			} else {
+				return res.json();
+			}
+		} catch (err) {
+			return err;
+		}
+	},
 };
