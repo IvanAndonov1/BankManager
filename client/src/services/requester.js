@@ -104,3 +104,5 @@ const requester = {
 
 	}
 };
+
+export default requester;
