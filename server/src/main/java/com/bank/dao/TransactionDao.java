@@ -32,13 +32,20 @@ public class TransactionDao {
         return jdbc.queryForObject(sql, p, Long.class);
     }
 
-    public List<TransactionDto> findByAccount(Long accountId) {
+    public List<TransactionDto> findByAccount(Long accountId, int limit, int offset) {
         String sql = """
-            SELECT id, account_id, type, amount, description, created_at
-            FROM transactions
-            WHERE account_id=:acc
-            ORDER BY id DESC
-        """;
-        return jdbc.query(sql, new MapSqlParameterSource("acc", accountId), mapper);
+        SELECT id, account_id, type, amount, date_time, description
+        FROM transactions
+        WHERE account_id = :aid
+        ORDER BY date_time DESC
+        LIMIT :lim OFFSET :off
+    """;
+        var params = new MapSqlParameterSource()
+                .addValue("aid", accountId)
+                .addValue("lim", limit)
+                .addValue("off", offset);
+
+        return jdbc.query(sql, params, new TransactionMapper());
     }
+
 }

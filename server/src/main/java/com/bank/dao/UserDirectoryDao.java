@@ -73,4 +73,44 @@ public class UserDirectoryDao {
         var params = new MapSqlParameterSource("role", role);
         return jdbc.query(sql, params, MAPPER);
     }
+    public List<UserListItemDto> listByRolePaged(String role, int page, int size, String q, Boolean active) {
+        int safeSize = Math.max(size, 1);
+        int safePage = Math.max(page, 0);
+        int offset = safePage * safeSize;
+
+        String sql = """
+        SELECT u.id, u.name, u.email, u.role, u.created_at, u.active,
+               COALESCE(acc.cnt, 0) AS accounts
+        FROM users u
+        LEFT JOIN (
+            SELECT c.id AS cid, COUNT(a.id) AS cnt
+            FROM customers c
+            LEFT JOIN accounts a ON a.customer_id = c.id
+            GROUP BY c.id
+        ) acc ON (u.id = acc.cid)
+        WHERE u.role = :role
+          AND ( :activeFilter = false OR u.active = :active )
+          AND ( :qFilter = false OR u.name ILIKE :qLike OR u.email ILIKE :qLike )
+        ORDER BY u.created_at DESC, u.id DESC
+        LIMIT :size OFFSET :offset
+    """;
+
+        boolean activeFilter = active != null;
+        boolean qFilter = (q != null && !q.isBlank());
+        String qLike = qFilter ? "%" + q + "%" : null;
+
+        var params = new MapSqlParameterSource()
+                .addValue("role", role)
+                .addValue("activeFilter", activeFilter)
+                .addValue("active", active)
+                .addValue("qFilter", qFilter)
+                .addValue("qLike", qLike)
+                .addValue("size", safeSize)
+                .addValue("offset", offset);
+
+        return jdbc.query(sql, params, MAPPER);
+    }
+
+
+
 }
