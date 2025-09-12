@@ -16,15 +16,25 @@ public class DirectoryController {
         this.dao = dao;
     }
 
-    // За employee страницата: списък клиенти
+    // EMPLOYEE view -> list customers (one endpoint, params optional)
     @GetMapping("/customers/all")
-    public List<UserListItemDto> customersAll() {
-        return dao.listByRole("CUSTOMER");
+    public List<UserListItemDto> customersAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size,
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false) Boolean active
+    ) {
+        return dao.listByRolePaged("CUSTOMER", page, size, query, active);
     }
 
-    // За admin страницата: списък служители
+    // ADMIN view -> list employees (one endpoint, params optional)
     @GetMapping("/employees/all")
-    public List<UserListItemDto> employeesAll() {
-        return dao.listByRole("EMPLOYEE");
+    public List<UserListItemDto> employeesAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size,
+            @RequestParam(required = false, name = "query") String q,
+            @RequestParam(required = false) Boolean active
+    ) {
+        return dao.listByRolePaged("EMPLOYEE", page, size, q, active);
     }
 }
