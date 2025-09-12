@@ -8,6 +8,7 @@ com\bank\service\CreditEvaluationService.class
 com\bank\dao\mapper\TransactionMapper.class
 com\bank\models\Customer.class
 com\bank\service\AccountService.class
+com\bank\dao\UserDirectoryDao.class
 com\bank\models\Employee.class
 com\bank\DbSmoke.class
 com\bank\dto\RegisterResponseDto.class
@@ -27,11 +28,13 @@ com\bank\health\HealthController.class
 com\bank\dto\LoanApplicationDto.class
 com\bank\config\CorsConfig.class
 com\bank\models\Account.class
+com\bank\dto\UserListItemDto.class
 com\bank\web\ApiExceptionHandler.class
 com\bank\service\LoanDecisionService.class
 com\bank\web\AuthController.class
 com\bank\dto\EvaluationResult.class
 com\bank\enums\Role.class
+com\bank\web\DirectoryController.class
 com\bank\service\LoanPricingService.class
 com\bank\dao\mapper\LoanApplicationRowMapper.class
 com\bank\web\LoanController.class
