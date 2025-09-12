@@ -44,4 +44,24 @@ const requester = {
 			return err;
 		}
 	},
+	put: async (url, headers = {}, data = {}) => {
+		try {
+			const res = await fetch(url, {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json',
+					...headers
+				},
+				body: JSON.stringify(data)
+			});
+
+			if (!res.ok) {
+				throw new Error(`Request failed with status: ${res.status}`);
+			} else {
+				return res.json();
+			}
+		} catch (err) {
+			return err;
+		}
+	},
 };
