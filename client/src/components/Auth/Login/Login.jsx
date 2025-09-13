@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { useActionState } from "react";
+import { loginUser } from "../../../services/userService";
+import { useNavigate } from 'react-router-dom';
+import { useStorage } from '../../../hooks/useStorage';
 
 const initialState = {
 	username: "",
@@ -10,31 +13,39 @@ const initialState = {
 
 export default function Login() {
 	const [showPass, setShowPass] = useState(false);
+	const navigate = useNavigate();
 
 	const formHandler = async (previousState, formData) => {
-		const username = (formData.get("username") || "").toString().trim();
-		const password = (formData.get("password") || "").toString().trim();
-		const remember = Boolean(formData.get("remember"));
+		try {
+			const username = (formData.get("username") || "").toString().trim();
+			const password = (formData.get("password") || "").toString().trim();
+			const remember = Boolean(formData.get("remember"));
 
-		if (!username || !password) {
+			if (!username || !password) {
+				return {
+					...previousState,
+					username,
+					password: "",
+					remember,
+					message: "All fields are required!",
+				};
+			}
+
+			loginUser({ username, password })
+				.then(data => {
+					console.log(data);
+				});
+
 			return {
 				...previousState,
 				username,
 				password: "",
 				remember,
-				message: "All fields are required!",
+				message: "Successfull login.",
 			};
+		} catch (err) {
+
 		}
-
-		// TODO: API call 
-
-		return {
-			...previousState,
-			username,
-			password: "",
-			remember,
-			message: "Successfull login.",
-		};
 	};
 
 	const [state, formAction, isPending] = useActionState(formHandler, initialState);
