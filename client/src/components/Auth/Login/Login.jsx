@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { use, useState } from "react";
 import { useActionState } from "react";
 import { loginUser } from "../../../services/userService";
 import { useNavigate } from 'react-router-dom';
-import { useStorage } from '../../../hooks/useStorage';
+import { AuthContext } from "../../../contexts/AuthContext.jsx";
 
 const initialState = {
 	username: "",
@@ -12,6 +12,7 @@ const initialState = {
 };
 
 export default function Login() {
+	const { userLogin } = use(AuthContext);
 	const [showPass, setShowPass] = useState(false);
 	const navigate = useNavigate();
 
@@ -33,7 +34,8 @@ export default function Login() {
 
 			loginUser({ username, password })
 				.then(data => {
-					console.log(data);
+					userLogin(data);
+					navigate('/customer-dashboard');
 				});
 
 			return {
