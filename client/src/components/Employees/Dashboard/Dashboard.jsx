@@ -3,9 +3,24 @@ import FilterCard from "../../common/FilterCard";
 import Sidebar from "../../common/Sidebar";
 import EmployeeTableRow from "./EmployeeTableRow";
 import DataTable from "../../common/DataTable";
+import { useEffect, useOptimistic, useState } from "react";
+import { getAllCustomers } from "../../../services/employeeService";
 
 export default function EmployeeDashboard() {
-	let data = { name: 'Name 1', date: '04/12/2020', status: 'active' };
+	const [customers, setCustomers] = useState([]);
+
+	const [optimisticCustomers, setOptimisticCustomers] = useOptimistic(customers);
+
+	useEffect(() => {
+		getAllCustomers()
+			.then(result => {
+				setOptimisticCustomers(result);
+				setCustomers(result);
+			});
+	}, []);
+
+	console.log(customers);
+
 
 	return (
 		<div className="min-h-screen flex bg-gray-100">
@@ -19,11 +34,9 @@ export default function EmployeeDashboard() {
 				</div>
 
 				<DataTable headers={["Customer", "Date", "Status", "Details"]}>
-					<EmployeeTableRow {...data} detailsTo="/customer-details/1" />
-					<EmployeeTableRow {...data} detailsTo="/customer-details/2" />
-					<EmployeeTableRow {...data} detailsTo="/customer-details/3" />
-					<EmployeeTableRow {...data} detailsTo="/customer-details/4" />
-					<EmployeeTableRow {...data} detailsTo="/customer-details/5" />
+					{optimisticCustomers.map(x => (
+						<EmployeeTableRow {...x} key={x.id} detailsTo="/customer-details/1" />
+					))}
 				</DataTable>
 			</div>
 		</div>
