@@ -2,7 +2,7 @@ ALTER TABLE orders DROP CONSTRAINT IF EXISTS fk_orders_customer;
 
 ALTER TABLE orders DROP COLUMN IF EXISTS customer_id;
 
-ALTER TABLE orders;
+ALTER TABLE orders
 ADD COLUMN customer_id BIGINT NOT NULL REFERENCES customers(id) ON DELETE CASCADE;
 
 DROP TABLE IF EXISTS customer;
