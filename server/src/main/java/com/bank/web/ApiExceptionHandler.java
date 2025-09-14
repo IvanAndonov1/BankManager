@@ -1,6 +1,8 @@
 package com.bank.web;
 
 import org.springframework.http.*;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
@@ -24,6 +26,24 @@ public class ApiExceptionHandler {
         return ResponseEntity.badRequest().body(Map.of(
                 "error", "Validation Failed",
                 "details", errs
+        ));
+    }
+
+    // NEW: 401 when auth fails
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<Map<String,Object>> handleAuth(AuthenticationException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
+                "error", "Unauthorized",
+                "message", ex.getMessage()
+        ));
+    }
+
+    // NEW: 403 when access is denied by our guards
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String,Object>> handleAccessDenied(AccessDeniedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of(
+                "error", "Forbidden",
+                "message", ex.getMessage()
         ));
     }
 

@@ -33,6 +33,7 @@ C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\co
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\models\User.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\security\JwtAuthFilter.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\security\JwtService.java
+C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\security\SecurityUtil.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\ServerApplication.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\service\AccountService.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\service\CreditEvaluationService.java

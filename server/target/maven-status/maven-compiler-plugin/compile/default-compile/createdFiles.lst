@@ -1,3 +1,4 @@
+com\bank\security\SecurityUtil.class
 com\bank\ServerApplication.class
 com\bank\enums\TransactionType.class
 com\bank\dto\EvaluationBreakdown.class

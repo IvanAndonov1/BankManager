@@ -52,4 +52,10 @@ public class AccountDao {
                 .addValue("b", newBalance)
                 .addValue("id", id));
     }
+    public Long findCustomerIdByAccountId(Long accountId) {
+        String sql = "SELECT customer_id FROM accounts WHERE id=:id";
+        var p = new MapSqlParameterSource("id", accountId);
+        return jdbc.query(sql, p, rs -> rs.next() ? rs.getLong(1) : null);
+    }
+
 }
