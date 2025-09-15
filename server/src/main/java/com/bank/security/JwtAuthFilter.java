@@ -33,7 +33,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             if (h != null && h.startsWith("Bearer ")) {
                 String token = h.substring(7);
 
-                // 🛑 Check if token is blacklisted
                 if (blacklistedTokenDao.isBlacklisted(token)) {
                     SecurityContextHolder.clearContext();
                     chain.doFilter(req, res);
