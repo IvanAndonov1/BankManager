@@ -111,6 +111,83 @@ public class UserDirectoryDao {
         return jdbc.query(sql, params, MAPPER);
     }
 
+    public java.util.List<java.util.Map<String, Object>> listCustomers(int page, int size, String query, Boolean active) {
+        int limit = Math.max(1, Math.min(100, size));
+        int offset = Math.max(0, page) * limit;
 
+        String qText = (query == null || query.isBlank()) ? null : "%" + query + "%";
+
+        var p = new org.springframework.jdbc.core.namedparam.MapSqlParameterSource()
+                .addValue("limit", limit)
+                .addValue("offset", offset);
+
+        StringBuilder sql = new StringBuilder("""
+        SELECT u.id,
+               u.name,
+               u.email,
+               u.role,
+               u.created_at,
+               u.active,
+               COALESCE(acc.cnt, 0) AS accounts
+        FROM users u
+        INNER JOIN customers c ON c.id = u.id
+        LEFT JOIN (
+            SELECT a.customer_id AS cid, COUNT(a.id) AS cnt
+            FROM accounts a
+            GROUP BY a.customer_id
+        ) acc ON acc.cid = c.id
+        WHERE u.role = 'CUSTOMER'
+    """);
+
+        if (active != null) {
+            sql.append(" AND u.active = :active");
+            p.addValue("active", active);
+        }
+        if (qText != null) {
+            sql.append(" AND (u.name ILIKE :qText OR u.email ILIKE :qText)");
+            p.addValue("qText", qText);
+        }
+
+        sql.append(" ORDER BY u.created_at DESC, u.id DESC LIMIT :limit OFFSET :offset");
+
+        return jdbc.queryForList(sql.toString(), p);
+    }
+
+
+    public java.util.List<java.util.Map<String, Object>> listEmployees(int page, int size, String query, Boolean active) {
+        int limit = Math.max(1, Math.min(100, size));
+        int offset = Math.max(0, page) * limit;
+
+        String qText = (query == null || query.isBlank()) ? null : "%" + query + "%";
+
+        var p = new org.springframework.jdbc.core.namedparam.MapSqlParameterSource()
+                .addValue("limit", limit)
+                .addValue("offset", offset);
+
+        StringBuilder sql = new StringBuilder("""
+        SELECT u.id,
+               u.name,
+               u.email,
+               u.role,
+               u.created_at,
+               u.active,
+               NULL::int AS accounts
+        FROM users u
+        WHERE u.role = 'EMPLOYEE'
+    """);
+
+        if (active != null) {
+            sql.append(" AND u.active = :active");
+            p.addValue("active", active);
+        }
+        if (qText != null) {
+            sql.append(" AND (u.name ILIKE :qText OR u.email ILIKE :qText)");
+            p.addValue("qText", qText);
+        }
+
+        sql.append(" ORDER BY u.created_at DESC, u.id DESC LIMIT :limit OFFSET :offset");
+
+        return jdbc.queryForList(sql.toString(), p);
+    }
 
 }
