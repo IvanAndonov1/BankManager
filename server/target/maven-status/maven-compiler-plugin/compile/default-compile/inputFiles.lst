@@ -20,6 +20,8 @@ C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\co
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\dto\RegisterRequestDto.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\dto\RegisterResponseDto.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\dto\TransactionDto.java
+C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\dto\TransactionRequestDto.java
+C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\dto\TransferRequestDto.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\dto\UserListItemDto.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\enums\LoanApplicationStatus.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\enums\Role.java

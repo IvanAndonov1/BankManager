@@ -2,12 +2,17 @@ package com.bank.web;
 
 import com.bank.dao.AccountDao;
 import com.bank.dto.AccountDto;
+import com.bank.dto.TransactionRequestDto;
+import com.bank.dto.TransferRequestDto;
+import com.bank.security.SecurityUtil;
 import com.bank.service.AccountService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 import static com.bank.security.SecurityUtil.*;
 
@@ -20,6 +25,11 @@ public class AccountController {
     public AccountController(AccountDao accountDao, AccountService accountService) {
         this.accountDao = accountDao;
         this.accountService = accountService;
+    }
+
+    @GetMapping("/{id}")
+    public AccountDto byId(@PathVariable Long id) {
+        return accountDao.findById(id).orElseThrow();
     }
 
     @GetMapping("/by-customer/{customerId}")
@@ -37,46 +47,36 @@ public class AccountController {
 
     @PostMapping("/{id}/deposit")
     public void deposit(@PathVariable Long id,
-                        @RequestParam BigDecimal amount,
-                        @RequestParam(defaultValue = "") String description) {
-        // Customer can only operate on own account
+                        @RequestBody TransactionRequestDto req) {
         if (!isEmployeeOrAdmin()) {
             Long ownerId = accountDao.findCustomerIdByAccountId(id);
             if (ownerId == null || !ownerId.equals(currentUserId())) {
                 throw new AccessDeniedException("Forbidden");
             }
         }
-        accountService.deposit(id, amount, description);
+        accountService.deposit(id, req.amount(), req.description());
     }
+
 
     @PostMapping("/{id}/withdraw")
     public void withdraw(@PathVariable Long id,
-                         @RequestParam BigDecimal amount,
-                         @RequestParam(defaultValue = "") String description) {
-        // Customer can only operate on own account
+                         @RequestBody TransactionRequestDto req) {
         if (!isEmployeeOrAdmin()) {
             Long ownerId = accountDao.findCustomerIdByAccountId(id);
             if (ownerId == null || !ownerId.equals(currentUserId())) {
                 throw new AccessDeniedException("Forbidden");
             }
         }
-        accountService.withdraw(id, amount, description);
+        accountService.withdraw(id, req.amount(), req.description());
     }
 
-    @PostMapping("/transfer")
-    public void transfer(@RequestParam Long fromId,
-                         @RequestParam Long toId,
-                         @RequestParam BigDecimal amount,
-                         @RequestParam(defaultValue = "") String description) {
-        if (fromId.equals(toId)) throw new IllegalArgumentException("Same account");
 
-        // Customer can only transfer from their own account
-        if (!isEmployeeOrAdmin()) {
-            Long ownerId = accountDao.findCustomerIdByAccountId(fromId);
-            if (ownerId == null || !ownerId.equals(currentUserId())) {
-                throw new AccessDeniedException("Forbidden");
-            }
+    @PostMapping("/{id}/transfer")
+    public void transfer(@PathVariable Long id,
+                         @RequestBody TransferRequestDto req) {
+        // Access control is handled in AccountService
+        accountService.transfer(id, req.toAccountId(), req.amount(), req.description(),
+                currentUserId(), isEmployeeOrAdmin());
         }
-        accountService.transfer(fromId, toId, amount, description);
+
     }
-}

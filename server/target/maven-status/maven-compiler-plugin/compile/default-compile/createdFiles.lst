@@ -1,4 +1,5 @@
 com\bank\security\SecurityUtil.class
+com\bank\dto\TransferRequestDto.class
 com\bank\ServerApplication.class
 com\bank\enums\TransactionType.class
 com\bank\dto\EvaluationBreakdown.class
@@ -23,6 +24,7 @@ com\bank\dao\LoanApplicationDao.class
 com\bank\config\OpenApiConfig.class
 com\bank\dao\AccountDao.class
 com\bank\web\AccountController.class
+com\bank\dto\TransactionRequestDto.class
 com\bank\dto\TransactionDto.class
 com\bank\config\SecurityBeans.class
 com\bank\security\JwtService.class
