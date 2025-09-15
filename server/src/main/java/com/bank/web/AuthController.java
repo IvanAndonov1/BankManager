@@ -104,7 +104,6 @@ public class AuthController {
 
     @GetMapping("/debug/hash")
     public Map<String, String> debugHash(@RequestParam String pw) {
-        // DEV ONLY — remove after you update DB!
         return Map.of("hash", encoder.encode(pw));
     }
 

@@ -36,7 +36,6 @@ public class LoanApplicationRowMapper implements RowMapper<LoanApplicationDto> {
                 rs.getObject("created_at", OffsetDateTime.class),
                 rs.getObject("updated_at", OffsetDateTime.class),
 
-                // 🆕 new evaluation fields
                 rs.getBigDecimal("evaluation_composite"),
                 rs.getString("evaluation_reasons"),
                 rs.getString("evaluation_status")

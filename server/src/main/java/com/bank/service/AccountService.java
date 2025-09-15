@@ -41,7 +41,6 @@ public class AccountService {
             throw new IllegalArgumentException("Cannot transfer to the same account");
         }
 
-        // ✅ Access control: only employees/admins OR the account owner can send
         if (!employeeOrAdmin) {
             Long ownerId = accounts.findCustomerIdByAccountId(fromAccountId);
             if (ownerId == null || !ownerId.equals(currentUserId)) {
@@ -49,20 +48,16 @@ public class AccountService {
             }
         }
 
-        // ✅ Check source balance
         BigDecimal fromBalance = accounts.getBalance(fromAccountId);
         if (fromBalance == null) throw new IllegalArgumentException("Source account not found");
         if (fromBalance.compareTo(amount) < 0) throw new IllegalArgumentException("Insufficient funds");
 
-        // ✅ Check destination exists
         BigDecimal toBalance = accounts.getBalance(toAccountId);
         if (toBalance == null) throw new IllegalArgumentException("Destination account not found");
 
-        // ✅ Update balances atomically
         accounts.updateBalance(fromAccountId, fromBalance.subtract(amount));
         accounts.updateBalance(toAccountId, toBalance.add(amount));
 
-        // ✅ Record transactions
         txs.create(fromAccountId, "TRANSFER_OUT", amount.negate(), description);
         txs.create(toAccountId, "TRANSFER_IN", amount, description);
     }

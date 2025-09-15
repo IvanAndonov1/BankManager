@@ -21,11 +21,9 @@ public class OpenApiConfig {
                         .version("v1")
                         .description("MVP endpoints for Accounts and Loans")
                         .contact(new Contact().name("BankManager Team").email("team@example.com")))
-                // UI base URL shown in Swagger
                 .servers(List.of(new Server().url("http://localhost:8080").description("Local")));
     }
 
-    // Optional: group just your REST endpoints under /api/**
     @Bean
     public GroupedOpenApi apiGroup() {
         return GroupedOpenApi.builder()

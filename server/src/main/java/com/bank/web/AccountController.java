@@ -34,14 +34,12 @@ public class AccountController {
 
     @GetMapping("/by-customer/{customerId}")
     public List<AccountDto> byCustomer(@PathVariable Long customerId) {
-        // Customers can only view their own accounts
         if (isCustomer()) {
             Long uid = currentUserId();
             if (uid == null || !uid.equals(customerId)) {
                 throw new AccessDeniedException("Forbidden");
             }
         }
-        // Employee/Admin can view any
         return accountDao.findByCustomer(customerId);
     }
 
@@ -74,7 +72,6 @@ public class AccountController {
     @PostMapping("/{id}/transfer")
     public void transfer(@PathVariable Long id,
                          @RequestBody TransferRequestDto req) {
-        // Access control is handled in AccountService
         accountService.transfer(id, req.toAccountId(), req.amount(), req.description(),
                 currentUserId(), isEmployeeOrAdmin());
         }

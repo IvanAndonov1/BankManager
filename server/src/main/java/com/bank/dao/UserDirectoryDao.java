@@ -21,12 +21,11 @@ public class UserDirectoryDao {
     }
 
     private static final RowMapper<UserListItemDto> MAPPER = (ResultSet rs, int i) -> {
-        // Опит 1: директно като OffsetDateTime (JDBC 4.2)
         OffsetDateTime created = null;
         try {
             created = rs.getObject("created_at", OffsetDateTime.class);
         } catch (Throwable ignored) {
-            // паднем ли тук, минаваме към Timestamp
+
         }
         if (created == null) {
             Timestamp ts = rs.getTimestamp("created_at");

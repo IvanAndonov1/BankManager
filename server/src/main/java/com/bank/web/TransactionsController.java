@@ -26,7 +26,6 @@ public class TransactionsController {
     public List<TransactionDto> list(@PathVariable Long accountId,
                                      @RequestParam(defaultValue = "50") int limit,
                                      @RequestParam(defaultValue = "0") int offset) {
-        // Customer can only view transactions for own account
         if (!isEmployeeOrAdmin()) {
             Long ownerId = accountDao.findCustomerIdByAccountId(accountId);
             if (ownerId == null || !ownerId.equals(currentUserId())) {
