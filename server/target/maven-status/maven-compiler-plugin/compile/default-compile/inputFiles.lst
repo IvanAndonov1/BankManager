@@ -7,7 +7,9 @@ C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\co
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\dao\mapper\AccountMapper.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\dao\mapper\LoanApplicationRowMapper.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\dao\mapper\TransactionMapper.java
+C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\dao\mapper\UserRowMapper.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\dao\TransactionDao.java
+C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\dao\UserDao.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\dao\UserDirectoryDao.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\DbSmoke.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\dto\AccountDto.java
@@ -23,6 +25,7 @@ C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\co
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\dto\TransactionRequestDto.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\dto\TransferRequestDto.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\dto\UserListItemDto.java
+C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\dto\UserProfileDto.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\enums\LoanApplicationStatus.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\enums\Role.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\enums\TransactionType.java
@@ -47,3 +50,4 @@ C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\co
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\web\DirectoryController.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\web\LoanController.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\web\TransactionsController.java
+C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\web\UserController.java

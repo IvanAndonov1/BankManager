@@ -3,12 +3,19 @@ package com.bank.web;
 import com.bank.dto.RegisterRequestDto;
 import com.bank.dto.RegisterResponseDto;
 import com.bank.security.JwtService;
+import com.bank.security.SecurityUtil;
+import com.bank.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -17,11 +24,13 @@ public class AuthController {
     private final NamedParameterJdbcTemplate jdbc;
     private final PasswordEncoder encoder;
     private final JwtService jwt;
+    private final AuthService authService;
 
-    public AuthController(NamedParameterJdbcTemplate jdbc, PasswordEncoder encoder, JwtService jwt) {
+    public AuthController(NamedParameterJdbcTemplate jdbc, PasswordEncoder encoder, JwtService jwt, AuthService authService) {
         this.jdbc = jdbc;
         this.encoder = encoder;
         this.jwt = jwt;
+        this.authService = authService;
     }
 
     @PostMapping("/register")
@@ -80,6 +89,19 @@ public class AuthController {
 
         return Map.of("id", uid, "username", username, "role", role, "token", token);
     }
+    private final Set<String> blacklistedTokens = ConcurrentHashMap.newKeySet();
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestHeader("Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.badRequest().body("Missing token");
+        }
+        String token = authHeader.substring(7);
+        Long uid = SecurityUtil.currentUserId();
+        authService.logout(token, uid);
+        return ResponseEntity.ok(Map.of("message", "Logged out successfully"));
+    }
+
+
     @GetMapping("/debug/hash")
     public Map<String, String> debugHash(@RequestParam String pw) {
         // DEV ONLY — remove after you update DB!

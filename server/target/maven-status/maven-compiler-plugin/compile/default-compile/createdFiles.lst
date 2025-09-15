@@ -22,6 +22,7 @@ com\bank\dao\mapper\AccountMapper.class
 com\bank\dto\LoanQuoteResponseDto.class
 com\bank\dao\LoanApplicationDao.class
 com\bank\config\OpenApiConfig.class
+com\bank\dao\UserDao.class
 com\bank\dao\AccountDao.class
 com\bank\web\AccountController.class
 com\bank\dto\TransactionRequestDto.class
@@ -30,6 +31,7 @@ com\bank\config\SecurityBeans.class
 com\bank\security\JwtService.class
 com\bank\models\Transaction.class
 com\bank\dao\TransactionDao.class
+com\bank\web\UserController$1.class
 com\bank\dto\RegisterRequestDto.class
 com\bank\health\HealthController.class
 com\bank\dto\LoanApplicationDto.class
@@ -37,12 +39,16 @@ com\bank\config\CorsConfig.class
 com\bank\models\Account.class
 com\bank\dto\UserListItemDto.class
 com\bank\web\ApiExceptionHandler.class
+com\bank\dao\mapper\UserRowMapper$1.class
+com\bank\web\UserController.class
 com\bank\service\LoanDecisionService.class
 com\bank\web\AuthController.class
 com\bank\dto\EvaluationResult.class
 com\bank\enums\Role.class
+com\bank\dto\UserProfileDto.class
 com\bank\web\DirectoryController.class
 com\bank\service\LoanPricingService.class
+com\bank\dao\mapper\UserRowMapper.class
 com\bank\dao\mapper\LoanApplicationRowMapper.class
 com\bank\web\LoanController.class
 com\bank\dto\AccountDto.class
