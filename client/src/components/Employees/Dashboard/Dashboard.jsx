@@ -3,24 +3,20 @@ import FilterCard from "../../common/FilterCard";
 import Sidebar from "../../common/Sidebar";
 import EmployeeTableRow from "./EmployeeTableRow";
 import DataTable from "../../common/DataTable";
-import { useEffect, useOptimistic, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { getAllCustomers } from "../../../services/employeeService";
+import { AuthContext } from "../../../contexts/AuthContext";
 
 export default function EmployeeDashboard() {
+	const { user } = use(AuthContext);
 	const [customers, setCustomers] = useState([]);
 
-	const [optimisticCustomers, setOptimisticCustomers] = useOptimistic(customers);
-
 	useEffect(() => {
-		getAllCustomers()
+		getAllCustomers(user.token)
 			.then(result => {
-				setOptimisticCustomers(result);
 				setCustomers(result);
 			});
 	}, []);
-
-	console.log(customers);
-
 
 	return (
 		<div className="min-h-screen flex bg-gray-100">
@@ -34,7 +30,7 @@ export default function EmployeeDashboard() {
 				</div>
 
 				<DataTable headers={["Customer", "Date", "Status", "Details"]}>
-					{optimisticCustomers.map(x => (
+					{customers.map(x => (
 						<EmployeeTableRow {...x} key={x.id} detailsTo="/customer-details/1" />
 					))}
 				</DataTable>
