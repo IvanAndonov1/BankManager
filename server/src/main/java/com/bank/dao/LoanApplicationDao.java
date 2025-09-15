@@ -166,5 +166,23 @@ public class LoanApplicationDao {
         var p = new MapSqlParameterSource("id", appId);
         return jdbc.query(sql, p, rs -> rs.next() ? rs.getLong(1) : null);
     }
+    public int saveEvaluationResult(Long applicationId, int composite, List<String> reasons, LoanApplicationStatus status) {
+        String sql = """
+        UPDATE loan_applications
+        SET evaluation_composite = :composite,
+            evaluation_reasons   = :reasons,
+            evaluation_status    = :status,
+            updated_at = now()
+        WHERE id = :id
+    """;
+
+        var params = new MapSqlParameterSource()
+                .addValue("composite", composite)
+                .addValue("reasons", String.join(",", reasons))
+                .addValue("status", status.name())
+                .addValue("id", applicationId);
+
+        return jdbc.update(sql, params);
+    }
 
 }

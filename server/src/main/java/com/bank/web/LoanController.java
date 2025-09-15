@@ -6,6 +6,7 @@ import com.bank.enums.LoanApplicationStatus;
 import com.bank.service.CreditEvaluationService;
 import com.bank.service.LoanDecisionService;
 import com.bank.service.LoanPricingService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
@@ -91,17 +92,6 @@ public class LoanController {
         );
     }
 
-    @PostMapping("/applications/{id}/evaluate")
-    public EvaluationBreakdown evaluate(@PathVariable Long id) {
-        // Customers can only evaluate their own application
-        if (isCustomer()) {
-            Long ownerId = dao.findCustomerIdByApplicationId(id);
-            if (ownerId == null || !ownerId.equals(currentUserId())) {
-                throw new AccessDeniedException("Forbidden");
-            }
-        }
-        return evaluator.evaluate(id);
-    }
 
     @GetMapping("/{id}")
     public LoanApplicationDto get(@PathVariable Long id) {
@@ -128,4 +118,17 @@ public class LoanController {
         LoanApplicationDto dto = dao.findById(id);
         return Map.of("ok", ok, "status", dto.status().name());
     }
+    @PostMapping("/applications/{id}/evaluate")
+    public ResponseEntity<EvaluationBreakdown> evaluateApplication(@PathVariable Long id) {
+        if (isCustomer()) {
+            Long ownerId = dao.findCustomerIdByApplicationId(id);
+            if (ownerId == null || !ownerId.equals(currentUserId())) {
+                throw new AccessDeniedException("Forbidden");
+            }
+        }
+
+        EvaluationBreakdown breakdown = decisionService.evaluateApplication(id);
+        return ResponseEntity.ok(breakdown);
+    }
+
 }
