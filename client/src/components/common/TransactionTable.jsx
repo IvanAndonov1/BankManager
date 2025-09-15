@@ -1,23 +1,16 @@
-import { use, useEffect } from "react";
+import { use, useEffect, useState } from "react";
 import CustomerTableRow from "../Customers/CustomerTableRow";
 
 import { AuthContext } from '../../contexts/AuthContext';
 import { getUserAccount } from "../../services/userService";
 
-let data = {
-	name: "Name 1",
-	amount: "+ 1200 EUR",
-	date: "04/09/2025",
-	time: "10:30 AM",
-	card: "Debit",
-};
-
 export default function TransactionTable() {
 	const { user } = use(AuthContext);
+	const [transactions, setTransactions] = useState([]);
 
 	useEffect(() => {
 		getUserAccount(user.id, user.token)
-			.then(result => console.log(result));
+			.then(result => setTransactions(result));
 	}, []);
 
 	return (
@@ -32,10 +25,12 @@ export default function TransactionTable() {
 				</tr>
 			</thead>
 			<tbody>
-				<CustomerTableRow {...data} />
-				<CustomerTableRow {...data} />
-				<CustomerTableRow {...data} />
-				<CustomerTableRow {...data} />
+				{transactions.length ?
+					transactions.map(x => (
+						<CustomerTableRow key={x.id} {...x} />
+					))
+					: <tr><td>No data available!</td></tr>
+				}
 			</tbody>
 		</table>
 	);
