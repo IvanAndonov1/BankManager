@@ -27,7 +27,6 @@ com\bank\dto\TransactionDto.class
 com\bank\config\SecurityBeans.class
 com\bank\security\JwtService.class
 com\bank\models\Transaction.class
-com\bank\security\JwtAuthFilter$1.class
 com\bank\dao\TransactionDao.class
 com\bank\dto\RegisterRequestDto.class
 com\bank\health\HealthController.class
