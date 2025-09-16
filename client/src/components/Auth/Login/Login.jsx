@@ -1,14 +1,23 @@
 import { use, useState } from "react";
 import { useActionState } from "react";
 import { loginUser } from "../../../services/userService";
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../contexts/AuthContext.jsx";
+import { validateCredentials } from "../../../utils/validations.js";
 
 const initialState = {
 	username: "",
 	password: "",
 	remember: false,
-	message: ""
+	message: "",
+	messageType: "neutral",
+	errors: { username: "", password: "" },
+};
+
+const roles = {
+	CUSTOMER: "/customer-dashboard",
+	EMPLOYEE: "/employee",
+	ADMIN: "/admin",
 };
 
 export default function Login() {
@@ -17,40 +26,100 @@ export default function Login() {
 	const navigate = useNavigate();
 
 	const formHandler = async (previousState, formData) => {
-		try {
-			const username = (formData.get("username") || "").toString().trim();
-			const password = (formData.get("password") || "").toString().trim();
-			const remember = Boolean(formData.get("remember"));
+		const username = (formData.get("username") || "").toString().trim();
+		const password = (formData.get("password") || "").toString().trim();
+		const remember = Boolean(formData.get("remember"));
 
-			if (!username || !password) {
+		const { errors, hasErrors } = validateCredentials({ username, password });
+
+		if (hasErrors) {
+			return {
+				...previousState,
+				username,
+				password: "",
+				remember,
+				errors,
+				message: "Please fix the highlighted errors.",
+				messageType: "error",
+			};
+		}
+
+		try {
+			const user = await loginUser({ username, password });
+
+			if (user.toString().includes('Error')) {
 				return {
 					...previousState,
 					username,
 					password: "",
 					remember,
-					message: "All fields are required!",
+					errors: { username: "", password: "" },
+					message: "Invalid username or password!",
+					messageType: "error",
 				};
 			}
 
-			loginUser({ username, password })
-				.then(data => {
-					userLogin(data);
-					navigate('/customer-dashboard');
-				});
+			if (!user) {
+				return {
+					...previousState,
+					username,
+					password: "",
+					remember,
+					errors: { username: "", password: "" },
+					message: "Invalid username or password!",
+					messageType: "error",
+				};
+			}
+
+			userLogin(user);
+
+			if (remember) {
+				try {
+					localStorage.setItem("remember", "1");
+				} catch { }
+			} else {
+				try {
+					localStorage.removeItem("remember");
+				} catch { }
+			}
+
+			const destination = roles[user.role] || "/login";
+			setTimeout(() => navigate(destination), 0);
 
 			return {
 				...previousState,
 				username,
 				password: "",
 				remember,
-				message: "Successfull login.",
+				errors: { username: "", password: "" },
+				message: "Successful login.",
+				messageType: "success",
 			};
 		} catch (err) {
+			const apiMsg =
+				err?.response?.data?.message ||
+				err?.message ||
+				"Login failed. Please check your credentials and try again.";
 
+			return {
+				...previousState,
+				username,
+				password: "",
+				remember,
+				message: apiMsg,
+				messageType: "error",
+			};
 		}
 	};
 
 	const [state, formAction, isPending] = useActionState(formHandler, initialState);
+
+	const messageClasses =
+		state.messageType === "error"
+			? "text-red-300"
+			: state.messageType === "success"
+				? "text-emerald-300"
+				: "text-white/85";
 
 	return (
 		<main className="fixed inset-0 overflow-hidden">
@@ -62,14 +131,10 @@ export default function Login() {
 							"repeating-linear-gradient(135deg, rgba(255,255,255,.08) 0px, rgba(255,255,255,.08) 2px, transparent 2px, transparent 36px)",
 					}}
 				/>
-				<div className="absolute top-6 left-6 text-white/90 font-semibold">
-					Logo
-				</div>
+				<div className="absolute top-6 left-6 text-white/90 font-semibold">Logo</div>
 
 				<div className="relative z-10 w-full max-w-xl mx-auto pt-24 px-4 text-white">
-					<h1 className="text-4xl md:text-5xl font-bold text-center">
-						Banking You Want To Use
-					</h1>
+					<h1 className="text-4xl md:text-5xl font-bold text-center">Banking You Want To Use</h1>
 
 					<section
 						className="mt-10 md:mt-12 rounded-2xl
@@ -79,27 +144,40 @@ export default function Login() {
 					>
 						<div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-r from-white/0 via-white/10 to-white/30" />
 
-						<form action={formAction} className="relative">
+						<form action={formAction} className="relative" noValidate>
 							<label className="block mb-6">
 								<span className="block text-sm text-white/85">Username</span>
 								<input
 									type="text"
 									name="username"
-									className="mt-2 w-full bg-transparent outline-none border-b border-white/50 focus:border-white placeholder-white/60 pb-2"
+									className={`mt-2 w-full bg-transparent outline-none border-b ${state.errors.username ? "border-red-400" : "border-white/50"
+										} focus:border-white placeholder-white/60 pb-2`}
 									defaultValue={state.username}
 									autoComplete="username"
+									aria-invalid={Boolean(state.errors.username)}
+									aria-describedby={state.errors.username ? "username-error" : undefined}
 								/>
+								{state.errors.username ? (
+									<p id="username-error" className="mt-2 text-xs text-red-300">
+										{state.errors.username}
+									</p>
+								) : null}
 							</label>
 
 							<label className="block">
 								<span className="block text-sm text-white/85">Password</span>
-								<div className="mt-2 flex items-center border-b border-white/50 focus-within:border-white pb-2">
+								<div
+									className={`mt-2 flex items-center border-b ${state.errors.password ? "border-red-400" : "border-white/50"
+										} focus-within:border-white pb-2`}
+								>
 									<input
 										type={showPass ? "text" : "password"}
 										name="password"
 										className="w-full bg-transparent outline-none placeholder-white/60"
 										defaultValue=""
 										autoComplete="current-password"
+										aria-invalid={Boolean(state.errors.password)}
+										aria-describedby={state.errors.password ? "password-error" : undefined}
 									/>
 									<button
 										type="button"
@@ -130,6 +208,11 @@ export default function Login() {
 										</svg>
 									</button>
 								</div>
+								{state.errors.password ? (
+									<p id="password-error" className="mt-2 text-xs text-red-300">
+										{state.errors.password}
+									</p>
+								) : null}
 							</label>
 
 							<div className="mt-4 flex items-center justify-between text-xs md:text-sm text-white/80">
@@ -146,11 +229,7 @@ export default function Login() {
 							</div>
 
 							{state.message && (
-								<p
-									role="status"
-									aria-live="polite"
-									className="mt-3 text-sm  text-red-600"
-								>
+								<p role="status" aria-live="polite" className={`mt-3 text-sm ${messageClasses}`}>
 									{state.message}
 								</p>
 							)}
@@ -169,9 +248,9 @@ export default function Login() {
 
 					<p className="mt-4 text-center text-white/85">
 						Don't have an account?{" "}
-						<a href="/register" className="text-[#351F78] hover:underline ">
+						<Link to="/register" className="text-[#351F78] hover:underline ">
 							Register
-						</a>
+						</Link>
 					</p>
 				</div>
 			</div>
