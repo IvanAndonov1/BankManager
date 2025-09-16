@@ -2,6 +2,7 @@ package com.bank.service;
 
 import com.bank.dao.AccountDao;
 import com.bank.dao.TransactionDao;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,9 +36,29 @@ public class AccountService {
     }
 
     @Transactional
-    public void transfer(Long fromId, Long toId, BigDecimal amount, String description) {
-        if (fromId.equals(toId)) throw new IllegalArgumentException("Same account");
-        withdraw(fromId, amount, "Transfer to " + toId + ": " + description);
-        deposit(toId, amount, "Transfer from " + fromId + ": " + description);
+    public void transfer(Long fromAccountId, Long toAccountId, BigDecimal amount, String description, Long currentUserId, boolean employeeOrAdmin) {
+        if (fromAccountId.equals(toAccountId)) {
+            throw new IllegalArgumentException("Cannot transfer to the same account");
+        }
+
+        if (!employeeOrAdmin) {
+            Long ownerId = accounts.findCustomerIdByAccountId(fromAccountId);
+            if (ownerId == null || !ownerId.equals(currentUserId)) {
+                throw new AccessDeniedException("You are not allowed to transfer from this account");
+            }
+        }
+
+        BigDecimal fromBalance = accounts.getBalance(fromAccountId);
+        if (fromBalance == null) throw new IllegalArgumentException("Source account not found");
+        if (fromBalance.compareTo(amount) < 0) throw new IllegalArgumentException("Insufficient funds");
+
+        BigDecimal toBalance = accounts.getBalance(toAccountId);
+        if (toBalance == null) throw new IllegalArgumentException("Destination account not found");
+
+        accounts.updateBalance(fromAccountId, fromBalance.subtract(amount));
+        accounts.updateBalance(toAccountId, toBalance.add(amount));
+
+        txs.create(fromAccountId, "TRANSFER_OUT", amount.negate(), description);
+        txs.create(toAccountId, "TRANSFER_IN", amount, description);
     }
 }

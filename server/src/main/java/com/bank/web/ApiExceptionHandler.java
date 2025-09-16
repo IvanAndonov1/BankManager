@@ -38,7 +38,7 @@ public class ApiExceptionHandler {
         ));
     }
 
-    // NEW: 403 when access is denied by our guards
+    // NEW: 403 when access is denied
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<Map<String,Object>> handleAccessDenied(AccessDeniedException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of(

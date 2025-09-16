@@ -21,7 +21,6 @@ public class CreditEvaluationService {
 
     private static final BigDecimal ZERO = BigDecimal.ZERO;
 
-    // Income level bands (adjust if needed)
     private static final BigDecimal L1 = new BigDecimal("1500");
     private static final BigDecimal L2 = new BigDecimal("2000");
     private static final BigDecimal L3 = new BigDecimal("3000");
@@ -38,7 +37,6 @@ public class CreditEvaluationService {
         LoanApplicationDto loan = loanDao.findById(loanId);
         List<String> reasons = new ArrayList<>();
 
-        // --- Basic input validation
         if (loan.termMonths() == null || loan.termMonths() <= 0) {
             reasons.add("termMonths must be > 0");
             return new EvaluationBreakdown(LoanApplicationStatus.PENDING, reasons, 0,0,0,0,0,0,0);
@@ -52,7 +50,6 @@ public class CreditEvaluationService {
             return new EvaluationBreakdown(LoanApplicationStatus.PENDING, reasons, 0,0,0,0,0,0,0);
         }
 
-        // --- Derived values
         long tenureMonths = Period.between(loan.currentJobStartDate(), LocalDate.now()).toTotalMonths();
 
         var annualRate = pricingService.rateForTermMonths(loan.termMonths());
@@ -69,11 +66,9 @@ public class CreditEvaluationService {
         long oldestAcctMonths = loanDao.oldestAccountAgeMonths(loan.customerId());
         BigDecimal totalBalance = loanDao.totalCurrentBalance(loan.customerId());
 
-        // --- A) Employment Tenure + hard rule
         int tenureScore = bandTenure(tenureMonths);
         if (tenureMonths < 6) reasons.add("Employer tenure < 6 months");
 
-        // --- B) DTI + hard 50% rule
         BigDecimal dti = (loan.netSalary().compareTo(ZERO) > 0)
                 ? totalMonthly.divide(loan.netSalary(), 6, RoundingMode.HALF_UP)
                 : BigDecimal.ONE;
@@ -82,18 +77,14 @@ public class CreditEvaluationService {
             reasons.add("Disposable income < 50% net salary after installments");
         }
 
-        // --- C) Late payments hard rule (band not included in composite per your scope)
         if (late12m > 0) {
             reasons.add("Late payments in last 12 months");
         }
 
-        // --- D) Income level
         int incomeScore = bandIncome(loan.netSalary());
 
-        // --- E) Account age (oldest account)
         int accountAgeScore = bandAccountAge(oldestAcctMonths);
 
-        // --- F) Balance cushion (proxy: total balance / total monthly installments)
         int cushionScore;
         if (totalMonthly.compareTo(ZERO) <= 0) {
             cushionScore = 100; // no existing+new installments → perfect cushion
@@ -102,22 +93,13 @@ public class CreditEvaluationService {
             cushionScore = bandCushion(cushion);
         }
 
-        // --- H) Recent new debt (approved in last 6 months)
         int recentDebtScore = bandRecentNewDebt(loanDao.approvedInLast6Months(loan.customerId()));
 
-//        // --- Final decision
-//        boolean hardFail = tenureMonths < 6
-//                || loan.netSalary().multiply(new BigDecimal("0.5")).compareTo(totalMonthly) < 0
-//                || late12m > 0;
+
 
         int composite = (tenureScore + dtiScore + incomeScore + accountAgeScore + cushionScore + recentDebtScore) / 6;
 
-//        String finalStatus = hardFail ? "DECLINED" : (composite >= 70 ? "APPROVED" : "DECLINED");
-//        if (!hardFail && composite < 70 && reasons.isEmpty()) {
-//            reasons.add("Composite score below threshold (>= 70 required)");
-//        }
-//
-//        loanDao.updateStatusAndScore(loanId, finalStatus, composite, reasons);
+
 
         return new EvaluationBreakdown(
                 LoanApplicationStatus.PENDING,
@@ -127,7 +109,6 @@ public class CreditEvaluationService {
         );
     }
 
-    // --- Band mappers ---
 
     private int bandTenure(long months) {
         if (months >= 24) return 100;

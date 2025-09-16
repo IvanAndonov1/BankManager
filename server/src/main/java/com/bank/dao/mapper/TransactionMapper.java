@@ -11,7 +11,6 @@ import java.time.ZoneOffset;
 public class TransactionMapper implements RowMapper<TransactionDto> {
     @Override
     public TransactionDto mapRow(ResultSet rs, int rowNum) throws java.sql.SQLException {
-        // date_time -> ISO-8601 string
         String dateTime;
         try {
             OffsetDateTime odt = rs.getObject("date_time", OffsetDateTime.class);

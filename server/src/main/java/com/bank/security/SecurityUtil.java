@@ -15,7 +15,6 @@ public final class SecurityUtil {
         Authentication a = SecurityContextHolder.getContext().getAuthentication();
         if (a == null) return null;
 
-        // 1) Preferred: from details map (our JWT filter path)
         Object d = a.getDetails();
         if (d instanceof Map<?,?> m) {
             Object v = m.get("uid");
@@ -25,9 +24,6 @@ public final class SecurityUtil {
                 try { return Long.parseLong(s); } catch (NumberFormatException ignored) {}
             }
         }
-
-        // 2) Fallbacks (extend if your app stores uid elsewhere)
-        // - Some apps put claims in principal as a Map
         Object p = a.getPrincipal();
         if (p instanceof Map<?,?> pm) {
             Object v = pm.get("uid");
@@ -37,7 +33,6 @@ public final class SecurityUtil {
             }
         }
 
-        // If we can't resolve, return null (guards will deny)
         return null;
     }
 
@@ -45,18 +40,15 @@ public final class SecurityUtil {
         Authentication a = SecurityContextHolder.getContext().getAuthentication();
         if (a == null) return null;
 
-        // 1) From details map (our JWT filter path)
         Object d = a.getDetails();
         if (d instanceof Map<?,?> m) {
             Object v = m.get("role");
             if (v != null) return v.toString();
         }
 
-        // 2) From authorities (most robust)
         String authRole = firstAuthorityAsRole(a.getAuthorities());
         if (authRole != null) return authRole;
 
-        // 3) From principal map (if any)
         Object p = a.getPrincipal();
         if (p instanceof Map<?,?> pm) {
             Object v = pm.get("role");
@@ -67,12 +59,10 @@ public final class SecurityUtil {
     }
 
     public static boolean isEmployeeOrAdmin() {
-        // Prefer authorities; covers ROLE_EMPLOYEE / ROLE_ADMIN or bare EMPLOYEE / ADMIN
         Authentication a = SecurityContextHolder.getContext().getAuthentication();
         if (a != null && hasAnyAuthority(a.getAuthorities(), "EMPLOYEE", "ADMIN")) {
             return true;
         }
-        // Fallback to role string
         String r = currentRole();
         return equalsRole(r, "EMPLOYEE") || equalsRole(r, "ADMIN");
     }
@@ -86,7 +76,6 @@ public final class SecurityUtil {
         return equalsRole(r, "CUSTOMER");
     }
 
-    // ===== helpers =====
 
     private static boolean equalsRole(String actual, String expected) {
         if (actual == null) return false;

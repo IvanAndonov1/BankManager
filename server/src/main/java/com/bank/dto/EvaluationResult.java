@@ -8,5 +8,5 @@ import java.util.List;
  */
 public record EvaluationResult(
         String status,        // APPROVED / DECLINED
-        List<String> reasons  // empty if approved, else decline reasons
+        List<String> reasons
 ) {}

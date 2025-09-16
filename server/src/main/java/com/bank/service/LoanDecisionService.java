@@ -32,7 +32,7 @@ public class LoanDecisionService {
                 applicationId,
                 breakdown.composite(),
                 breakdown.reasons(),
-                LoanApplicationStatus.APPROVED   // instead of breakdown.status()
+                LoanApplicationStatus.APPROVED
         );
 
         return breakdown;

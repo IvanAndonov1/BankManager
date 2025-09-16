@@ -63,7 +63,6 @@ public class LoanController {
         if (req.termMonths() < 12 || req.termMonths() > 240)
             throw new IllegalArgumentException("Term months must be from 12 to 240!");
 
-        // Customers can only create for themselves
         if (isCustomer() && !currentUserId().equals(req.customerId())) {
             throw new AccessDeniedException("Forbidden");
         }
@@ -95,7 +94,6 @@ public class LoanController {
 
     @GetMapping("/{id}")
     public LoanApplicationDto get(@PathVariable Long id) {
-        // Customers can only read their own application
         if (isCustomer()) {
             Long ownerId = dao.findCustomerIdByApplicationId(id);
             if (ownerId == null || !ownerId.equals(currentUserId())) {
@@ -109,7 +107,6 @@ public class LoanController {
     public Map<String, Object> decide(@PathVariable Long id,
                                       @RequestParam Long userId,
                                       @RequestParam boolean approve) {
-        // Customers cannot decide
         if (isCustomer()) {
             throw new AccessDeniedException("Forbidden");
         }

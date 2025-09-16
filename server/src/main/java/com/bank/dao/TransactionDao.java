@@ -44,7 +44,7 @@ public class TransactionDao {
                 .addValue("acc", accountId)
                 .addValue("limit", Math.max(1, Math.min(100, limit)))
                 .addValue("offset", Math.max(0, offset));
-        return jdbc.query(sql, p, mapper); // reuse your existing mapper instance
+        return jdbc.query(sql, p, mapper);
     }
 
 }

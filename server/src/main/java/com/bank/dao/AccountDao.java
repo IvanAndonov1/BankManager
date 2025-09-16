@@ -1,4 +1,3 @@
-// was: package com.bank.dao.mapper;
 package com.bank.dao;
 
 import com.bank.dto.AccountDto;
@@ -45,6 +44,21 @@ public class AccountDao {
                 .addValue("acc", accountNumber);
         return jdbc.queryForObject(sql, p, Long.class);
     }
+    public BigDecimal getBalance(Long accountId) {
+        String sql = "SELECT balance FROM accounts WHERE id=:id";
+        var p = new MapSqlParameterSource("id", accountId);
+        BigDecimal result = jdbc.query(sql, p, rs -> rs.next() ? rs.getBigDecimal(1) : null);
+        System.out.println("DEBUG getBalance accountId=" + accountId + " result=" + result);
+        return result;
+    }
+
+    public boolean exists(Long accountId) {
+        String sql = "SELECT COUNT(*) FROM accounts WHERE id=:id";
+        var p = new MapSqlParameterSource("id", accountId);
+        Integer count = jdbc.queryForObject(sql, p, Integer.class);
+        return count != null && count > 0;
+    }
+
 
     public int updateBalance(Long id, BigDecimal newBalance) {
         String sql = "UPDATE accounts SET balance=:b WHERE id=:id";

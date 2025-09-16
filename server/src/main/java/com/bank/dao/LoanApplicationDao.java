@@ -37,7 +37,7 @@ public class LoanApplicationDao {
                 .addValue("c", customerId)
                 .addValue("a", amount)
                 .addValue("t", termMonths)
-                .addValue("cjsd", currentJobStartDate)  // <-- matches :cjsd in SQL
+                .addValue("cjsd", currentJobStartDate)
                 .addValue("ns", netSalary);
 
         return jdbc.queryForObject(sql, params, Long.class);
@@ -119,9 +119,6 @@ public class LoanApplicationDao {
         """;
         return jdbc.queryForObject(sql, Map.of("c", customerId), Integer.class);
     }
-
-    // OPTIONAL: remove if product_type was dropped by V12
-    // public int distinctApprovedProductTypes(Long customerId) { ... }
 
     public int approvedInLast6Months(Long customerId) {
         String sql = """
