@@ -11,5 +11,4 @@ Thumbs.db
 
 git add .gitignore
 git commit -m "chore: ignore IDE/OS files"
-
 run-server.cmd
