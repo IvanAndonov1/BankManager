@@ -11,7 +11,7 @@ import java.util.Objects;
 
 public class Customer extends User {
 
-    private Long id;                          // DB PK
+   // private Long id;                          // DB PK
     private OffsetDateTime createdAt;         // registered date
     private final List<Account> accountList = new ArrayList<>();
 
@@ -28,13 +28,10 @@ public class Customer extends User {
                     String email,
                     OffsetDateTime createdAt) {
         super(username, password, firstName, lastName, email);
-        this.id = id;
+        this.setId(id);
         this.createdAt = createdAt;
         this.setRole(Role.CUSTOMER);
     }
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
 
     public OffsetDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(OffsetDateTime createdAt) { this.createdAt = createdAt; }
@@ -47,7 +44,7 @@ public class Customer extends User {
     @Override
     public String toString() {
         return "Customer{" +
-                "id=" + id +
+                "id=" + getId() +
                 ", username='" + getUsername() + '\'' +
                 ", firstName='" + getFirstName() + '\'' +
                 ", lastName='" + getLastName() + '\'' +
@@ -61,9 +58,9 @@ public class Customer extends User {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Customer c)) return false;
-        return Objects.equals(id, c.id);
+        return Objects.equals(getId(), c.getId());
     }
 
     @Override
-    public int hashCode() { return Objects.hash(id); }
+    public int hashCode() { return Objects.hash(getId()); }
 }

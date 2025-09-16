@@ -71,6 +71,11 @@ export default function Login() {
 				};
 			}
 
+			loginUser({ username, password })
+				.then(user => {
+					userLogin(user);
+					navigate(roles[user.role]);
+				});
 			userLogin(user);
 
 			if (remember) {

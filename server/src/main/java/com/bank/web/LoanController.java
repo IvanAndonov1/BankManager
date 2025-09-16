@@ -6,12 +6,14 @@ import com.bank.enums.LoanApplicationStatus;
 import com.bank.service.CreditEvaluationService;
 import com.bank.service.LoanDecisionService;
 import com.bank.service.LoanPricingService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.List;
 import java.util.Map;
+
+import static com.bank.security.SecurityUtil.*;
 
 @RestController
 @RequestMapping("/api/loans")
@@ -22,18 +24,18 @@ public class LoanController {
     private final LoanDecisionService decisionService;
     private final LoanPricingService pricingService;
 
-    public LoanController(LoanApplicationDao dao, CreditEvaluationService evaluator, LoanDecisionService decisionService, LoanPricingService pricingService) {
-
+    public LoanController(LoanApplicationDao dao,
+                          CreditEvaluationService evaluator,
+                          LoanDecisionService decisionService,
+                          LoanPricingService pricingService) {
         this.dao = dao;
         this.evaluator = evaluator;
         this.decisionService = decisionService;
         this.pricingService = pricingService;
-
     }
 
     @PostMapping("/quote")
     public LoanQuoteResponseDto quote(@RequestBody LoanQuoteRequestDto req) {
-
         if (req.requestedAmount() == null || req.requestedAmount().signum() <= 0)
             throw new IllegalArgumentException("Requested amount must be > 0!");
         if (req.requestedAmount().compareTo(new BigDecimal("100000")) > 0)
@@ -41,28 +43,15 @@ public class LoanController {
         if (req.termMonths() == null || req.termMonths() < 12 || req.termMonths() > 240)
             throw new IllegalArgumentException("Term months must be from 12 to 240!");
 
-        var rate   = pricingService.rateForTermMonths(req.termMonths());
-        var mp     = pricingService.annuityPayment(req.requestedAmount(), req.termMonths(), rate);
-        var total  = pricingService.totalPayable(mp, req.termMonths());
+        var rate  = pricingService.rateForTermMonths(req.termMonths());
+        var mp    = pricingService.annuityPayment(req.requestedAmount(), req.termMonths(), rate);
+        var total = pricingService.totalPayable(mp, req.termMonths());
 
         return new LoanQuoteResponseDto("EUR", rate, mp, total, req.requestedAmount(), req.termMonths());
-
     }
 
-    /**
-     * Create a new loan application.
-     * Example payload:
-     * {
-     *   "customerId": 1,
-     *   "requestedAmount": 5000,
-     *   "termMonths": 24,
-     *   "currentJobStartDate": "2024-01-01",
-     *   "netSalary": 2500.00
-     * }
-     */
     @PostMapping("/applications")
     public Map<String, Object> create(@RequestBody CreateLoanRequestDto req) {
-
         if (req.customerId() == null || req.requestedAmount() == null || req.termMonths() == null ||
                 req.currentJobStartDate() == null || req.netSalary() == null) {
             throw new IllegalArgumentException("Missing required fields.");
@@ -74,6 +63,10 @@ public class LoanController {
         if (req.termMonths() < 12 || req.termMonths() > 240)
             throw new IllegalArgumentException("Term months must be from 12 to 240!");
 
+        if (isCustomer() && !currentUserId().equals(req.customerId())) {
+            throw new AccessDeniedException("Forbidden");
+        }
+
         Long id = dao.create(
                 req.customerId(),
                 req.requestedAmount(),
@@ -82,9 +75,9 @@ public class LoanController {
                 req.netSalary()
         );
 
-        var rate   = pricingService.rateForTermMonths(req.termMonths());
-        var mp     = pricingService.annuityPayment(req.requestedAmount(), req.termMonths(), rate);
-        var total  = pricingService.totalPayable(mp, req.termMonths());
+        var rate  = pricingService.rateForTermMonths(req.termMonths());
+        var mp    = pricingService.annuityPayment(req.requestedAmount(), req.termMonths(), rate);
+        var total = pricingService.totalPayable(mp, req.termMonths());
 
         dao.updatePricing(id, "EUR", rate, mp, total);
 
@@ -96,16 +89,17 @@ public class LoanController {
                 "monthlyPayment", mp,
                 "totalPayable", total
         );
-
     }
 
-    @PostMapping("/applications/{id}/evaluate")
-    public EvaluationBreakdown evaluate(@PathVariable Long id) {
-        return evaluator.evaluate(id);
-    }
 
     @GetMapping("/{id}")
     public LoanApplicationDto get(@PathVariable Long id) {
+        if (isCustomer()) {
+            Long ownerId = dao.findCustomerIdByApplicationId(id);
+            if (ownerId == null || !ownerId.equals(currentUserId())) {
+                throw new AccessDeniedException("Forbidden");
+            }
+        }
         return dao.findById(id);
     }
 
@@ -113,11 +107,25 @@ public class LoanController {
     public Map<String, Object> decide(@PathVariable Long id,
                                       @RequestParam Long userId,
                                       @RequestParam boolean approve) {
+        if (isCustomer()) {
+            throw new AccessDeniedException("Forbidden");
+        }
 
         boolean ok = decisionService.decide(id, userId, approve);
         LoanApplicationDto dto = dao.findById(id);
         return Map.of("ok", ok, "status", dto.status().name());
+    }
+    @PostMapping("/applications/{id}/evaluate")
+    public ResponseEntity<EvaluationBreakdown> evaluateApplication(@PathVariable Long id) {
+        if (isCustomer()) {
+            Long ownerId = dao.findCustomerIdByApplicationId(id);
+            if (ownerId == null || !ownerId.equals(currentUserId())) {
+                throw new AccessDeniedException("Forbidden");
+            }
+        }
 
+        EvaluationBreakdown breakdown = decisionService.evaluateApplication(id);
+        return ResponseEntity.ok(breakdown);
     }
 
 }

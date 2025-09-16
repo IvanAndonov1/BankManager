@@ -20,10 +20,10 @@ public class TransactionDao {
 
     public Long create(Long accountId, String type, BigDecimal amount, String description) {
         String sql = """
-            INSERT INTO transactions (account_id, type, amount, description)
-            VALUES (:acc, :type, :amt, :descr)
-            RETURNING id
-        """;
+        INSERT INTO transactions (account_id, type, amount, description)
+        VALUES (:acc, :type, :amt, :descr)
+        RETURNING id
+    """;
         var p = new MapSqlParameterSource()
                 .addValue("acc", accountId)
                 .addValue("type", type)
@@ -32,13 +32,19 @@ public class TransactionDao {
         return jdbc.queryForObject(sql, p, Long.class);
     }
 
-    public List<TransactionDto> findByAccount(Long accountId) {
+    public List<TransactionDto> findByAccount(Long accountId, int limit, int offset) {
         String sql = """
-            SELECT id, account_id, type, amount, description, created_at
-            FROM transactions
-            WHERE account_id=:acc
-            ORDER BY id DESC
-        """;
-        return jdbc.query(sql, new MapSqlParameterSource("acc", accountId), mapper);
+        SELECT id, account_id, type, amount, date_time, description
+        FROM transactions
+        WHERE account_id = :acc
+        ORDER BY date_time DESC, id DESC
+        LIMIT :limit OFFSET :offset
+    """;
+        var p = new MapSqlParameterSource()
+                .addValue("acc", accountId)
+                .addValue("limit", Math.max(1, Math.min(100, limit)))
+                .addValue("offset", Math.max(0, offset));
+        return jdbc.query(sql, p, mapper);
     }
+
 }

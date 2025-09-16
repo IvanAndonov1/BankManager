@@ -2,11 +2,21 @@ package com.bank.web;
 
 import com.bank.dao.AccountDao;
 import com.bank.dto.AccountDto;
+import com.bank.dto.CardDto;
+import com.bank.dto.TransactionRequestDto;
+import com.bank.dto.TransferRequestDto;
+import com.bank.security.SecurityUtil;
 import com.bank.service.AccountService;
+import com.bank.service.CardService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
+
+import static com.bank.security.SecurityUtil.*;
 
 @RestController
 @RequestMapping("/api/accounts")
@@ -19,27 +29,53 @@ public class AccountController {
         this.accountService = accountService;
     }
 
+    @GetMapping("/{id}")
+    public AccountDto byId(@PathVariable Long id) {
+        return accountDao.findById(id).orElseThrow();
+    }
+
     @GetMapping("/by-customer/{customerId}")
     public List<AccountDto> byCustomer(@PathVariable Long customerId) {
+        if (isCustomer()) {
+            Long uid = currentUserId();
+            if (uid == null || !uid.equals(customerId)) {
+                throw new AccessDeniedException("Forbidden");
+            }
+        }
         return accountDao.findByCustomer(customerId);
     }
 
     @PostMapping("/{id}/deposit")
-    public void deposit(@PathVariable Long id, @RequestParam BigDecimal amount,
-                        @RequestParam(defaultValue = "") String description) {
-        accountService.deposit(id, amount, description);
+    public void deposit(@PathVariable Long id,
+                        @RequestBody TransactionRequestDto req) {
+        if (!isEmployeeOrAdmin()) {
+            Long ownerId = accountDao.findCustomerIdByAccountId(id);
+            if (ownerId == null || !ownerId.equals(currentUserId())) {
+                throw new AccessDeniedException("Forbidden");
+            }
+        }
+        accountService.deposit(id, req.amount(), req.description());
     }
+
 
     @PostMapping("/{id}/withdraw")
-    public void withdraw(@PathVariable Long id, @RequestParam BigDecimal amount,
-                         @RequestParam(defaultValue = "") String description) {
-        accountService.withdraw(id, amount, description);
+    public void withdraw(@PathVariable Long id,
+                         @RequestBody TransactionRequestDto req) {
+        if (!isEmployeeOrAdmin()) {
+            Long ownerId = accountDao.findCustomerIdByAccountId(id);
+            if (ownerId == null || !ownerId.equals(currentUserId())) {
+                throw new AccessDeniedException("Forbidden");
+            }
+        }
+        accountService.withdraw(id, req.amount(), req.description());
     }
 
-    @PostMapping("/transfer")
-    public void transfer(@RequestParam Long fromId, @RequestParam Long toId,
-                         @RequestParam BigDecimal amount,
-                         @RequestParam(defaultValue = "") String description) {
-        accountService.transfer(fromId, toId, amount, description);
+
+    @PostMapping("/{id}/transfer")
+    public void transfer(@PathVariable Long id,
+                         @RequestBody TransferRequestDto req) {
+        accountService.transfer(id, req.toAccountId(), req.amount(), req.description(),
+                currentUserId(), isEmployeeOrAdmin());
+        }
+
     }
-}
