@@ -7,6 +7,7 @@ import com.bank.security.SecurityUtil;
 import com.bank.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -96,10 +97,17 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Missing token");
         }
         String token = authHeader.substring(7);
+
         Long uid = SecurityUtil.currentUserId();
+        if (uid == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Invalid or expired token"));
+        }
+
         authService.logout(token, uid);
         return ResponseEntity.ok(Map.of("message", "Logged out successfully"));
     }
+
 
 
     @GetMapping("/debug/hash")

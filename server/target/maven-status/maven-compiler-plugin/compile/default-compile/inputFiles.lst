@@ -3,6 +3,7 @@ C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\co
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\config\SecurityBeans.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\config\SecurityConfig.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\dao\AccountDao.java
+C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\dao\BlacklistedTokenDao.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\dao\LoanApplicationDao.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\dao\mapper\AccountMapper.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\dao\mapper\LoanApplicationRowMapper.java
@@ -41,6 +42,7 @@ C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\co
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\security\SecurityUtil.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\ServerApplication.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\service\AccountService.java
+C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\service\AuthService.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\service\CreditEvaluationService.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\service\LoanDecisionService.java
 C:\Users\farns\OneDrive\Desktop\BankManager3\BankManager\server\src\main\java\com\bank\service\LoanPricingService.java

@@ -14,6 +14,7 @@ com\bank\dao\UserDirectoryDao.class
 com\bank\models\Employee.class
 com\bank\web\TransactionsController.class
 com\bank\DbSmoke.class
+com\bank\service\AuthService.class
 com\bank\dto\RegisterResponseDto.class
 com\bank\enums\LoanApplicationStatus.class
 com\bank\config\SecurityConfig.class
@@ -33,6 +34,7 @@ com\bank\models\Transaction.class
 com\bank\dao\TransactionDao.class
 com\bank\web\UserController$1.class
 com\bank\dto\RegisterRequestDto.class
+com\bank\dao\BlacklistedTokenDao.class
 com\bank\health\HealthController.class
 com\bank\dto\LoanApplicationDto.class
 com\bank\config\CorsConfig.class
