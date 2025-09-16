@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { validate } from "../../../utils/validations";
 import { handleChange } from "../../../utils/handleChange";
+import { registerUser } from "../../../services/userService";
 
 export default function Register() {
 	const [values, setValues] = useState({
@@ -9,23 +10,32 @@ export default function Register() {
 		lastName: "",
 		email: "",
 		username: "",
-		password: "",
-		rePassword: ""
+		password: ""
 	});
 
 	const [errors, setErrors] = useState({});
 	const [message, setMessage] = useState("");
+	const [rePass, setRePass] = useState('');
+	const navigate = useNavigate();
 
 	function handleSubmit(e) {
 		e.preventDefault();
 		try {
-			const validationErrors = validate(values);
+			const validationErrors = validate({ ...values, rePass });
 			setErrors(validationErrors);
 
 			if (Object.keys(validationErrors).length === 0) {
 				setMessage("Registration submitted.");
 
-				
+				if (values.password == rePass) {
+					registerUser(values)
+						.then(() => {
+							navigate('/login');
+						})
+				} else {
+					setMessage("Passwords don\'t match!");
+				}
+
 				console.log("Register submit values:", values);
 			} else {
 				setMessage("Please fix the highlighted errors.");
@@ -57,7 +67,7 @@ export default function Register() {
 									<span className="block mb-2">First Name</span>
 									<input
 										value={values.firstName}
-										onChange={(e) => handleChange("firstName", e.target.value)}
+										onChange={(e) => handleChange("firstName", e.target.value, setValues)}
 										className={`w-full bg-transparent border-b h-10 px-1 outline-none ${errors.firstName ? "border-red-400" : "border-white/40"
 											}`}
 									/>
@@ -69,7 +79,7 @@ export default function Register() {
 									<span className="block mb-2">Last Name</span>
 									<input
 										value={values.lastName}
-										onChange={(e) => handleChange("lastName", e.target.value)}
+										onChange={(e) => handleChange("lastName", e.target.value, setValues)}
 										className={`w-full bg-transparent border-b h-10 px-1 outline-none ${errors.lastName ? "border-red-400" : "border-white/40"
 											}`}
 									/>
@@ -83,7 +93,7 @@ export default function Register() {
 								<span className="block mb-2">Email Address</span>
 								<input
 									value={values.email}
-									onChange={(e) => handleChange("email", e.target.value)}
+									onChange={(e) => handleChange("email", e.target.value, setValues)}
 									className={`w-full bg-transparent border-b h-10 px-1 outline-none ${errors.email ? "border-red-400" : "border-white/40"
 										}`}
 								/>
@@ -96,9 +106,10 @@ export default function Register() {
 								<span className="block mb-2">Username</span>
 								<input
 									value={values.username}
-									onChange={(e) => handleChange("username", e.target.value)}
+									onChange={(e) => handleChange("username", e.target.value, setValues)}
 									className={`w-full bg-transparent border-b h-10 px-1 outline-none ${errors.username ? "border-red-400" : "border-white/40"
 										}`}
+									autoComplete="username"
 								/>
 								{errors.username && (
 									<p className="text-xs text-red-300 mt-1">{errors.username}</p>
@@ -111,7 +122,7 @@ export default function Register() {
 									type="password"
 									autoComplete="new-password"
 									value={values.password}
-									onChange={(e) => handleChange("password", e.target.value)}
+									onChange={(e) => handleChange("password", e.target.value, setValues)}
 									className={`w-full bg-transparent border-b h-10 px-1 outline-none ${errors.password ? "border-red-400" : "border-white/40"
 										}`}
 								/>
@@ -124,8 +135,8 @@ export default function Register() {
 								<input
 									type="password"
 									autoComplete="new-password"
-									value={values.rePassword}
-									onChange={(e) => handleChange("rePassword", e.target.value)}
+									value={rePass}
+									onChange={(e) => setRePass(e.target.value)}
 									className={`w-full bg-transparent border-b h-10 px-1 outline-none ${errors.rePassword ? "border-red-400" : "border-white/40"
 										}`}
 								/>
