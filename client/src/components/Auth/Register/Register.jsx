@@ -1,41 +1,43 @@
-import { useMemo, useState } from "react";
-import StepOne from "./StepOne";
-import StepTwo from "./StepTwo";
-import StepThree from "./StepThree";
-import StepFour from "./StepFour";
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { validate } from "../../../utils/validations";
+import { handleChange } from "../../../utils/handleChange";
 
 export default function Register() {
-	const [step, setStep] = useState(0);
-	const [values, setValues] = useState({});
+	const [values, setValues] = useState({
+		firstName: "",
+		lastName: "",
+		email: "",
+		username: "",
+		password: "",
+		rePassword: ""
+	});
 
-	const steps = useMemo(
-		() => [
-			{ key: "one", component: StepOne },
-			{ key: "two", component: StepTwo },
-			{ key: "three", component: StepThree },
-			{ key: "four", component: StepFour },
-		],
-		[]
-	);
-
-	const StepComponent = steps[step].component;
-	const progress = ((step + 1) / steps.length) * 100;
-	const isLast = step === steps.length - 1;
-
-	function handleChange(patch) {
-		setValues((v) => ({ ...v, ...patch }));
-	}
+	const [errors, setErrors] = useState({});
+	const [message, setMessage] = useState("");
 
 	function handleSubmit(e) {
 		e.preventDefault();
-		console.log("Register submit values:", values);
-		// TODO: API call
+		try {
+			const validationErrors = validate(values);
+			setErrors(validationErrors);
+
+			if (Object.keys(validationErrors).length === 0) {
+				setMessage("Registration submitted.");
+
+				
+				console.log("Register submit values:", values);
+			} else {
+				setMessage("Please fix the highlighted errors.");
+			}
+		} catch (err) {
+
+		}
 	}
 
 	return (
 		<div
-			className="min-h-screen flex items-start justify-center pt-16"
+			className="min-h-screen flex items-center justify-center py-8"
 			style={{ background: "linear-gradient(135deg, #5b1d77 0%, #0b82be 100%)" }}
 		>
 			<div className="w-full max-w-3xl">
@@ -43,30 +45,116 @@ export default function Register() {
 					Register
 				</div>
 
-				<div className="h-2 w-2/3 mx-auto bg-white/40 rounded-full overflow-hidden">
-					<div
-						className="h-full bg-[#351F78] transition-all"
-						style={{ width: `${progress}%` }}
-					/>
-				</div>
-
 				<div className="relative mt-6">
 					<form
-						onSubmit={(e) => handleSubmit(e)}
-						className="mx-auto rounded-xl bg-white/15 backdrop-blur-md shadow-xl text-white p-8 w-[680px] max-w-[90vw] border border-white/20"
+						onSubmit={handleSubmit}
+						className="mx-auto rounded-xl bg-white/15 backdrop-blur-md shadow-xl text-white p-8 w-[680px] max-w-[90vw] border border-white/20 max-h-[85vh] overflow-y-auto"
+						noValidate
 					>
-						<StepComponent values={values} onChange={handleChange} />
-
-						{isLast && (
-							<div className="mt-6 flex items-center justify-end">
-								<button
-									type="submit"
-									className="px-6 h-10 rounded-full bg-[#351F78] hover:opacity-95 text-white font-medium"
-								>
-									Register
-								</button>
+						<div className="space-y-6">
+							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+								<label className="block text-sm text-white/90">
+									<span className="block mb-2">First Name</span>
+									<input
+										value={values.firstName}
+										onChange={(e) => handleChange("firstName", e.target.value)}
+										className={`w-full bg-transparent border-b h-10 px-1 outline-none ${errors.firstName ? "border-red-400" : "border-white/40"
+											}`}
+									/>
+									{errors.firstName && (
+										<p className="text-xs text-red-300 mt-1">{errors.firstName}</p>
+									)}
+								</label>
+								<label className="block text-sm text-white/90">
+									<span className="block mb-2">Last Name</span>
+									<input
+										value={values.lastName}
+										onChange={(e) => handleChange("lastName", e.target.value)}
+										className={`w-full bg-transparent border-b h-10 px-1 outline-none ${errors.lastName ? "border-red-400" : "border-white/40"
+											}`}
+									/>
+									{errors.lastName && (
+										<p className="text-xs text-red-300 mt-1">{errors.lastName}</p>
+									)}
+								</label>
 							</div>
+
+							<label className="block text-sm text-white/90">
+								<span className="block mb-2">Email Address</span>
+								<input
+									value={values.email}
+									onChange={(e) => handleChange("email", e.target.value)}
+									className={`w-full bg-transparent border-b h-10 px-1 outline-none ${errors.email ? "border-red-400" : "border-white/40"
+										}`}
+								/>
+								{errors.email && (
+									<p className="text-xs text-red-300 mt-1">{errors.email}</p>
+								)}
+							</label>
+
+							<label className="block text-sm text-white/90">
+								<span className="block mb-2">Username</span>
+								<input
+									value={values.username}
+									onChange={(e) => handleChange("username", e.target.value)}
+									className={`w-full bg-transparent border-b h-10 px-1 outline-none ${errors.username ? "border-red-400" : "border-white/40"
+										}`}
+								/>
+								{errors.username && (
+									<p className="text-xs text-red-300 mt-1">{errors.username}</p>
+								)}
+							</label>
+
+							<label className="block text-sm text-white/90">
+								<span className="block mb-2">Password</span>
+								<input
+									type="password"
+									autoComplete="new-password"
+									value={values.password}
+									onChange={(e) => handleChange("password", e.target.value)}
+									className={`w-full bg-transparent border-b h-10 px-1 outline-none ${errors.password ? "border-red-400" : "border-white/40"
+										}`}
+								/>
+								{errors.password && (
+									<p className="text-xs text-red-300 mt-1">{errors.password}</p>
+								)}
+							</label>
+							<label className="block text-sm text-white/90">
+								<span className="block mb-2">Confirm Password</span>
+								<input
+									type="password"
+									autoComplete="new-password"
+									value={values.rePassword}
+									onChange={(e) => handleChange("rePassword", e.target.value)}
+									className={`w-full bg-transparent border-b h-10 px-1 outline-none ${errors.rePassword ? "border-red-400" : "border-white/40"
+										}`}
+								/>
+								{errors.rePassword && (
+									<p className="text-xs text-red-300 mt-1">{errors.rePassword}</p>
+								)}
+							</label>
+						</div>
+
+						{message && (
+							<p className="mt-4 text-sm text-center">
+								<span
+									className={
+										Object.keys(errors).length ? "text-red-300" : "text-emerald-300"
+									}
+								>
+									{message}
+								</span>
+							</p>
 						)}
+
+						<div className="mt-6 flex items-center justify-end">
+							<button
+								type="submit"
+								className="px-6 h-10 rounded-full bg-[#351F78] hover:opacity-95 text-white font-medium"
+							>
+								Register
+							</button>
+						</div>
 
 						<div className="mt-6 text-center text-white/90 text-sm">
 							Already have an account?{" "}
@@ -75,53 +163,6 @@ export default function Register() {
 							</Link>
 						</div>
 					</form>
-
-					<button
-						type="button"
-						className="absolute left-0 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center"
-						disabled={step === 0}
-						onClick={() => setStep((s) => Math.max(0, s - 1))}
-						aria-label="Previous"
-					>
-						<svg
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							strokeWidth="2"
-							className="w-5 h-5"
-						>
-							<path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
-						</svg>
-					</button>
-
-					<button
-						type="button"
-						className="absolute right-0 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center"
-						onClick={() => setStep((s) => Math.min(steps.length - 1, s + 1))}
-						aria-label="Next"
-					>
-						{!isLast ? (
-							<svg
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								strokeWidth="2"
-								className="w-5 h-5"
-							>
-								<path d="M9 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
-							</svg>
-						) : (
-							<svg
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								strokeWidth="2"
-								className="w-5 h-5"
-							>
-								<path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
-							</svg>
-						)}
-					</button>
 				</div>
 			</div>
 		</div>
