@@ -2,7 +2,6 @@ package com.bank.service;
 
 import com.bank.dao.LoanApplicationDao;
 import com.bank.dto.EvaluationBreakdown;
-import com.bank.dto.EvaluationResult;
 import com.bank.dto.LoanApplicationDto;
 import com.bank.enums.LoanApplicationStatus;
 import org.springframework.stereotype.Service;
@@ -29,35 +28,42 @@ public class CreditEvaluationService {
     private final LoanApplicationDao loanDao;
 
     public CreditEvaluationService(LoanApplicationDao loanDao, LoanPricingService pricingService) {
+
         this.loanDao = loanDao;
         this.pricingService = pricingService;
+
     }
 
     public EvaluationBreakdown evaluate(Long loanId) {
+
         LoanApplicationDto loan = loanDao.findById(loanId);
         List<String> reasons = new ArrayList<>();
 
         if (loan.termMonths() == null || loan.termMonths() <= 0) {
+
             reasons.add("termMonths must be > 0");
             return new EvaluationBreakdown(LoanApplicationStatus.PENDING, reasons, 0,0,0,0,0,0,0);
+
         }
+
         if (loan.currentJobStartDate() == null || loan.netSalary() == null) {
+
             reasons.add("currentJobStartDate and netSalary are required");
             return new EvaluationBreakdown(LoanApplicationStatus.PENDING, reasons, 0,0,0,0,0,0,0);
+
         }
+
         if (loan.netSalary().compareTo(ZERO) <= 0) {
+
             reasons.add("netSalary must be > 0");
             return new EvaluationBreakdown(LoanApplicationStatus.PENDING, reasons, 0,0,0,0,0,0,0);
+
         }
 
         long tenureMonths = Period.between(loan.currentJobStartDate(), LocalDate.now()).toTotalMonths();
 
-        var annualRate = pricingService.rateForTermMonths(loan.termMonths());
-        BigDecimal newInstallment = pricingService.annuityPayment(
-                loan.requestedAmount(),
-                loan.termMonths(),
-                annualRate
-        );
+        var pricing = pricingService.calculate(loan.requestedAmount(), loan.termMonths());
+        BigDecimal newInstallment = pricing.monthlyPayment();
 
         BigDecimal currentMonthly = loanDao.currentMonthlyInstallments(loan.customerId());
         BigDecimal totalMonthly = currentMonthly.add(newInstallment);
@@ -67,12 +73,17 @@ public class CreditEvaluationService {
         BigDecimal totalBalance = loanDao.totalCurrentBalance(loan.customerId());
 
         int tenureScore = bandTenure(tenureMonths);
-        if (tenureMonths < 6) reasons.add("Employer tenure < 6 months");
+
+        if (tenureMonths < 6) {
+            reasons.add("Employer tenure < 6 months");
+        }
 
         BigDecimal dti = (loan.netSalary().compareTo(ZERO) > 0)
                 ? totalMonthly.divide(loan.netSalary(), 6, RoundingMode.HALF_UP)
                 : BigDecimal.ONE;
+
         int dtiScore = bandDTI(dti);
+
         if (loan.netSalary().multiply(new BigDecimal("0.5")).compareTo(totalMonthly) < 0) {
             reasons.add("Disposable income < 50% net salary after installments");
         }
@@ -86,20 +97,19 @@ public class CreditEvaluationService {
         int accountAgeScore = bandAccountAge(oldestAcctMonths);
 
         int cushionScore;
+
         if (totalMonthly.compareTo(ZERO) <= 0) {
-            cushionScore = 100; // no existing+new installments → perfect cushion
+            cushionScore = 100;
         } else {
+
             BigDecimal cushion = totalBalance.divide(totalMonthly, 6, RoundingMode.HALF_UP);
             cushionScore = bandCushion(cushion);
+
         }
 
         int recentDebtScore = bandRecentNewDebt(loanDao.approvedInLast6Months(loan.customerId()));
 
-
-
         int composite = (tenureScore + dtiScore + incomeScore + accountAgeScore + cushionScore + recentDebtScore) / 6;
-
-
 
         return new EvaluationBreakdown(
                 LoanApplicationStatus.PENDING,
@@ -111,14 +121,17 @@ public class CreditEvaluationService {
 
 
     private int bandTenure(long months) {
+
         if (months >= 24) return 100;
         if (months >= 12) return 80;
         if (months >= 6)  return 60;
         if (months >= 3)  return 30;
         return 0;
+
     }
 
     private int bandDTI(BigDecimal dti) {
+
         if (dti.compareTo(new BigDecimal("0.20")) <= 0) return 100;
         if (dti.compareTo(new BigDecimal("0.30")) <= 0) return 90;
         if (dti.compareTo(new BigDecimal("0.40")) <= 0) return 75;
@@ -126,36 +139,45 @@ public class CreditEvaluationService {
         if (dti.compareTo(new BigDecimal("0.60")) <= 0) return 40;
         if (dti.compareTo(new BigDecimal("0.70")) <= 0) return 20;
         return 0; // > 0.70
+
     }
 
     private int bandIncome(BigDecimal netSalary) {
+
         if (netSalary.compareTo(L4) >= 0) return 100;  // >= 4000
         if (netSalary.compareTo(L3) >= 0) return 80;   // 3000–3999
         if (netSalary.compareTo(L2) >= 0) return 60;   // 2000–2999
         if (netSalary.compareTo(L1) >= 0) return 40;   // 1500–1999
         return 20;                                     // < 1500
+
     }
 
     private int bandAccountAge(long months) {
+
         if (months >= 36) return 100;
         if (months >= 24) return 80;
         if (months >= 12) return 60;
         if (months >= 6)  return 40;
         return 20;
+
     }
 
     private int bandCushion(BigDecimal cushion) {
+
         if (cushion.compareTo(new BigDecimal("3.0")) >= 0) return 100;
         if (cushion.compareTo(new BigDecimal("2.0")) >= 0) return 80;
         if (cushion.compareTo(new BigDecimal("1.0")) >= 0) return 60;
         if (cushion.compareTo(new BigDecimal("0.5")) >= 0) return 30;
         return 0;
+
     }
 
     private int bandRecentNewDebt(int count) {
+
         if (count <= 0) return 100;
         if (count == 1) return 60;
         if (count == 2) return 30;
         return 0; // >=3
+
     }
 }
