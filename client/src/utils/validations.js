@@ -15,3 +15,30 @@ export function validateCredentials({ username, password }) {
 	const hasErrors = Boolean(errors.username || errors.password);
 	return { errors, hasErrors };
 }
+
+export function validate(vals) {
+	const errs = {};
+
+	if (!vals.firstName.trim()) errs.firstName = "First name is required.";
+	if (!vals.lastName.trim()) errs.lastName = "Last name is required.";
+
+	if (!vals.email.trim()) errs.email = "Email is required.";
+	else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(vals.email))
+		errs.email = "Invalid email format.";
+
+	if (!vals.username.trim()) errs.username = "Username is required.";
+	else if (vals.username.length < 3)
+		errs.username = "Username must be at least 3 characters.";
+
+	if (!vals.password) errs.password = "Password is required.";
+	else if (vals.password.length < 8)
+		errs.password = "Password must be at least 8 characters.";
+	else if (!/[A-Za-z]/.test(vals.password) || !/[0-9]/.test(vals.password))
+		errs.password = "Password must include a letter and a number.";
+
+	if (!vals.rePassword) errs.rePassword = "Confirm password is required.";
+	else if (vals.password !== vals.rePassword)
+		errs.rePassword = "Passwords do not match.";
+
+	return errs;
+}
