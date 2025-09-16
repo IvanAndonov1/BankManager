@@ -10,7 +10,6 @@ export function validateCredentials({ username, password }) {
 		errors.username = "Only letters, digits, dot, underscore and dash (3-30 chars).";
 
 	if (!p) errors.password = "Password is required.";
-	else if (p.length < 5) errors.password = "Password must be at least 8 characters.";
 
 	const hasErrors = Boolean(errors.username || errors.password);
 	return { errors, hasErrors };
@@ -31,14 +30,10 @@ export function validate(vals) {
 		errs.username = "Username must be at least 3 characters.";
 
 	if (!vals.password) errs.password = "Password is required.";
-	else if (vals.password.length < 8)
-		errs.password = "Password must be at least 8 characters.";
-	else if (!/[A-Za-z]/.test(vals.password) || !/[0-9]/.test(vals.password))
-		errs.password = "Password must include a letter and a number.";
 
-	if (!vals.rePassword) errs.rePassword = "Confirm password is required.";
-	else if (vals.password !== vals.rePassword)
-		errs.rePassword = "Passwords do not match.";
+	if (!vals.rePass) errs.rePass = "Confirm password is required.";
+	else if (vals.password !== vals.rePass)
+		errs.rePass = "Passwords do not match.";
 
 	return errs;
 }
