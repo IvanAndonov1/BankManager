@@ -1,3 +1,3 @@
-export function handleChange(field, value) {
-	setValues((prev) => ({ ...prev, [field]: value }));
+export function handleChange(field, value, setter) {
+	setter((prev) => ({ ...prev, [field]: value }));
 }

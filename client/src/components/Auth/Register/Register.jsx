@@ -31,7 +31,7 @@ export default function Register() {
 					registerUser(values)
 						.then(() => {
 							navigate('/login');
-						})
+						});
 				} else {
 					setMessage("Passwords don\'t match!");
 				}
