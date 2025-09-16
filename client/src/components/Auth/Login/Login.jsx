@@ -3,6 +3,9 @@ import { useActionState } from "react";
 import { loginUser } from "../../../services/userService";
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from "../../../contexts/AuthContext.jsx";
+import redLine1 from "../../../assets/red-line1.svg";
+import redLine2 from "../../../assets/red-line2.svg";
+
 
 const initialState = {
 	username: "",
@@ -60,19 +63,24 @@ export default function Login() {
 
 	return (
 		<main className="fixed inset-0 overflow-hidden">
-			<div className="relative h-full w-full bg-gradient-to-br from-[#6a1ea1] via-[#3a4fb6] to-[#0b84b9]">
-				<div
-					className="pointer-events-none absolute inset-0 opacity-25"
-					style={{
-						backgroundImage:
-							"repeating-linear-gradient(135deg, rgba(255,255,255,.08) 0px, rgba(255,255,255,.08) 2px, transparent 2px, transparent 36px)",
-					}}
-				/>
+			<div className="relative h-full w-full bg-gradient-to-br from-[#6B1F78] via-[#424996] to-[#0B82BE]">
+				
+				
 				<div className="absolute top-6 left-6 text-white/90 font-semibold">
 					Logo
 				</div>
+				<img
+					src={redLine1}
+					alt="red lines"
+					className="pointer-events-none w-5xl h-5xl absolute inset-0 object-cover "
+				/>
+				<img
+					src={redLine2}
+					alt="red lines"
+					className="pointer-events-none w-3xl h-3xl absolute inset-0 left-[40%] object-cover "
+				/>
 
-				<div className="relative z-10 w-full max-w-xl mx-auto pt-24 px-4 text-white">
+				<div className="relative z-10 w-full max-w-2xl mx-auto pt-24 px-4 text-white">
 					<h1 className="text-4xl md:text-5xl font-bold text-center">
 						Banking You Want To Use
 					</h1>

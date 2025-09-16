@@ -14,13 +14,13 @@ function FilterCard() {
 					<span>Filter</span>
 				</div>
 
-				<div className="inline-flex items-center rounded-full p-1 shadow-sm ring-1 ring-black/10 bg-white">
+				<div className="inline-flex items-center rounded-full shadow-sm ring-1 ring-black/10 bg-white">
 					<label className="cursor-pointer">
 						<input type="radio" name="accountType" defaultChecked className="hidden peer" />
 						<span
 							className="
-        px-3 h-9 inline-flex items-center justify-center rounded-full text-sm font-medium
-        text-gray-800 ring-1 ring-gray-300 bg-white
+        px-4 h-9 inline-flex items-center justify-center rounded-full text-sm font-medium
+        text-gray-800  bg-white
         peer-checked:bg-[#351F78] peer-checked:text-white peer-checked:ring-0 peer-checked:shadow
       "
 						>
@@ -35,7 +35,7 @@ function FilterCard() {
 						<span
 							className="
         px-3 h-9 inline-flex items-center justify-center rounded-full text-sm font-medium
-        text-gray-800 ring-1 ring-gray-300 bg-white
+        text-gray-800  bg-white
         peer-checked:bg-[#351F78] peer-checked:text-white peer-checked:ring-0 peer-checked:shadow
       "
 						>

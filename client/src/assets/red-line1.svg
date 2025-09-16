@@ -1,0 +1,24 @@
+<svg width="1246" height="1024" viewBox="0 0 1246 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="-72.3521" y="-41" width="1468" height="49" transform="rotate(32.9451 -72.3521 -41)" fill="url(#paint0_linear_21_216)"/>
+<rect x="-57.6028" y="86.4368" width="1468" height="49" transform="rotate(32.9451 -57.6028 86.4368)" fill="url(#paint1_linear_21_216)"/>
+<rect x="-98.714" y="188.49" width="1468" height="49" transform="rotate(32.9451 -98.714 188.49)" fill="url(#paint2_linear_21_216)"/>
+<rect x="-166.478" y="267.313" width="1468" height="49" transform="rotate(32.9451 -166.478 267.313)" fill="url(#paint3_linear_21_216)"/>
+<defs>
+<linearGradient id="paint0_linear_21_216" x1="-72.3521" y1="-16.5" x2="1395.65" y2="-16.5" gradientUnits="userSpaceOnUse">
+<stop stop-color="#D52020" stop-opacity="0.09"/>
+<stop offset="1" stop-color="#0B82BE" stop-opacity="0.06"/>
+</linearGradient>
+<linearGradient id="paint1_linear_21_216" x1="-57.6028" y1="110.937" x2="1410.4" y2="110.937" gradientUnits="userSpaceOnUse">
+<stop stop-color="#D52020" stop-opacity="0.09"/>
+<stop offset="1" stop-color="#0B82BE" stop-opacity="0.06"/>
+</linearGradient>
+<linearGradient id="paint2_linear_21_216" x1="-98.714" y1="212.99" x2="1369.29" y2="212.99" gradientUnits="userSpaceOnUse">
+<stop stop-color="#D52020" stop-opacity="0.09"/>
+<stop offset="1" stop-color="#0B82BE" stop-opacity="0.06"/>
+</linearGradient>
+<linearGradient id="paint3_linear_21_216" x1="-166.478" y1="291.813" x2="1301.52" y2="291.813" gradientUnits="userSpaceOnUse">
+<stop stop-color="#D52020" stop-opacity="0.09"/>
+<stop offset="1" stop-color="#0B82BE" stop-opacity="0.06"/>
+</linearGradient>
+</defs>
+</svg>

@@ -7,7 +7,7 @@ export default function Dashboard() {
 	let data = { name: 'Name 1', date: '04/12/2020', status: 'active' };
 
 	return (
-		<div className="min-h-screen flex bg-gray-100">
+		<div className="min-h-screen flex bg-gradient-to-br from-[#0B82BE]/10 to-[#351F78]/10  overflow-hidden">
 			<Sidebar />
 
 			<div className="flex-1 p-6 space-y-6">
