@@ -3,6 +3,7 @@
 .idea/
 *.iml
 .vscode/
+target/
 
 # OS
 .DS_Store
