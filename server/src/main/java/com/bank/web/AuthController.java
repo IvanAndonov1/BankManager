@@ -96,7 +96,7 @@ public class AuthController {
                 INSERT INTO users(name, password, first_name, last_name, email, role, created_at, active,
                 date_of_birth, phone_number, home_address, egn
                 )
-                VALUES (:u, :p, :f, :l, :e, 'CUSTOMER', now(), true,
+                VALUES (:u, :p, :f, :l, :e, 'EMPLOYEE', now(), true,
                 :dob, :phone, :addr, :egn)
                 RETURNING id
                 """,
