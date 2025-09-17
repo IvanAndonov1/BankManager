@@ -45,7 +45,7 @@ public class AuthController {
         String hashed = encoder.encode(req.password());
 
         Long id = jdbc.queryForObject("""
-                INSERT INTO users(name, password, first_name, last_name, email, role, created_at, active
+                INSERT INTO users(name, password, first_name, last_name, email, role, created_at, active,
                 date_of_birth, phone_number, home_address, egn
                 )
                 VALUES (:u, :p, :f, :l, :e, 'CUSTOMER', now(), true,
