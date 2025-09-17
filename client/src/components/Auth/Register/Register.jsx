@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { handleChange } from "../../../utils/handleChange";
+import { registerUser } from "../../../services/userService";
 
 export default function Register() {
 	const [values, setValues] = useState({
@@ -22,7 +23,7 @@ export default function Register() {
 		setErrors((e) => ({ ...e, [field]: msg }));
 	}
 
-	async function handleSubmit(e) {
+	function handleSubmit(e) {
 		e.preventDefault();
 		setErrors({});
 		setFormError("");
@@ -69,7 +70,9 @@ export default function Register() {
 		const payload = { ...rest, name: username };
 
 		try {
-			console.log("Submitting payload:", payload);
+			// NOT WORKING!!!!
+			registerUser(payload)
+				.then(result => console.log(result));
 		} catch (err) {
 			setFormError(err?.message || "Registration failed. Please try again.");
 		}
