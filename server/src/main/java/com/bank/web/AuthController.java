@@ -34,8 +34,8 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @PostMapping("/register")
-    public RegisterResponseDto register(@RequestBody RegisterRequestDto req) {
+    @PostMapping("/register/customer")
+    public RegisterResponseDto registerCustomer(@RequestBody RegisterRequestDto req) {
 
         if (req.username() == null || req.password() == null ||
                 req.firstName() == null || req.lastName() == null || req.email() == null) {
@@ -72,6 +72,51 @@ public class AuthController {
                 req.username(),
                 req.email(),
                 "CUSTOMER",
+                req.firstName(),
+                req.lastName(),
+                req.dateOfBirth(),
+                req.phoneNumber(),
+                req.homeAddress(),
+                req.egn()
+        );
+
+    }
+
+    @PostMapping("/register/employee")
+    public RegisterResponseDto registerEmployee(@RequestBody RegisterRequestDto req){
+
+        if (req.username() == null || req.password() == null ||
+                req.firstName() == null || req.lastName() == null || req.email() == null) {
+            throw new IllegalArgumentException("All fields are required");
+        }
+
+        String hashed = encoder.encode(req.password());
+
+        Long id = jdbc.queryForObject("""
+                INSERT INTO users(name, password, first_name, last_name, email, role, created_at, active,
+                date_of_birth, phone_number, home_address, egn
+                )
+                VALUES (:u, :p, :f, :l, :e, 'CUSTOMER', now(), true,
+                :dob, :phone, :addr, :egn)
+                RETURNING id
+                """,
+                new MapSqlParameterSource()
+                        .addValue("u", req.username())
+                        .addValue("p", hashed)
+                        .addValue("f", req.firstName())
+                        .addValue("l", req.lastName())
+                        .addValue("e", req.email())
+                        .addValue("dob", req.dateOfBirth())
+                        .addValue("phone", req.phoneNumber())
+                        .addValue("addr", req.homeAddress())
+                        .addValue("egn", req.egn()),
+                Long.class);
+
+        return new RegisterResponseDto(
+                id,
+                req.username(),
+                req.email(),
+                "EMPLOYEE",
                 req.firstName(),
                 req.lastName(),
                 req.dateOfBirth(),
@@ -136,8 +181,6 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("message", "Logged out successfully"));
 
     }
-
-
 
     @GetMapping("/debug/hash")
     public Map<String, String> debugHash(@RequestParam String pw) {
