@@ -48,6 +48,9 @@ public class AccountDao {
         String sql = "SELECT balance FROM accounts WHERE id=:id";
         var p = new MapSqlParameterSource("id", accountId);
         BigDecimal result = jdbc.query(sql, p, rs -> rs.next() ? rs.getBigDecimal(1) : null);
+        if(result == null){
+            return BigDecimal.ZERO;
+        }
         System.out.println("DEBUG getBalance accountId=" + accountId + " result=" + result);
         return result;
     }
