@@ -10,11 +10,27 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class AccountDao {
+public class AccountDao{
+
     private final NamedParameterJdbcTemplate jdbc;
     private final AccountMapper mapper = new AccountMapper();
 
     public AccountDao(NamedParameterJdbcTemplate jdbc) { this.jdbc = jdbc; }
+
+    public Long create(Long customerId, String accountNumber, BigDecimal initialBalance){
+
+        return jdbc.queryForObject("""
+                INSERT INTO accounts (customer_id, account_number, balance)
+                VALUES (:cid, :acc, :bal)
+                RETURNING id
+                """, new MapSqlParameterSource()
+                .addValue("cid", customerId)
+                .addValue("acc", accountNumber)
+                .addValue("bal", initialBalance),
+                Long.class
+        );
+
+    }
 
     public Optional<AccountDto> findById(Long id) {
         String sql = "SELECT id, customer_id, account_number, balance FROM accounts WHERE id=:id";

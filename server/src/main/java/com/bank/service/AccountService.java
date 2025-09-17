@@ -3,11 +3,13 @@ package com.bank.service;
 import com.bank.dao.AccountDao;
 import com.bank.dao.TransactionDao;
 import com.bank.exception.AccountNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class AccountService {
@@ -18,6 +20,32 @@ public class AccountService {
         this.accountDao = accountDao;
         this.transactionDao = transactionDao;
     }
+
+    private String generateAccountNumber(){
+
+        long tail = ThreadLocalRandom.current().nextLong(0, 1_000_000_0000L);
+        return "BG80BNBG9661" + String.format("%010d", tail);
+
+    }
+
+    public Long createDefaultAccountForCustomer(Long customerId){
+
+        String accNo = generateAccountNumber();
+
+        for(int i = 0; i < 5; i++){
+
+            try{
+                return accountDao.create(customerId, accNo, BigDecimal.ZERO);
+            } catch (DataIntegrityViolationException dup){
+                // ако се генерира съществуваща сметка
+                accNo = generateAccountNumber();
+            }
+
+        }
+        throw new IllegalArgumentException("Could not generate unique account number after several attempts!");
+
+    }
+
 
     @Transactional
     public void deposit(Long accountId, BigDecimal amount, String description) {
