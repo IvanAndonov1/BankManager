@@ -28,7 +28,7 @@ public class AccountService {
 
     }
 
-    public Long createDefaultAccountForCustomer(Long customerId){
+    public Long createAccount(Long customerId){
 
         String accNo = generateAccountNumber();
 

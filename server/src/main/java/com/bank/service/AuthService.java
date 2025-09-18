@@ -67,7 +67,7 @@ public class AuthService {
         jdbc.update("INSERT INTO customers(id) VALUES(:id)",
                 new MapSqlParameterSource().addValue("id", id));
 
-        accountService.createDefaultAccountForCustomer(id);
+        accountService.createAccount(id);
 
         return new RegisterResponseDto(
             id,
