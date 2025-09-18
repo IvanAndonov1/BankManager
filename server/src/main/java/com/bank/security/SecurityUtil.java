@@ -76,6 +76,20 @@ public final class SecurityUtil {
         return equalsRole(r, "CUSTOMER");
     }
 
+    public static boolean isAdmin(){
+
+        Authentication a = SecurityContextHolder.getContext().getAuthentication();
+
+        if(a != null && hasAnyAuthority(a.getAuthorities(), "ADMIN")){
+            return true;
+        }
+
+        String r = currentRole();
+
+        return equalsRole(r, "ADMIN");
+
+    }
+
 
     private static boolean equalsRole(String actual, String expected) {
         if (actual == null) return false;
