@@ -37,7 +37,7 @@ function App() {
 
 						<Route element={<RequireRole roles={["EMPLOYEE"]} />}>
 							<Route path="/employee" element={<EmployeeDashboard />} />
-							<Route path="/customer-details/:employeeId" element={<CustomerMoreInfo />} />
+							<Route path="/customer-details/:userId" element={<CustomerMoreInfo />} />
 						</Route>
 
 						<Route element={<RequireRole roles={["ADMIN"]} />}>

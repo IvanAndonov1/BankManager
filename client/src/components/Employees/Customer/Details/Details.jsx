@@ -9,14 +9,16 @@ import LoansPlaceholder from "./LoansPlaceholder";
 import RequestsPlaceholder from "./RequestPlaceholder";
 import { AuthContext } from "../../../../contexts/AuthContext";
 import { getUserDetails } from "../../../../services/userService";
+import { useParams } from "react-router";
 
 export default function CustomerMoreInfo() {
+	const { userId } = useParams();
 	const [tab, setTab] = useState("profile");
 	const { user } = use(AuthContext);
 	const [userDetails, setUserDetails] = useState({});
 
 	useEffect(() => {
-		getUserDetails(user.token)
+		getUserDetails(user.token, userId)
 			.then(result => console.log(result));
 	}, [user.token]);
 
