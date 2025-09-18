@@ -1,10 +1,7 @@
 package com.bank.web;
 
 import com.bank.dao.AccountDao;
-import com.bank.dto.AccountDto;
-import com.bank.dto.CardDto;
-import com.bank.dto.TransactionRequestDto;
-import com.bank.dto.TransferRequestDto;
+import com.bank.dto.*;
 import com.bank.security.SecurityUtil;
 import com.bank.service.AccountService;
 import com.bank.service.CardService;
@@ -43,6 +40,32 @@ public class AccountController {
             }
         }
         return accountDao.findByCustomer(customerId);
+    }
+
+    @PostMapping
+    public CreateAccountResponseDto createAccount(@RequestBody CreateAccountRequestDto req){
+
+        if(req.customerId() == null){
+            throw new IllegalArgumentException("Customer id is required!");
+        }
+
+        if(!isEmployeeOrAdmin()){
+
+            if(!currentUserId().equals(req.customerId())){
+                throw new AccessDeniedException("Forbidden!");
+            }
+
+        }
+
+        Long accountId = accountService.createAccount(req.customerId());
+        var acc = accountDao.findById(accountId).orElseThrow();
+
+        return new CreateAccountResponseDto(
+                acc.id(),
+                acc.accountNumber(),
+                acc.balance()
+        );
+
     }
 
     @PostMapping("/{id}/deposit")
