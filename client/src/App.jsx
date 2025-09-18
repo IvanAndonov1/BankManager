@@ -3,17 +3,54 @@ import Loans from './components/Customers/Loans/Loans';
 import Transactions from './components/Customers/Transactions/Transactions';
 import Dashboard from './components/Customers/Dashboard';
 
+import CustomerMoreInfo from './components/Employees/Customer/Details/Details';
+import Home from './components/Home/Home';
+import Login from './components/Auth/Login/Login';
+import AdminDashboard from './components/Admin/Dashboard/Dashboard';
+import AdminEmployeeDetails from './components/Admin/Employee/Details/AdminEmployeeDetails';
+import Register from './components/Auth/Register/Register';
+import EmployeeDashboard from './components/Employees/Dashboard/Dashboard';
+import { AuthProvider } from './contexts/AuthContext';
+import Logout from './components/Auth/Logout/Logout';
+import RequireRole from './guards/RequireRole';
+import RequireGuest from './guards/RequireGuest';
+import RequireAuth from './guards/RequireAuth';
+
 
 function App() {
 	return (
 		<>
-			<Routes>
-				<Route path='/customer-loans' element={<Loans />} />
-				<Route path="/customer-dashboard" element={<Dashboard />} />
-				<Route path='/customer-transactions' element={<Transactions />} />
-				
-				
-			</Routes>
+			<AuthProvider>
+				<Routes>
+					<Route element={<RequireGuest />}>
+						<Route path="/" element={<Home />} />
+						<Route path="/login" element={<Login />} />
+						<Route path="/register" element={<Register />} />
+					</Route>
+
+					<Route element={<RequireAuth />}>
+						<Route element={<RequireRole roles={["CUSTOMER"]} />}>
+							<Route path="/customer-dashboard" element={<Dashboard />} />
+							<Route path="/customer-loans" element={<Loans />} />
+							<Route path="/customer-transactions" element={<Transactions />} />
+						</Route>
+
+						<Route element={<RequireRole roles={["EMPLOYEE"]} />}>
+							<Route path="/employee" element={<EmployeeDashboard />} />
+							<Route path="/customer-details/:employeeId" element={<CustomerMoreInfo />} />
+						</Route>
+
+						<Route element={<RequireRole roles={["ADMIN"]} />}>
+							<Route path="/admin" element={<AdminDashboard />} />
+							<Route path="/admin/employee/:employeeId" element={<AdminEmployeeDetails />} />
+						</Route>
+
+						<Route element={<RequireRole roles={["CUSTOMER", "EMPLOYEE", "ADMIN"]} />}>
+							<Route path="/logout" element={<Logout />} />
+						</Route>
+					</Route>
+				</Routes>
+			</AuthProvider>
 		</>
 	)
 }
