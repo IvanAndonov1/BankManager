@@ -19,6 +19,7 @@ public class CreditEvaluationService {
     private final LoanPricingService pricingService;
 
     private static final BigDecimal ZERO = BigDecimal.ZERO;
+    private static final int MAX_POINTS = 6 * 100;
 
     private static final BigDecimal L1 = new BigDecimal("1500");
     private static final BigDecimal L2 = new BigDecimal("2000");
@@ -42,21 +43,48 @@ public class CreditEvaluationService {
         if (loan.termMonths() == null || loan.termMonths() <= 0) {
 
             reasons.add("termMonths must be > 0");
-            return new EvaluationBreakdown(LoanApplicationStatus.PENDING, reasons, 0,0,0,0,0,0,0);
+            return new EvaluationBreakdown(
+                    LoanApplicationStatus.PENDING,
+                    reasons,
+                    0,0,0,0,0,0,
+                    0,          // composite
+                    0,          // accumulatedPoints
+                    MAX_POINTS, // maxPossiblePoints
+                    0.0,        // riskAssessment
+                    "0/" + MAX_POINTS // creditScore
+            );
 
         }
 
         if (loan.currentJobStartDate() == null || loan.netSalary() == null) {
 
             reasons.add("currentJobStartDate and netSalary are required");
-            return new EvaluationBreakdown(LoanApplicationStatus.PENDING, reasons, 0,0,0,0,0,0,0);
+            return new EvaluationBreakdown(
+                    LoanApplicationStatus.PENDING,
+                    reasons,
+                    0,0,0,0,0,0,
+                    0,
+                    0,
+                    MAX_POINTS,
+                    0.0,
+                    "0/" + MAX_POINTS
+            );
 
         }
 
         if (loan.netSalary().compareTo(ZERO) <= 0) {
 
             reasons.add("netSalary must be > 0");
-            return new EvaluationBreakdown(LoanApplicationStatus.PENDING, reasons, 0,0,0,0,0,0,0);
+            return new EvaluationBreakdown(
+                    LoanApplicationStatus.PENDING,
+                    reasons,
+                    0,0,0,0,0,0,
+                    0,
+                    0,
+                    MAX_POINTS,
+                    0.0,
+                    "0/" + MAX_POINTS
+            );
 
         }
 
@@ -109,13 +137,21 @@ public class CreditEvaluationService {
 
         int recentDebtScore = bandRecentNewDebt(loanDao.approvedInLast6Months(loan.customerId()));
 
-        int composite = (tenureScore + dtiScore + incomeScore + accountAgeScore + cushionScore + recentDebtScore) / 6;
+        int accumulatedPoints = (tenureScore + dtiScore + incomeScore + accountAgeScore + cushionScore + recentDebtScore);
+        int maxPossiblePoints = MAX_POINTS;
+        int composite = accumulatedPoints / 6;
+        double riskAssessment = accumulatedPoints / 6.0;
+        String creditScore = accumulatedPoints + "/" + MAX_POINTS;
 
         return new EvaluationBreakdown(
                 LoanApplicationStatus.PENDING,
                 reasons,
                 tenureScore, dtiScore, incomeScore, accountAgeScore, cushionScore, recentDebtScore,
-                composite
+                composite,
+                accumulatedPoints,
+                maxPossiblePoints,
+                riskAssessment,
+                creditScore
         );
     }
 
