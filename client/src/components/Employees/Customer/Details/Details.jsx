@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { use, useEffect, useState } from "react";
 import Sidebar from "../../../common/Sidebar";
 import EmployeeHeader from "../../../common/EmployeeHeader";
 import InfoRow from "./InfoRow";
@@ -7,9 +7,18 @@ import Tab from "./Tab";
 import ProfileForm from "./ProfileForm";
 import LoansPlaceholder from "./LoansPlaceholder";
 import RequestsPlaceholder from "./RequestPlaceholder";
+import { AuthContext } from "../../../../contexts/AuthContext";
+import { getUserDetails } from "../../../../services/userService";
 
 export default function CustomerMoreInfo() {
 	const [tab, setTab] = useState("profile");
+	const { user } = use(AuthContext);
+	const [userDetails, setUserDetails] = useState({});
+
+	useEffect(() => {
+		getUserDetails(user.token)
+			.then(result => console.log(result));
+	}, [user.token]);
 
 	const customer = {
 		fullName: "Full Name",
