@@ -10,11 +10,27 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class AccountDao {
+public class AccountDao{
+
     private final NamedParameterJdbcTemplate jdbc;
     private final AccountMapper mapper = new AccountMapper();
 
     public AccountDao(NamedParameterJdbcTemplate jdbc) { this.jdbc = jdbc; }
+
+    public Long create(Long customerId, String accountNumber, BigDecimal initialBalance){
+
+        return jdbc.queryForObject("""
+                INSERT INTO accounts (customer_id, account_number, balance)
+                VALUES (:cid, :acc, :bal)
+                RETURNING id
+                """, new MapSqlParameterSource()
+                .addValue("cid", customerId)
+                .addValue("acc", accountNumber)
+                .addValue("bal", initialBalance),
+                Long.class
+        );
+
+    }
 
     public Optional<AccountDto> findById(Long id) {
         String sql = "SELECT id, customer_id, account_number, balance FROM accounts WHERE id=:id";
@@ -48,6 +64,9 @@ public class AccountDao {
         String sql = "SELECT balance FROM accounts WHERE id=:id";
         var p = new MapSqlParameterSource("id", accountId);
         BigDecimal result = jdbc.query(sql, p, rs -> rs.next() ? rs.getBigDecimal(1) : null);
+        if(result == null){
+            return BigDecimal.ZERO;
+        }
         System.out.println("DEBUG getBalance accountId=" + accountId + " result=" + result);
         return result;
     }
@@ -71,5 +90,7 @@ public class AccountDao {
         var p = new MapSqlParameterSource("id", accountId);
         return jdbc.query(sql, p, rs -> rs.next() ? rs.getLong(1) : null);
     }
+
+    //get last 10 transactions for account
 
 }

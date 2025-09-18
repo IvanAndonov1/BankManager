@@ -5,6 +5,9 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+
+import javax.security.auth.login.AccountNotFoundException;
+import java.time.Instant;
 import java.util.*;
 
 @RestControllerAdvice
@@ -46,6 +49,16 @@ public class ApiExceptionHandler {
                 "message", ex.getMessage()
         ));
     }
+    @ExceptionHandler(AccountNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleAccountNotFound(AccountNotFoundException ex) {
+        Map<String, Object> body = Map.of(
+                "error", "AccountNotFound",
+                "message", ex.getMessage(),
+                "timestamp", Instant.now().toString()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String,Object>> handleGeneric(Exception ex) {
