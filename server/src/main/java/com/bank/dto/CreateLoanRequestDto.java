@@ -5,10 +5,10 @@ import java.time.LocalDate;
 
 public record CreateLoanRequestDto(
 
-        Long customerId,
         BigDecimal requestedAmount,
         Integer termMonths,
         LocalDate currentJobStartDate,
-        BigDecimal netSalary
+        BigDecimal netSalary,
+        Long targetAccountId
 
 ) {}

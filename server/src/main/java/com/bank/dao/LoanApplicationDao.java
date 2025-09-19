@@ -2,6 +2,7 @@ package com.bank.dao;
 
 import com.bank.dao.mapper.LoanApplicationRowMapper;
 import com.bank.dto.LoanApplicationDto;
+import com.bank.enums.EvaluationRecommendation;
 import com.bank.enums.LoanApplicationStatus;
 import org.springframework.jdbc.core.namedparam.*;
 import org.springframework.stereotype.Repository;
@@ -26,6 +27,7 @@ public class LoanApplicationDao {
                        int termMonths,
                        LocalDate currentJobStartDate,
                        BigDecimal netSalary) {
+
         String sql = """
             INSERT INTO loan_applications
               (customer_id, requested_amount, term_months, current_job_start_date, net_salary)
@@ -163,12 +165,14 @@ public class LoanApplicationDao {
         var p = new MapSqlParameterSource("id", appId);
         return jdbc.query(sql, p, rs -> rs.next() ? rs.getLong(1) : null);
     }
-    public int saveEvaluationResult(Long applicationId, int composite, List<String> reasons, LoanApplicationStatus status) {
+    public int saveEvaluationResult(Long applicationId, int composite, List<String> reasons, LoanApplicationStatus status, EvaluationRecommendation recommendation) {
+
         String sql = """
         UPDATE loan_applications
         SET evaluation_composite = :composite,
             evaluation_reasons   = :reasons,
             evaluation_status    = :status,
+            evaluation_recommendation = :rec,
             updated_at = now()
         WHERE id = :id
     """;
@@ -177,9 +181,131 @@ public class LoanApplicationDao {
                 .addValue("composite", composite)
                 .addValue("reasons", String.join(",", reasons))
                 .addValue("status", status.name())
+                .addValue("rec", recommendation.name())
                 .addValue("id", applicationId);
 
         return jdbc.update(sql, params);
+    }
+
+    public int setDecisionReasons(Long applicationId, List<String> reasons){
+
+        String sql = """
+                UPDATE loan_applications
+                SET reasons = :reasons, updated_at = now()
+                WHERE id = :id
+                """;
+
+        var params = new MapSqlParameterSource()
+                .addValue("id", applicationId)
+                .addValue("reasons", reasons.toArray(new String[0]));
+
+        return jdbc.update(sql, params);
+
+    }
+
+    public boolean accountBelongsToCustomer(Long accountId, Long customerId){
+
+        String sql = """
+                SELECT EXISTS(SELECT 1 FROM accounts
+                                WHERE id=:a 
+                                AND customer_id=:c)
+                """;
+
+        return Boolean.TRUE.equals(jdbc.queryForObject(sql, Map.of("a", accountId, "c", customerId), Boolean.class));
+
+    }
+
+    public int updateTargetAccount (Long applicationId, Long accountId){
+
+        String sql = """
+                UPDATE loan_applications
+                SET target_account_id = :acc, updated_at = now()
+                WHERE id = :id
+                """;
+
+        return jdbc.update(sql, new MapSqlParameterSource()
+                .addValue("acc", accountId)
+                .addValue("id", applicationId));
+
+    }
+
+    public boolean disburseIfNeeded(Long applicationId) {
+
+        String q = """
+        SELECT la.customer_id, la.requested_amount, la.target_account_id, la.disbursed_at
+        FROM loan_applications la
+        WHERE la.id = :id
+        FOR UPDATE
+    """;
+
+        var row = jdbc.query(q, Map.of("id", applicationId), rs -> {
+
+            if (!rs.next()) {
+                return null;
+            }
+
+            Map<String, Object> m = new java.util.HashMap<>();
+            m.put("customerId", rs.getLong("customer_id"));
+            m.put("amount", rs.getBigDecimal("requested_amount"));
+            m.put("accountId", rs.getLong("target_account_id"));
+            m.put("disbursedAt", rs.getObject("disbursed_at", java.time.OffsetDateTime.class));
+
+            return m;
+
+        });
+
+        if (row == null) {
+            throw new IllegalArgumentException("Application not found!");
+        }
+
+        if (row.get("disbursedAt") != null) {
+            return false; // вече дисбурснато
+        }
+
+        Long accountId = (Long) row.get("accountId");
+
+        if (accountId == null) {
+            throw new IllegalStateException("No target account set for this application!");
+        }
+
+        BigDecimal amount = (BigDecimal) row.get("amount");
+
+        if (amount == null) {
+            throw new IllegalStateException("Requested amount is null!");
+        }
+
+        // увеличава баланса на сметката
+        String updBalance = """
+        UPDATE accounts 
+        SET balance = balance + :amt, updated_at = now()
+        WHERE id = :acc
+    """;
+
+        jdbc.update(updBalance, new MapSqlParameterSource()
+                .addValue("amt", amount)
+                .addValue("acc", accountId));
+
+        // записва транзакция
+        String insTxn = """
+        INSERT INTO transactions (account_id, type, amount, date_time, description)
+        VALUES (:acc, 'CREDIT', :amt, now(), 'Loan disbursement')
+    """;
+
+        jdbc.update(insTxn, new MapSqlParameterSource()
+                .addValue("acc", accountId)
+                .addValue("amt", amount));
+
+        // маркирва се дисбурсването в заявлението
+        String mark = """
+        UPDATE loan_applications
+        SET disbursed_at = now(),
+            disbursed_amount = :amt,
+            updated_at = now()
+        WHERE id = :id
+    """;
+        jdbc.update(mark, new MapSqlParameterSource().addValue("amt", amount).addValue("id", applicationId));
+
+        return true;
     }
 
 }

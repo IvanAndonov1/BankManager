@@ -3,6 +3,7 @@ package com.bank.service;
 import com.bank.dao.LoanApplicationDao;
 import com.bank.dto.EvaluationBreakdown;
 import com.bank.dto.LoanApplicationDto;
+import com.bank.enums.EvaluationRecommendation;
 import com.bank.enums.LoanApplicationStatus;
 import org.springframework.stereotype.Service;
 
@@ -19,12 +20,7 @@ public class CreditEvaluationService {
     private final LoanPricingService pricingService;
 
     private static final BigDecimal ZERO = BigDecimal.ZERO;
-    private static final int MAX_POINTS = 6 * 100;
-
-    private static final BigDecimal L1 = new BigDecimal("1500");
-    private static final BigDecimal L2 = new BigDecimal("2000");
-    private static final BigDecimal L3 = new BigDecimal("3000");
-    private static final BigDecimal L4 = new BigDecimal("4000");
+    private static final int MAX_POINTS = 5 * 100;
 
     private final LoanApplicationDao loanDao;
 
@@ -35,60 +31,42 @@ public class CreditEvaluationService {
 
     }
 
+    private EvaluationBreakdown emptyBreakdown(List<String> reasons) {
+
+        return new EvaluationBreakdown(
+                LoanApplicationStatus.PENDING,
+                reasons,
+                0, 0, 0, 0, 0,       // 5-те скорове
+                0,                   // composite
+                0,                   // accumulated
+                MAX_POINTS,          // max=500
+                0.0,                 // percentageOfMax
+                "0/" + MAX_POINTS,   // creditScore
+                EvaluationRecommendation.CONSIDER
+        );
+
+    }
+
     public EvaluationBreakdown evaluate(Long loanId) {
 
         LoanApplicationDto loan = loanDao.findById(loanId);
         List<String> reasons = new ArrayList<>();
 
         if (loan.termMonths() == null || loan.termMonths() <= 0) {
-
             reasons.add("termMonths must be > 0");
-            return new EvaluationBreakdown(
-                    LoanApplicationStatus.PENDING,
-                    reasons,
-                    0,0,0,0,0,0,
-                    0,          // composite
-                    0,          // accumulatedPoints
-                    MAX_POINTS, // maxPossiblePoints
-                    0.0,        // riskAssessment
-                    "0/" + MAX_POINTS // creditScore
-            );
-
+            return emptyBreakdown(reasons);
         }
-
         if (loan.currentJobStartDate() == null || loan.netSalary() == null) {
-
             reasons.add("currentJobStartDate and netSalary are required");
-            return new EvaluationBreakdown(
-                    LoanApplicationStatus.PENDING,
-                    reasons,
-                    0,0,0,0,0,0,
-                    0,
-                    0,
-                    MAX_POINTS,
-                    0.0,
-                    "0/" + MAX_POINTS
-            );
-
+            return emptyBreakdown(reasons);
         }
-
         if (loan.netSalary().compareTo(ZERO) <= 0) {
-
             reasons.add("netSalary must be > 0");
-            return new EvaluationBreakdown(
-                    LoanApplicationStatus.PENDING,
-                    reasons,
-                    0,0,0,0,0,0,
-                    0,
-                    0,
-                    MAX_POINTS,
-                    0.0,
-                    "0/" + MAX_POINTS
-            );
-
+            return emptyBreakdown(reasons);
         }
 
-        long tenureMonths = Period.between(loan.currentJobStartDate(), LocalDate.now()).toTotalMonths();
+        long tenureMonths = Math.max(0, Period.between(loan.currentJobStartDate(), LocalDate.now()).toTotalMonths());
+        int tenureScore = bandTenure(tenureMonths);
 
         var pricing = pricingService.calculate(loan.requestedAmount(), loan.termMonths());
         BigDecimal newInstallment = pricing.monthlyPayment();
@@ -96,33 +74,18 @@ public class CreditEvaluationService {
         BigDecimal currentMonthly = loanDao.currentMonthlyInstallments(loan.customerId());
         BigDecimal totalMonthly = currentMonthly.add(newInstallment);
 
-        int late12m = loanDao.latePaymentsLast12m(loan.customerId());
-        long oldestAcctMonths = loanDao.oldestAccountAgeMonths(loan.customerId());
-        BigDecimal totalBalance = loanDao.totalCurrentBalance(loan.customerId());
-
-        int tenureScore = bandTenure(tenureMonths);
-
-        if (tenureMonths < 6) {
-            reasons.add("Employer tenure < 6 months");
-        }
-
         BigDecimal dti = (loan.netSalary().compareTo(ZERO) > 0)
                 ? totalMonthly.divide(loan.netSalary(), 6, RoundingMode.HALF_UP)
                 : BigDecimal.ONE;
 
         int dtiScore = bandDTI(dti);
 
-        if (loan.netSalary().multiply(new BigDecimal("0.5")).compareTo(totalMonthly) < 0) {
-            reasons.add("Disposable income < 50% net salary after installments");
-        }
-
-        if (late12m > 0) {
-            reasons.add("Late payments in last 12 months");
-        }
-
-        int incomeScore = bandIncome(loan.netSalary());
+        int late12m = loanDao.latePaymentsLast12m(loan.customerId());
+        long oldestAcctMonths = loanDao.oldestAccountAgeMonths(loan.customerId());
 
         int accountAgeScore = bandAccountAge(oldestAcctMonths);
+
+        BigDecimal totalBalance = loanDao.totalCurrentBalance(loan.customerId());
 
         int cushionScore;
 
@@ -137,22 +100,42 @@ public class CreditEvaluationService {
 
         int recentDebtScore = bandRecentNewDebt(loanDao.approvedInLast6Months(loan.customerId()));
 
-        int accumulatedPoints = (tenureScore + dtiScore + incomeScore + accountAgeScore + cushionScore + recentDebtScore);
-        int maxPossiblePoints = MAX_POINTS;
-        int composite = accumulatedPoints / 6;
-        double riskAssessment = accumulatedPoints / 6.0;
+        int accumulatedPoints = tenureScore
+                + dtiScore
+                + accountAgeScore
+                + cushionScore
+                + recentDebtScore;
+
+        int composite = accumulatedPoints / 5;
+        double percentageOfMax = (accumulatedPoints * 100.0) / MAX_POINTS;
         String creditScore = accumulatedPoints + "/" + MAX_POINTS;
+
+        EvaluationRecommendation recommendation;
+
+        if (percentageOfMax < 40.0) {
+            recommendation = EvaluationRecommendation.DECLINE;
+        } else if (percentageOfMax < 70.0) { // [40, 70)
+            recommendation = EvaluationRecommendation.CONSIDER;
+        } else {
+            recommendation = EvaluationRecommendation.APPROVE;
+        }
 
         return new EvaluationBreakdown(
                 LoanApplicationStatus.PENDING,
                 reasons,
-                tenureScore, dtiScore, incomeScore, accountAgeScore, cushionScore, recentDebtScore,
+                tenureScore,
+                dtiScore,
+                accountAgeScore,
+                cushionScore,
+                recentDebtScore,
                 composite,
                 accumulatedPoints,
-                maxPossiblePoints,
-                riskAssessment,
-                creditScore
+                MAX_POINTS,
+                percentageOfMax,
+                creditScore,
+                recommendation
         );
+
     }
 
 
@@ -175,16 +158,6 @@ public class CreditEvaluationService {
         if (dti.compareTo(new BigDecimal("0.60")) <= 0) return 40;
         if (dti.compareTo(new BigDecimal("0.70")) <= 0) return 20;
         return 0; // > 0.70
-
-    }
-
-    private int bandIncome(BigDecimal netSalary) {
-
-        if (netSalary.compareTo(L4) >= 0) return 100;  // >= 4000
-        if (netSalary.compareTo(L3) >= 0) return 80;   // 3000–3999
-        if (netSalary.compareTo(L2) >= 0) return 60;   // 2000–2999
-        if (netSalary.compareTo(L1) >= 0) return 40;   // 1500–1999
-        return 20;                                     // < 1500
 
     }
 
