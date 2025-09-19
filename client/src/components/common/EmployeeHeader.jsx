@@ -1,9 +1,14 @@
+import { use } from "react";
+import { AuthContext } from '../../contexts/AuthContext';
+
 function EmployeeHeader() {
+	const { user } = use(AuthContext);
+
 	return (
 		<>
 			<div className="flex justify-between items-center">
 				<p className="text-sm text-gray-600">
-					Logged as <span className="font-medium">employee_1@company.com</span>
+					Logged as <span className="font-medium">{user.username}</span>
 				</p>
 				<button className="cursor-pointer p-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50">
 					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
