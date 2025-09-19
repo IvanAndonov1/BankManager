@@ -76,6 +76,19 @@ public final class SecurityUtil {
         return equalsRole(r, "CUSTOMER");
     }
 
+    public static boolean isEmployee() {
+
+        Authentication a = SecurityContextHolder.getContext().getAuthentication();
+
+        if (a != null && hasAnyAuthority(a.getAuthorities(), "EMPLOYEE")) {
+            return true;
+        }
+
+        String r = currentRole();
+        return equalsRole(r, "EMPLOYEE");
+
+    }
+
     public static boolean isAdmin(){
 
         Authentication a = SecurityContextHolder.getContext().getAuthentication();
@@ -91,7 +104,7 @@ public final class SecurityUtil {
     }
 
 
-    private static boolean equalsRole(String actual, String expected) {
+    public static boolean equalsRole(String actual, String expected) {
         if (actual == null) return false;
         String norm = stripRolePrefix(actual).toUpperCase(Locale.ROOT);
         return norm.equals(expected.toUpperCase(Locale.ROOT));

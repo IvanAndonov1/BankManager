@@ -1,56 +1,51 @@
 package com.bank.web;
 
-import com.bank.dao.UserDao;
-import com.bank.dto.UserProfileDto;
-import com.bank.models.User;
+import com.bank.dao.UserDirectoryDao;
+import com.bank.dto.CustomerDto;
+import com.bank.dto.EmployeeDto;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.bank.security.SecurityUtil.currentUserId;
+import static com.bank.security.SecurityUtil.*;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
-    private final UserDao users;
+    private final UserDirectoryDao directoryDao;
 
-    public UserController(UserDao users){
-        this.users = users;
+    public UserController(UserDirectoryDao directoryDao){
+        this.directoryDao = directoryDao;
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/me")
-    public ResponseEntity<UserProfileDto> me (Authentication auth){
+    public ResponseEntity<?> me () {
 
-        Long uid = currentUserId();
+        Long id = currentUserId();
 
-        if (uid == null) {
-            throw new AuthenticationException("No user id in token!") {};
+        if (id == null) {
+            return ResponseEntity.status(401).build();
         }
 
-        User u = users.findById(uid)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: id=" + uid));
+        if (isCustomer()) {
 
-        String fullName = ((u.getFirstName() != null ? u.getFirstName() : "") + " " +
-                (u.getLastName()  != null ? u.getLastName()  : "")).trim();
+            CustomerDto dto = directoryDao.findCustomerById(id);
+            return dto == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
 
-        UserProfileDto dto = new UserProfileDto(
-                u.getId(),
-                u.getUsername(),
-                fullName.isEmpty() ? null : fullName,
-                u.getEmail(),
-                u.getPhoneNumber(),
-                u.getHomeAddress(),
-                u.getDateOfBirth(),
-                u.getEgn(),
-                u.getRole().name()
-        );
+        }
 
-        return ResponseEntity.ok(dto);
+        if (isEmployee()) {
+
+            EmployeeDto dto = directoryDao.findEmployeeById(id);
+            return dto == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
+
+        }
+
+        return ResponseEntity.status(403).build();
 
     }
 
