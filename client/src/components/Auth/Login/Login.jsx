@@ -7,11 +7,18 @@ import { validateCredentials } from "../../../utils/validations.js";
 import redLine1 from "../../../assets/red-line1.svg";
 import redLine2 from "../../../assets/red-line2.svg";
 
+const savedCreds = (() => {
+	try {
+		return JSON.parse(localStorage.getItem("rememberCreds")) || null;
+	} catch {
+		return null;
+	}
+})();
 
 const initialState = {
-	username: "",
-	password: "",
-	remember: false,
+	username: savedCreds?.username || "",
+	password: savedCreds?.password || "",
+	remember: localStorage.getItem('remember') || false,
 	message: "",
 	messageType: "neutral",
 	errors: { username: "", password: "" },
@@ -83,10 +90,15 @@ export default function Login() {
 
 			if (remember) {
 				try {
-					localStorage.setItem("remember", "1");
+					localStorage.setItem(
+						"rememberCreds",
+						JSON.stringify({ remember: true, username, password })
+					);
+					localStorage.setItem('remember', 1);
 				} catch { }
 			} else {
 				try {
+					localStorage.removeItem("rememberCreds");
 					localStorage.removeItem("remember");
 				} catch { }
 			}
@@ -132,8 +144,8 @@ export default function Login() {
 	return (
 		<main className="fixed inset-0 overflow-hidden">
 			<div className="relative h-full w-full bg-gradient-to-br from-[#6B1F78] via-[#424996] to-[#0B82BE]">
-				
-				
+
+
 				<div className="absolute top-6 left-6 text-white/90 font-semibold">
 					Logo
 				</div>
