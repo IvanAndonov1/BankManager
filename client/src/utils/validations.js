@@ -37,12 +37,12 @@ export function validateRegister(vals = {}) {
 
 	if (!vals.firstName?.trim()) e.firstName = "First name is required.";
 	if (!vals.lastName?.trim()) e.lastName = "Last name is required.";
-	if (!vals.phone?.trim()) e.phone = "Phone number is required.";
+	if (!vals.phoneNumber?.trim()) e.phoneNumber = "Phone number is required.";
 	if (!vals.email?.trim()) e.email = "Email is required.";
 
 	if (!vals.egn?.trim()) e.egn = "EGN is required.";
 	if (!vals.dateOfBirth) e.dateOfBirth = "Date of Birth is required.";
-	if (!vals.address?.trim()) e.address = "Address is required.";
+	if (!vals.homeAddress?.trim()) e.homeAddress = "Address is required.";
 
 	if (!vals.username?.trim()) e.username = "Username is required.";
 	if (!vals.password) e.password = "Password is required.";
@@ -58,12 +58,12 @@ export function validateStep(vals = {}, stepKey = "one") {
 	if (stepKey === "one") {
 		if (!vals.firstName?.trim()) e.firstName = "First name is required.";
 		if (!vals.lastName?.trim()) e.lastName = "Last name is required.";
-		if (!vals.phone?.trim()) e.phone = "Phone number is required.";
+		if (!vals.phoneNumber?.trim()) e.phoneNumber = "Phone number is required.";
 		if (!vals.email?.trim()) e.email = "Email is required.";
 	} else if (stepKey === "two") {
 		if (!vals.egn?.trim()) e.egn = "EGN is required.";
 		if (!vals.dateOfBirth) e.dateOfBirth = "Date of Birth is required.";
-		if (!vals.address?.trim()) e.address = "Address is required.";
+		if (!vals.homeAddress?.trim()) e.homeAddress = "Address is required.";
 	} else if (stepKey === "four") {
 		if (!vals.username?.trim()) e.username = "Username is required.";
 		if (!vals.password) e.password = "Password is required.";
