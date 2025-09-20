@@ -1,7 +1,10 @@
 package com.bank.dao;
 
 import com.bank.dao.mapper.LoanApplicationRowMapper;
+import com.bank.dto.EvaluationBreakdown;
 import com.bank.dto.LoanApplicationDto;
+import com.bank.dto.LoanApplicationEmployeeAdminResponse;
+import com.bank.dto.LoanApplicationMineDto;
 import com.bank.enums.EvaluationRecommendation;
 import com.bank.enums.LoanApplicationStatus;
 import org.springframework.jdbc.core.namedparam.*;
@@ -10,8 +13,10 @@ import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.LongFunction;
 
 @Repository
 public class LoanApplicationDao {
@@ -307,5 +312,191 @@ public class LoanApplicationDao {
 
         return true;
     }
+
+    public Long findAccountByNumberForCustomer (String accountNumber, Long customerId){
+
+        String sql = """
+                SELECT id FROM accounts
+                WHERE account_number = :num AND customer_id = :cid
+                LIMIT 1
+                """;
+
+        var p = new MapSqlParameterSource()
+                .addValue("num", accountNumber)
+                .addValue("cid", customerId);
+
+        return jdbc.query(sql, p, rs -> rs.next() ? rs.getLong(1) : null);
+
+    }
+
+    public boolean accountNumberBelongsToCustomer (String accountNumber, Long customerId){
+
+        String sql = """
+                SELECT EXISTS (SELECT 1 
+                                FROM accounts 
+                                WHERE account_number=:num
+                                AND customer_id=:cid)
+                """;
+
+        var p = new MapSqlParameterSource()
+                .addValue("num", accountNumber)
+                .addValue("cid", customerId);
+
+        return Boolean.TRUE.equals(jdbc.queryForObject(sql, p, Boolean.class));
+
+    }
+
+    public List<LoanApplicationDto> findByCustomer(Long customerId) {
+
+        String sql = "SELECT * FROM loan_applications WHERE customer_id=:c ORDER BY created_at DESC";
+
+        return jdbc.query(sql, Map.of("c", customerId), new LoanApplicationRowMapper());
+
+    }
+
+    public List<LoanApplicationMineDto> findMineByCustomer(Long customerId, LongFunction<EvaluationBreakdown> evaluatorFn) {
+
+        String sql = """
+        SELECT id,
+        requested_amount,
+        term_months,
+        status,
+        reasons,
+        currency,
+        created_at,
+        updated_at
+        FROM loan_applications
+        WHERE customer_id = :c
+        ORDER BY created_at DESC, id DESC
+    """;
+
+        var p = new MapSqlParameterSource("c", customerId);
+
+        return jdbc.query(sql, p, (rs, i) -> {
+            Long appId = rs.getLong("id");
+
+            var status = LoanApplicationStatus.valueOf(rs.getString("status"));
+
+            List<String> reasons = java.util.List.of();
+
+            var dbArr = rs.getArray("reasons");
+
+            if (status == LoanApplicationStatus.DECLINED && dbArr != null) {
+
+                String[] arr = (String[]) dbArr.getArray();
+
+                if (arr != null && arr.length > 0) {
+                    reasons = Arrays.asList(arr);
+                }
+
+            }
+
+            var eb = evaluatorFn.apply(appId);
+
+            var eval = new LoanApplicationMineDto.EvaluationView(
+                    eb.percentageOfMax(),
+                    eb.maxPossiblePoints(),
+                    eb.creditScore(),
+                    new LoanApplicationMineDto.Scores(
+                            eb.cushionScore(),
+                            eb.tenureScore(),
+                            eb.dtiScore(),
+                            eb.recentDebtScore(),
+                            eb.accountAgeScore()
+                    ),
+                    eb.accumulatedPoints()
+            );
+
+            return new LoanApplicationMineDto(
+                    rs.getBigDecimal("requested_amount"),
+                    rs.getInt("term_months"),
+                    status,
+                    reasons,
+                    rs.getString("currency"),
+                    rs.getObject("created_at", OffsetDateTime.class),
+                    rs.getObject("updated_at", OffsetDateTime.class),
+                    eval
+            );
+        });
+    }
+
+    public List<LoanApplicationEmployeeAdminResponse> findForStaffBasics(
+            Integer limit,
+            Integer offset,
+            String status,
+            Long customerId
+    ) {
+        String base = """
+        SELECT
+            la.id,
+            la.customer_id,
+            la.requested_amount,
+            la.term_months,
+            la.status,
+            la.current_job_start_date,
+            la.net_salary,
+            la.currency,
+            la.nominal_annual_rate,
+            la.monthly_payment,
+            la.total_payable,
+            a.account_number AS target_account_number,
+            la.decided_by_user_id,
+            la.decided_at,
+            la.reasons,
+            la.disbursed_at,
+            la.disbursed_amount,
+            la.created_at,
+            la.updated_at
+        FROM loan_applications la
+        LEFT JOIN accounts a ON a.id = la.target_account_id
+        """;
+
+        String orderPage = " ORDER BY la.created_at DESC, la.id DESC LIMIT :lim OFFSET :off";
+
+        var p = new MapSqlParameterSource()
+                .addValue("lim", Math.max(1, Math.min(200, (limit == null ? 50 : limit))))
+                .addValue("off", Math.max(0, (offset == null ? 0 : offset)));
+
+        List<String> where = new java.util.ArrayList<>();
+
+        if (status != null && !status.isBlank()) {
+            where.add("la.status = :st");
+            p.addValue("st", status.toUpperCase());
+        }
+        if (customerId != null) {
+            where.add("la.customer_id = :cid");
+            p.addValue("cid", customerId);
+        }
+
+        String sql = base + (where.isEmpty() ? "" : " WHERE " + String.join(" AND ", where)) + orderPage;
+
+        return jdbc.query(sql, p, (rs, i) -> {
+            String[] arr = (rs.getArray("reasons") == null) ? null : (String[]) rs.getArray("reasons").getArray();
+            List<String> reasons = (arr == null) ? List.of() : java.util.Arrays.asList(arr);
+
+            return new LoanApplicationEmployeeAdminResponse(
+                    rs.getLong("id"),
+                    rs.getLong("customer_id"),
+                    rs.getBigDecimal("requested_amount"),
+                    rs.getInt("term_months"),
+                    com.bank.enums.LoanApplicationStatus.valueOf(rs.getString("status")),
+                    rs.getObject("current_job_start_date", java.time.LocalDate.class),
+                    rs.getBigDecimal("net_salary"),
+                    rs.getString("currency"),
+                    rs.getBigDecimal("nominal_annual_rate"),
+                    rs.getBigDecimal("monthly_payment"),
+                    rs.getBigDecimal("total_payable"),
+                    rs.getString("target_account_number"),
+                    (Long) rs.getObject("decided_by_user_id"),
+                    rs.getObject("decided_at", java.time.OffsetDateTime.class),
+                    reasons,
+                    rs.getObject("disbursed_at", java.time.OffsetDateTime.class),
+                    rs.getBigDecimal("disbursed_amount"),
+                    rs.getObject("created_at", java.time.OffsetDateTime.class),
+                    rs.getObject("updated_at", java.time.OffsetDateTime.class)
+            );
+        });
+    }
+
 
 }

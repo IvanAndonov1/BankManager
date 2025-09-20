@@ -3,6 +3,8 @@ package com.bank.web;
 import com.bank.dao.UserDirectoryDao;
 import com.bank.dto.CustomerDto;
 import com.bank.dto.EmployeeDto;
+import com.bank.dto.MeCustomerResponse;
+import com.bank.dto.MeEmployeeResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,20 +35,61 @@ public class UserController {
 
         if (isCustomer()) {
 
-            CustomerDto dto = directoryDao.findCustomerById(id);
-            return dto == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
+            var dto = directoryDao.findCustomerById(id);
 
+            if (dto == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            var response = new MeCustomerResponse(
+                    dto.username(),
+                    dto.firstName(),
+                    dto.lastName(),
+                    dto.email(),
+                    dto.dateOfBirth(),
+                    dto.phoneNumber(),
+                    dto.homeAddress(),
+                    dto.egn(),
+                    dto.role(),
+                    dto.active(),
+                    dto.createdAt(),
+                    dto.accounts().stream()
+                            .map(acc -> new MeCustomerResponse.AccountView(
+                                    acc.accountNumber(),
+                                    acc.balance()
+                            ))
+                            .toList()
+            );
+
+            return ResponseEntity.ok(response);
         }
 
         if (isEmployee()) {
 
-            EmployeeDto dto = directoryDao.findEmployeeById(id);
-            return dto == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
+            var dto = directoryDao.findEmployeeById(id);
 
+            if (dto == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            var response = new MeEmployeeResponse(
+                    dto.username(),
+                    dto.firstName(),
+                    dto.lastName(),
+                    dto.email(),
+                    dto.dateOfBirth(),
+                    dto.phoneNumber(),
+                    dto.homeAddress(),
+                    dto.egn(),
+                    dto.role(),
+                    dto.active(),
+                    dto.createdAt()
+            );
+
+            return ResponseEntity.ok(response);
         }
 
         return ResponseEntity.status(403).build();
-
     }
 
 }

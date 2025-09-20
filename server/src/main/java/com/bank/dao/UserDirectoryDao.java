@@ -190,7 +190,7 @@ public class UserDirectoryDao {
 
                 String accNo = getStr(r, "account_number");
                 BigDecimal bal = getBigDec(r, "balance");
-                accounts.add(new AccountDto(accId, id, accNo, bal));
+                accounts.add(new AccountDto(accNo, bal));
 
             }
         }
@@ -279,7 +279,7 @@ public class UserDirectoryDao {
 
                 String accNo = getStr(r, "account_number");
                 BigDecimal bal = getBigDec(r, "balance");
-                accounts.add(new AccountDto(accId, id, accNo, bal));
+                accounts.add(new AccountDto(accNo, bal));
 
             }
 

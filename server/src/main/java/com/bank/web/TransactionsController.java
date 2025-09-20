@@ -22,18 +22,32 @@ public class TransactionsController {
         this.accountDao = accountDao;
     }
 
-    @GetMapping("/{accountId}/transactions")
-    public List<TransactionDto> list(@PathVariable Long accountId,
+    @GetMapping("/{accountNumber}/transactions")
+    public List<TransactionDto> list(@PathVariable String accountNumber,
                                      @RequestParam(defaultValue = "50") int limit,
                                      @RequestParam(defaultValue = "0") int offset) {
+
         if (!isEmployeeOrAdmin()) {
-            Long ownerId = accountDao.findCustomerIdByAccountId(accountId);
+
+            Long ownerId = accountDao.findCustomerIdByAccountNumber(accountNumber);
+
             if (ownerId == null || !ownerId.equals(currentUserId())) {
                 throw new AccessDeniedException("Forbidden");
             }
+
         }
-        limit = Math.max(1, Math.min(100, limit));
+
+        Long accountId = accountDao.findIdByAccountNumber(accountNumber);
+
+        if (accountId == null) {
+            throw new IllegalArgumentException("Account not found");
+        }
+
+        limit  = Math.max(1, Math.min(100, limit));
         offset = Math.max(0, offset);
+
         return dao.findByAccount(accountId, limit, offset);
+
     }
+
 }

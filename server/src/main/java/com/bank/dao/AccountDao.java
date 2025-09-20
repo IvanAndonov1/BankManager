@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -92,5 +93,56 @@ public class AccountDao{
     }
 
     //get last 10 transactions for account
+
+    public Long findIdByAccountNumber(String accountNumber) {
+
+        String sql =
+            """
+        SELECT id 
+        FROM accounts 
+        WHERE account_number = :num
+        """;
+
+        return jdbc.query(sql, Map.of("num", accountNumber),
+                rs -> rs.next() ? rs.getLong(1) : null);
+
+    }
+
+    public boolean existsByAccountNumber (String accountNumber){
+
+        String sql = "SELECT EXISTS(SELECT 1 FROM accounts WHERE account_number = :num)";
+
+        return Boolean.TRUE.equals(jdbc.queryForObject(sql, Map.of("num", accountNumber), Boolean.class));
+
+    }
+
+    public Long findCustomerIdByAccountNumber (String accountNumber){
+
+        String sql = """
+                SELECT customer_id
+                FROM accounts
+                WHERE account_number = :num
+                """;
+
+        return jdbc.query(sql, Map.of("num", accountNumber),
+                rs -> rs.next() ? rs.getLong(1) : null);
+
+    }
+
+    public Optional<AccountDto> findByAccountNumber (String accountNumber){
+
+        String sql = """
+                SELECT id, customer_id, account_number, balance
+                FROM accounts
+                WHERE account_number = :num
+                LIMIT 1
+                """;
+
+        var p = new MapSqlParameterSource("num", accountNumber);
+        var list = jdbc.query(sql, p, mapper);
+
+        return list.stream().findFirst();
+
+    }
 
 }
