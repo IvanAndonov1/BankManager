@@ -9,8 +9,8 @@ export default function LoanCards({className = ""}) {
             <Card size="w-38 h-24" textSize="text-[10px]" />
           </div>
           <div>
-            <p className="text-lg font-semibold">Credit Mastercard</p>
-            <p size className="font-normal mt-2">
+            <p className="text-normal font-semibold">Credit Mastercard</p>
+            <p size className="font-2xs mt-2">
               IBAN BG00 XXXX XXXX XXXX XXXX 11
             </p>
             <p className="font-medium">1234 **** **** 0000 | 06/27</p>
@@ -18,7 +18,7 @@ export default function LoanCards({className = ""}) {
 
           <div className="text-right border-l-2 border-gray-300 pl-6">
             <p className="text-lg text-black font-normal text-left">Balance</p>
-            <p className="text-2xl text-gray-600 font-semibold mt-2">
+            <p className="text-xl text-gray-600 font-semibold mt-2 text-left">
               2034,62 EUR
             </p>
           </div>

@@ -1,6 +1,9 @@
 import CustomerSidebar from "../common/CustomerSidebar";
 import CustomerTableRow from "./CustomerTableRow";
 import Card from "./Cards";
+import { useEffect, useState, useContext } from "react";
+import { getUserAccount } from "../../services/userService";
+import { AuthContext } from "../../contexts/AuthContext";
 
 let data = {
 	name: "Name 1",
@@ -11,6 +14,31 @@ let data = {
 };
 
 export default function Dashboard() {
+	const { user } = useContext(AuthContext);
+  const [accounts, setAccounts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchAccounts() {
+      if (!user) return;
+      try {
+        const token = localStorage.getItem("token");
+		
+		console.log("Token in Dashboard:", token);
+
+        const accs = await getUserAccount(user.id, token); 
+        setAccounts(accs);
+      } catch (err) {
+        console.error("Error fetching accounts:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchAccounts();
+  }, [user]);
+
+  if (loading) return <p>Loading accounts...</p>;
+
 	return (
 		<div className="min-h-screen flex bg-white">
 			<CustomerSidebar />
@@ -31,14 +59,14 @@ export default function Dashboard() {
 
 
 					<div className="grid grid-cols-2 gap-6 mt-6">
-						<div className="w-96 h-20 rounded-2xl border-2 border-[#351F78] flex flex-col justify-center">
-							<div className="text-[#351F78] text-2xl text-center">Balance: 5087,67 EUR</div>
-							<div className="text-[#351F78] text-sm text-center">IBAN: BG00 XXXX XXXX XXXX XXXX 00</div>
+						 {accounts.map((acc) => (
+						<div
+						key={acc.id} 
+						className="w-96 h-20 rounded-2xl border-2 border-[#351F78] flex flex-col justify-center">
+							<div className="text-[#351F78] text-2xl text-center">  Balance: {acc.balance.toFixed(2)} EUR</div>
+							<div className="text-[#351F78] text-sm text-center"> IBAN: {acc.accountNumber}</div>
 						</div>
-						<div className="w-96 h-20 bg-[#351F78] rounded-2xl border-2 border-[#351F78] flex flex-col justify-center">
-							<div className="text-white text-2xl text-center">Balance: 2034,62 EUR</div>
-							<div className="text-white text-sm text-center">IBAN: BG00 XXXX XXXX XXXX XXXX 11</div>
-						</div>
+						))}
 					</div>
 				</div>
 
