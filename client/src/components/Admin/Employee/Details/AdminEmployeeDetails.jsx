@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { use, useState } from "react";
 import Sidebar from "../../../common/Sidebar";
 import UserHeader from "../../../common/UserHeader";
 import ProfileCard from "../../../common/ProfileCard";
@@ -6,9 +6,12 @@ import Tabs from "../../../common/Tabs";
 import ProfileTab from "./ProfileTab";
 import SalaryTab from "./SalaryTab";
 import SalaryHistoryTab from "./SalaryHistoryTab";
+import { AuthContext } from "../../../../contexts/AuthContext";
 
 export default function AdminEmployeeDetails() {
 	const [tab, setTab] = useState("profile");
+	const { user } = use(AuthContext);
+
 	const employee = {
 		fullName: "Full Name",
 		username: "Username",
@@ -35,7 +38,7 @@ export default function AdminEmployeeDetails() {
 		<div className="min-h-screen flex bg-gray-100">
 			<Sidebar />
 			<div className="flex-1 p-6 space-y-6">
-				<UserHeader roleLabel="Admin" email="admin@company.com" />
+				<UserHeader roleLabel="Admin" email={user.username} />
 				<div className="flex gap-6">
 					<ProfileCard title={employee.fullName} subtitle={employee.username} info={info} footerActionLabel="Remove Account" />
 					<div className="flex-1 min-w-0 bg-white rounded-2xl shadow-md overflow-hidden">
