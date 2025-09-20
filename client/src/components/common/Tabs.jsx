@@ -9,7 +9,7 @@ function Tabs({ items = [], activeKey, onChange }) {
 							key={item.key}
 							type="button"
 							onClick={() => onChange?.(item.key)}
-							className={`relative pb-3 font-medium ${isActive ? "text-gray-900" : "text-gray-500 hover:text-gray-700"}`}
+							className={`cursor-pointer relative pb-3 font-medium ${isActive ? "text-gray-900" : "text-gray-500 hover:text-gray-700"}`}
 						>
 							{item.label}
 							<span
