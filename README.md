@@ -58,7 +58,32 @@ Bodu: json:
   "description": "Transfer test"
 }
 
-GET /api/accounts/by-customer/{id} – всички сметки на клиент.
+GET /api/accounts/by-id/{id} - връща ноомер на сметка и баланс по id на сметка - за служители и админ 
+json:
+{
+    "accountNumber": BG80BNBG9661XXXXXXXXXX,
+    "balance": 1500.00
+}
+
+GET /api/accounts/{accountNumber} - връща номер на сметка и баланс по номер на сметка - за всички 
+json:
+{
+    "accountNumber": BG80BNBG9661XXXXXXXXXX,
+    "balance": 1500.00
+}
+
+GET /api/accounts/by-customer/{customerId} – връща сметки на клиент по id на клиент - забранено за клиенти
+json:
+[
+    {
+        "accountNumber": "BG80BNBG9661XXXXXXXXXX",
+        "balance": 12300.00
+    },
+    {
+        "accountNumber": "BG80BNBG9661XXXXXXXXXX",
+        "balance": 700.00
+    }
+]
 
 Кредити (Loans)
 
@@ -70,28 +95,6 @@ GET /api/loans/{id} – връща данни за заявка.
 
 ---
     3) Примери
-
-    3.1 Сметки
----
-
-GET /api/accounts/by-customer/1
-
-[
-{
-"id": 1,
-"customerId": 1,
-"accountNumber": "BG80BNBG96611020345678",
-"balance": 1000.00
-}
-]
-
-
-POST /api/accounts/deposit
-
-{ "accountId": 1, "amount": 100.00, "description": "Заплата" }
-
-
-Отговор: 204 No Content
 
 ---
     3.2 Кредити
