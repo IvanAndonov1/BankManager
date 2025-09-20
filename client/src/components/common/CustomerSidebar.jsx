@@ -39,7 +39,7 @@ function CustomerSidebar() {
       <div className="flex flex-col text-white items-center py-12">
         <div className="container w-24 h-24 rounded-full bg-white p-4" />
         <h1 className="text-3xl font-semibold mt-4">
-          {user?.username || "Name"}
+          {user?.firstName || "firstName"}
         </h1>
         <h4 className="text-md font-semibold">
           {user?.username || "Username"}

@@ -1,40 +1,14 @@
 import CustomerSidebar from '../common/CustomerSidebar';
 import MoneyTransferCard from '../common/MoneyTransferCard';
 import TransactionsTable from '../common/TransactionTable';
-import { useState, useEffect, useContext } from 'react';
+import { useState } from 'react';
 import Modal from './TransactionModal';
-import { getUserAccount, getAllTransactions } from '../../services/userService';
-import { AuthContext } from "../../contexts/AuthContext.jsx";
 
 export default function Transactions() {
-  const { user } = useContext(AuthContext);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [transactions, setTransactions] = useState([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchData() {
-      if (!user) return;
 
-      try {
-        const token = localStorage.getItem("token");
-
-        
-        const account = await getUserAccount(user.id, token);
-
-       
-        const txs = await getAllTransactions(account.id, token);
-
-        setTransactions(txs);
-      } catch (err) {
-        console.error("Error fetching transactions:", err);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchData();
-  }, [user]);
 
   return (
     <div className="min-h-screen flex bg-white">
@@ -64,11 +38,9 @@ export default function Transactions() {
             />
           </div>
 
-          {loading ? (
-            <p>Loading transactions...</p>
-          ) : (
-            <TransactionsTable transactions={transactions} />
-          )}
+        
+            <TransactionsTable  />
+          
 
           <div className="flex justify-end mt-8">
             <button className="bg-[#351f78] rounded-3xl p-2 px-6 text-white">
