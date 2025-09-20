@@ -9,6 +9,6 @@ public record CreateLoanRequestDto(
         Integer termMonths,
         LocalDate currentJobStartDate,
         BigDecimal netSalary,
-        Long targetAccountId
+        String targetAccountNumber
 
 ) {}

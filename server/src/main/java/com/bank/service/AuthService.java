@@ -1,6 +1,7 @@
 package com.bank.service;
 
 import com.bank.dao.BlacklistedTokenDao;
+import com.bank.dto.AuthLoginResponse;
 import com.bank.dto.RegisterRequestDto;
 import com.bank.dto.RegisterResponseDto;
 import com.bank.security.JwtService;
@@ -129,7 +130,7 @@ public class AuthService {
 
     }
 
-    public Map<String,Object> login(String username, String password){
+    public AuthLoginResponse login(String username, String password){
 
         if (username == null || password == null) {
             throw new IllegalArgumentException("Username and password are required!");
@@ -154,7 +155,7 @@ public class AuthService {
         String role = String.valueOf(user.get("role"));
         String token = jwt.generate(uid, username, role);
 
-        return Map.of("id", uid, "username", username, "role", role, "token", token);
+        return new AuthLoginResponse(username, role, token);
 
     }
 
