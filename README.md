@@ -15,13 +15,50 @@ proxy: {
 ---
    Сметки (Accounts)
 
+POST /api/accounts - създаване на сметка:
+Body: json - {}
+резултат: json
+{
+    "accountNumber": "BG80BNBG9661XXXXXXXXXX",
+    "balance": 0.00
+}
+
+GET /api/accounts/me - връща списък с всичките сметки на логнатия customer: 
+
+[
+  {
+    "accountNumber": "BG80BNBG9661XXXXXXXXXX",
+    "balance": 0.00
+  },
+  {
+    "accountNumber": "BG80BNBG9661XXXXXXXXXX",
+    "balance": 250.00
+  }
+]
+
+POST /api/accounts/{accountNumber}/deposit 
+Body: json:
+{
+    "amount": 200,
+    "description": "Test deposit"
+}
+
+POST /api/accounts/{accountNumber}/withdraw
+Body: json:
+{
+    "amount": 200,
+    "description": "Test withdraw"
+}
+
+POST /api/accounts/{fromAccountNumber}/transfer
+Bodu: json:
+{
+  "toAccountNumber": "BG80BNBG9661XXXXXXXXXX",
+  "amount": 100,
+  "description": "Transfer test"
+}
+
 GET /api/accounts/by-customer/{id} – всички сметки на клиент.
-
-POST /api/accounts/deposit – внасяне по сметка.
-
-POST /api/accounts/withdraw – теглене от сметка.
-
-POST /api/accounts/transfer – превод между сметки.
 
 Кредити (Loans)
 
