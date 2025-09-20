@@ -2,10 +2,19 @@ import Sidebar from "../../common/Sidebar";
 import UserHeader from "../../common/UserHeader";
 import FilterCard from "../../common/FilterCard";
 import DataTable from "../../common/DataTable";
-import EmployeeTableRow from "../../Employees/Dashboard/EmployeeTableRow";
+import AdminTableRow from "./AdminTableRow";
+import { use, useEffect, useState } from "react";
+import { AuthContext } from "../../../contexts/AuthContext";
+import { getAllEmployees } from "../../../services/adminService";
 
 export default function AdminDashboard() {
-	let data = { name: 'Admin User', date: '05/01/2021', status: 'active' };
+	const { user } = use(AuthContext);
+	const [employees, setEmployees] = useState([]);
+
+	useEffect(() => {
+		getAllEmployees(user.token)
+			.then(result => setEmployees(result));
+	}, [user.token]);
 
 	return (
 		<div className="min-h-screen flex bg-gray-100">
@@ -19,9 +28,14 @@ export default function AdminDashboard() {
 				</div>
 
 				<DataTable headers={["User", "Date", "Status", "Details"]}>
-					<EmployeeTableRow {...data} detailsTo="/admin/employee/1" />
-					<EmployeeTableRow {...data} detailsTo="/admin/employee/2" />
-					<EmployeeTableRow {...data} detailsTo="/admin/employee/3" />
+					{employees.length > 0
+						?
+						employees.map(x => (
+							<AdminTableRow key={x.id} {...x} />
+						))
+						:
+						<h1>No data available!</h1>
+					}
 				</DataTable>
 			</div>
 		</div>
