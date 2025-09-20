@@ -1,3 +1,5 @@
+import { Link } from "react-router";
+
 function ProfileCard({ avatar = null, title, subtitle, info = [], footerActionLabel, onFooterAction }) {
 	return (
 		<div className="w-96 shrink-0 bg-white rounded-2xl shadow-md p-6">
@@ -21,23 +23,23 @@ function ProfileCard({ avatar = null, title, subtitle, info = [], footerActionLa
 			{footerActionLabel && (
 				<>
 					<div className="mt-6 pt-6 border-t text-center">
-						<button
-							className="text-[#e11d48] font-medium hover:underline"
+						<Link
+							className="cursor-pointer text-[#e11d48] font-medium hover:underline"
 							type="button"
 							onClick={onFooterAction}
 						>
 							{footerActionLabel}
-						</button>
+						</Link>
 					</div>
 
 					<div className="mt-6 pt-6 border-t text-center">
-						<button
-							className="text-green-500 font-medium hover:underline"
+						<Link
+							className="cursor-pointer text-green-500 font-medium hover:underline"
 							type="button"
 							onClick={onFooterAction}
 						>
 							Promote Account
-						</button>
+						</Link>
 					</div>
 				</>
 
