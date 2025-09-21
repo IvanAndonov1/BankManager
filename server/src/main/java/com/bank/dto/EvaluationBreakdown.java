@@ -19,4 +19,16 @@ public record EvaluationBreakdown(
         double percentageOfMax,
         String creditScore,
         EvaluationRecommendation recommendation // препоръка към служителя
-) {}
+) {
+    public double percentageOfMax() {
+        return percentageOfMax;
+    }
+
+    public EvaluationRecommendation recommendation() {
+        return recommendation;
+    }
+
+    public String creditScoreS() {
+        return creditScore;
+    }
+}

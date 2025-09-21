@@ -312,6 +312,17 @@ public class LoanApplicationDao {
 
         return true;
     }
+    public List<LoanApplicationDto> findByCustomerId(Long customerId) {
+        String sql = """
+            SELECT *
+            FROM loan_applications
+            WHERE customer_id = :c
+            ORDER BY created_at DESC
+    """;
+
+        return jdbc.query(sql, Map.of("c", customerId), new LoanApplicationRowMapper());
+    }
+
 
     public Long findAccountByNumberForCustomer (String accountNumber, Long customerId){
 

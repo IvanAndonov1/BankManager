@@ -28,6 +28,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/employees/**").hasAnyRole("EMPLOYEE", "ADMIN")
                         .requestMatchers("/api/customers/**").hasAnyRole("EMPLOYEE", "ADMIN")
                         .requestMatchers("/api/loans/**", "/api/accounts/**").authenticated()
+                        .requestMatchers("/api/ai/**").permitAll()
                         .anyRequest().authenticated()
                 );
         return http.build();

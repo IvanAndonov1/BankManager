@@ -2,6 +2,7 @@ package com.bank.service;
 
 import com.bank.dao.AccountDao;
 import com.bank.dao.TransactionDao;
+import com.bank.dto.AccountDto;
 import com.bank.exception.AccountNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.AccessDeniedException;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
@@ -131,4 +133,21 @@ public class AccountService {
         transactionDao.insert(fromAccountId, "TRANSFER_OUT", amount, description, "N/A");
         transactionDao.insert(toAccountId, "TRANSFER_IN", amount, description, "N/A");
     }
+
+    public AccountDto getById(Long accountId) {
+        return accountDao.findById(accountId)
+                .orElseThrow(() -> new AccountNotFoundException(accountId));
+    }
+    public List<AccountDto> findByCustomer(Long customerId) {
+        return accountDao.findByCustomer(customerId);
+    }
+    public AccountDto findByAccountNumber(String accountNumber) {
+        return accountDao.findByAccountNumber(accountNumber).orElse(null);
+    }
+
+    public Long findIdByAccountNumber(String accountNumber) {
+        return accountDao.findIdByAccountNumber(accountNumber);
+    }
+
+
 }
