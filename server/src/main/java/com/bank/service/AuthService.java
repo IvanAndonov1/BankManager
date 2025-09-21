@@ -10,7 +10,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Map;
 
@@ -24,14 +23,17 @@ public class AuthService {
     private final AccountService accountService;
     private final JwtService jwt;
 
+    private final CardService cardService;
 
-    public AuthService(NamedParameterJdbcTemplate jdbc, PasswordEncoder encoder, AccountService accountService, BlacklistedTokenDao blacklist, JwtService jwt){
+
+    public AuthService(NamedParameterJdbcTemplate jdbc, PasswordEncoder encoder, AccountService accountService, BlacklistedTokenDao blacklist, JwtService jwt, CardService cardService){
 
         this.jdbc = jdbc;
         this.encoder = encoder;
         this.accountService = accountService;
         this.blacklist = blacklist;
         this.jwt = jwt;
+        this.cardService = cardService;
 
     }
 
@@ -68,7 +70,16 @@ public class AuthService {
         jdbc.update("INSERT INTO customers(id) VALUES(:id)",
                 new MapSqlParameterSource().addValue("id", id));
 
-        accountService.createAccount(id);
+        Long accountId = accountService.createAccount(id);
+
+        String holder = ((req.firstName() == null ? "" : req.firstName()) + " " +
+                (req.lastName()  == null ? "" : req.lastName())).trim();
+
+        if (holder.isBlank()) {
+            holder = req.username();
+        }
+
+        cardService.issuePrimary(accountId, holder);
 
         return new RegisterResponseDto(
             id,
