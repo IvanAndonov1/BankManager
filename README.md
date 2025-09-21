@@ -162,6 +162,148 @@ json:
     }
 ]
 
+Карти: 
+
+POST /api/cards - създава карта
+
+приема body:
+{
+  "accountNumber": "BG80BNBG96612537842339",   - към коя сметка да е картата
+  "holderName": "NewCustomer3 NewCustomer3",   - име което да е на картата
+  "type": "DEBIT"                              - тип на картата
+}
+
+връща: 
+
+{
+    "maskedNumber": "**** **** **** 7054",
+    "last4": "7054",
+    "type": "DEBIT",
+    "expiration": "2029-09",
+    "accountNumber": "BG80BNBG96612537842339"
+}
+
+POST /api/{publicId}/reveal   - дава целия номер на картата и CVV (3те цифри), 
+                                като се посочи publicId, който customer може да види със следващия endpoint,     
+                                който показва всички негови карти 
+
+приема body: 
+{
+"password": "pa***"  - паролата на самия customer 
+}
+
+връща: 
+{
+    "cardNumber": "5399998416277054",
+    "holderName": "NewCustomer3 NewCustomer3",
+    "expiration": "2029-09-01",
+    "cvv": "489"
+}
+
+GET /api/cards/mine - връща всички карти на логнатия customer
+
+пример: 
+[
+    {
+        "publicId": "4f5c5760-3855-44b7-bcec-442f7951b3b0",
+        "maskedNumber": "**** **** **** 7054",
+        "last4": "7054",
+        "type": "DEBIT",
+        "status": "ACTIVE",
+        "expiration": "2029-09-01",
+        "primary": false,
+        "accountNumber": "BG80BNBG96612537842339"
+    },
+    {
+        "publicId": "6e21a44c-44b5-4dd0-a25d-9b1e3d50ca15",
+        "maskedNumber": "**** **** **** 8382",
+        "last4": "8382",
+        "type": "DEBIT",
+        "status": "ACTIVE",
+        "expiration": "2029-09-01",
+        "primary": false,
+        "accountNumber": "BG80BNBG96612537842339"
+    },
+    {
+        "publicId": "80252aa9-dc14-46ea-b551-84f512cbf21d",
+        "maskedNumber": "**** **** **** 6104",
+        "last4": "6104",
+        "type": "DEBIT",
+        "status": "ACTIVE",
+        "expiration": "2029-09-01",
+        "primary": false,
+        "accountNumber": "BG80BNBG96616717038011"
+    },
+    {
+        "publicId": "bc3466ab-d78d-42e8-80d3-684696d7c2fe",
+        "maskedNumber": "**** **** **** 2063",
+        "last4": "2063",
+        "type": "DEBIT",
+        "status": "ACTIVE",
+        "expiration": "2029-09-01",
+        "primary": false,
+        "accountNumber": "BG80BNBG96616717038011"
+    },
+    {
+        "publicId": "a441ba23-1d76-4f2d-b054-827c33626302",
+        "maskedNumber": "**** **** **** 4449",
+        "last4": "4449",
+        "type": "DEBIT",
+        "status": "ACTIVE",
+        "expiration": "2029-09-01",
+        "primary": true,
+        "accountNumber": "BG80BNBG96616717038011"
+    }
+]
+
+GET /api/by-account/{accountNumber} - връща всички карти към подадената сметка на логнатия customer 
+
+пример: 
+[
+    {
+        "publicId": "80252aa9-dc14-46ea-b551-84f512cbf21d",
+        "maskedNumber": "**** **** **** 6104",
+        "last4": "6104",
+        "type": "DEBIT",
+        "status": "ACTIVE",
+        "expiration": "2029-09-01",
+        "primary": false,
+        "accountNumber": "BG80BNBG96616717038011"
+    },
+    {
+        "publicId": "bc3466ab-d78d-42e8-80d3-684696d7c2fe",
+        "maskedNumber": "**** **** **** 2063",
+        "last4": "2063",
+        "type": "DEBIT",
+        "status": "ACTIVE",
+        "expiration": "2029-09-01",
+        "primary": false,
+        "accountNumber": "BG80BNBG96616717038011"
+    },
+    {
+        "publicId": "a441ba23-1d76-4f2d-b054-827c33626302",
+        "maskedNumber": "**** **** **** 4449",
+        "last4": "4449",
+        "type": "DEBIT",
+        "status": "ACTIVE",
+        "expiration": "2029-09-01",
+        "primary": true,
+        "accountNumber": "BG80BNBG96616717038011"
+    }
+]
+
+POST /api/cards/{publicId}/block - блокира картата по подадено нейно publicId 
+                                 - когато гледа своите карти, статуса на тази ще е BLOCKED
+
+POST /api/cards/{publicId}/unblock - отблокира
+
+връща: 
+{
+    status": "ACTIVE",
+    "ok": true
+}
+
+
 -------------------------------------------------------------------------------------------------------------
 
 Directory
