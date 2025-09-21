@@ -77,7 +77,10 @@ public class ApiController {
             answer = tools.getLastTransactions(accountNumber, limit);
         } else if (prompt.toLowerCase().contains("loan")) {
             answer = tools.getLoans(customerId);
-        } else {
+        }else if (prompt.toLowerCase().contains("credit score") || prompt.toLowerCase().contains("evaluation")) {
+            answer = tools.getCreditScore(customerId);
+        }
+        else {
             answer = ollama.generate("llama3.2:3b", prompt);
         }
 

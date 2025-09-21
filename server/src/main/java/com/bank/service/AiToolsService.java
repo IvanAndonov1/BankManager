@@ -56,4 +56,26 @@ public class AiToolsService {
                 .map(l -> "Loan " + l.id() + " of " + l.requestedAmount() + " BGN, status: " + l.status())
                 .collect(Collectors.joining("; "));
     }
+    public String getCreditScore(Long customerId) {
+        var loans = loanDao.findByCustomerId(customerId);
+        if (loans.isEmpty()) {
+            return "You have no loan applications, so no credit score is available.";
+        }
+
+        var latest = loans.get(loans.size() - 1);
+        var dto = loanDao.findById(latest.id());
+
+        if (dto == null || dto.evaluationComposite() == null) {
+            return "Your last loan application has not been evaluated yet.";
+        }
+
+        return "Your last evaluation score was "
+                + dto.evaluationComposite() + " points. Status: "
+                + dto.evaluationStatus()
+                + (dto.evaluationReasons() != null && !dto.evaluationReasons().isBlank()
+                ? " Reasons: " + dto.evaluationReasons()
+                : "");
+    }
+
+
 }

@@ -570,5 +570,49 @@ GET /api/staff/analytics/declines/top?from=...&to=...&limit=10
     }
 ]
 
+------------------------------------------------------------------------
+AI chat:
+POST /api/ai/generate:
+Генерира свободен отговор от AI модел (Ollama).
 
+Body (json):
+{
+"model": "llama3.2:3b",
+"prompt": "Say hello from the bank AI assistant"
+}
 
+Response (json):
+{
+"ok": true,
+"model": "llama3.2:3b",
+"output": "Hello! I'm the Bank AI Assistant. How can I help you today?"
+}
+
+POST /api/ai/chat
+
+Чат endpoint, който комбинира AI + банкови данни.
+Използва ключови думи в prompt-а, за да извика реалните endpoint-и за баланс, транзакции и кредити.
+
+Body (json):
+{
+"prompt": "Show me my last 3 transactions"
+}
+Response (json):
+
+{
+"ok": true,
+"response": "DEPOSIT 200 on 2025-09-10 (Salary); WITHDRAW 50 on 2025-09-12 (ATM); TRANSFER_OUT 25 on 2025-09-14 (Rent)"
+}
+
+Промптове + response примери:
+Prompt: "What is my current balance?"
+Response: "Your current balance is N EUR."
+
+ВРЪЩА СЕ РЕАЛНИЯ БАЛАНС НА ЛОГНАТОТО ЛИЦЕ
+Prompt: "Show me my last 3 transactions"
+Response: "DEPOSIT 200 on 2025-09-10 (Salary); WITHDRAW 50 on 2025-09-12 (ATM);"
+Връща последните N транзакции на логнатия клиент
+
+Prompt: "Do I have any loans?"
+Response: "You have 2 loans: 15000.00 EUR, status: APPROVED;...."
+Връща всички кредити на логнатия клиент
