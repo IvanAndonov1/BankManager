@@ -477,3 +477,98 @@ GET /api/loans/applications - връща всички заявки за кред
 Transactions: 
 
 GET /api/accounts/{accountNumber}/transactions 
+
+
+
+-----------------------------------------------------------------------------
+
+Analytics
+
+GET /api/staff/analytics/overview?from=2025-09-01&to=2025-09-21 - за посочен период 
+    /api/staff/analytics/overview - за последните 30 дни 
+
+връща: 
+{
+    "period": {
+        "from": "2025-09-01",
+        "to": "2025-09-21"
+    },
+    "aum": 49250.00,                  - обща сума в момента в банката (не за период)
+    "inflow": 48100.00,               - общо входящи суми по транзакции в периода 
+    "outflow": 925.00,                - общо изходящи суми по транзакции в периода
+    "netFlow": 47175.00,              - inflow - outflow - нетен приток
+    "newAccounts": 30,                - брой новооткрити сметки в периода
+    "activeCustomers": 9,             - брой уникални клиенти с поне една транзакция в периода
+    "loans": {
+        "pending": 9,                 - брой заявки създадени в периода, със статус PENDING
+        "approved": 5,                - брой одобрени заявки за периода
+        "declined": 4,                - брой отказани заявки за периода 
+        "approvalRate": 55.56,        - процент на одобрение за периода 
+        "disbursedAmount": 35000.00,  - изплатена(дисбурсната) сума по кредити за периода
+        "avgTicket": 17500.00,        - среден размер дисбурснат заем за периода
+        "openPendingNow": 9           - брой заявки със статус PENDING към днешна дата
+    },
+    "riskProxy": {
+        "latePayers30dShare": 0.0,    - дял от активните кредитополучатели, с поне едно закъснение в последните 30 дни
+        "latePayers90dShare": 0.0     - ... 90 дни
+    }
+}
+
+
+GET /api/staff/analytics/cashflow/daily - последните 30 дни 
+GET /api/staff/analytics/cashflow/daily?from=2025-09-01&to=2025-09-21 - за периода
+
+връща период, примерен ден от периода:
+
+{
+        "day": "2025-09-17", - денят
+        "inflow": 10225.00,  - общ входящ паричен поток за деня 
+        "outflow": 300.00,   - общ изходящ паричен поток за деня 
+        "net": 9925.00       - чист паричен поток (inflow - outflow)
+}
+
+GET /api/staff/analytics/loans/decisions/daily - 30 дни
+GET /api/staff/analytics/loans/decisions/daily?from=2025-09-01&to=2025-09-21 - период 
+
+връща период, примерен ден от периода:
+
+{
+  "day": "2025-09-19",  - ден
+  "created": 5,         - брой новосъздадени заявки в този ден
+  "approved": 1,        - брой APPROVED заявки в този ден
+  "declined": 1         - брой DECLINED заявки в този ден
+}
+
+GET /api/staff/analytics/loans/disbursed/daily - 30 дни
+GET /api/staff/analytics/loans/disbursed/daily?from=2025-09-01&to=2025-09-21 - период
+
+връща период, примерен ден от периода:
+
+{
+  "day": "2025-09-20",            - ден
+  "disbursedCount": 1,            - колко кредита са изплатени в този ден
+  "disbursedAmount": 20000.00     - общо изплатена сума по кредити в този ден
+}
+
+GET /api/staff/analytics/declines/top
+GET /api/staff/analytics/declines/top?from=...&to=...&limit=10
+
+- чести причини за отказ на кредит (по период и лимит) или за 30 дни (ако не се посочи период)
+
+[
+    {
+        "key": "Bad incomes.",
+        "count": 1
+    },
+    {
+        "key": "Low cushion score and low account age score.",
+        "count": 1
+    },
+    {
+        "key": "Low cushion score and low account average score.",
+        "count": 1
+    }
+]
+
+
+
