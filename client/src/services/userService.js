@@ -12,4 +12,4 @@ export const getAllTransactions = (accountId, token) => requester.get(`${baseUrl
 
 export const getUserAccount = (customerId, token) => requester.get(`${baseUrl}/accounts/by-customer/${customerId}`, { 'Authorization': `Bearer ${token}` });
 
-export const getUserDetails = (token, userId) => requester.get(`${baseUrl}/employee/users/${userId}`, { 'Authorization': `Bearer ${token}` });
+export const getUserDetails = (token, userId) => requester.get(`${baseUrl}/customers/by-id/${userId}`, { 'Authorization': `Bearer ${token}` });
