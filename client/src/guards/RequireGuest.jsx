@@ -11,7 +11,7 @@ const roleHome = {
 export default function RequireGuest() {
 	const { user } = useContext(AuthContext);
 
-	if (user?.id) {
+	if (user?.token) {
 		const dest = roleHome[user.role] ?? "/";
 		return <Navigate to={dest} replace />;
 	}
