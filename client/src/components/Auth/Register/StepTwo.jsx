@@ -25,11 +25,11 @@ export default function StepTwo({ values = {}, onChange, errors = {} }) {
 			<label className="block text-sm text-white/90">
 				<span className="block mb-2">Home Address</span>
 				<input
-					value={values.address || ""}
-					onChange={(e) => onChange?.({ address: e.target.value })}
+					value={values.homeAddress || ""}
+					onChange={(e) => onChange?.({ homeAddress: e.target.value })}
 					className="w-full bg-transparent border-b border-white/40 h-10 px-1 text-white outline-none"
 				/>
-				{errors.address && <p className="mt-1 text-xs text-red-200">{errors.address}</p>}
+				{errors.homeAddress && <p className="mt-1 text-xs text-red-200">{errors.homeAddress}</p>}
 			</label>
 		</div>
 	);

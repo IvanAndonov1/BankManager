@@ -4,11 +4,11 @@ function ProfileForm({ customer }) {
 	return (
 		<form className="space-y-4">
 			<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-				<Field label="Full Name" defaultValue={customer.fullName} />
-				<Field label="Date of Birth" defaultValue={customer.dob} />
+				<Field label="Full Name" defaultValue={`${customer.firstName} ${customer.lastName}`} />
+				<Field label="Date of Birth" defaultValue={customer.dateOfBirth} />
 				<Field label="Email Address" defaultValue={customer.email} />
-				<Field label="Phone Number" defaultValue={customer.phone} />
-				<Field label="Home Address" defaultValue={customer.address} />
+				<Field label="Phone Number" defaultValue={customer.phoneNumber} />
+				<Field label="Home Address" defaultValue={customer.homeAddress} />
 				<Field label="EGN" defaultValue={customer.egn} />
 			</div>
 

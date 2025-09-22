@@ -9,7 +9,7 @@ function Logout() {
 	useEffect(() => {
 		logoutUser(user.token)
 			.then(() => userLogout());
-	}, []);
+	}, [user.token]);
 
 	return <Navigate to="/" />
 }

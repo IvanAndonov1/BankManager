@@ -26,12 +26,12 @@ export default function StepOne({ values = {}, onChange, errors = {} }) {
 			<label className="block text-sm text-white/90">
 				<span className="block mb-2">Phone Number</span>
 				<input
-					value={values.phone || ""}
+					value={values.phoneNumber || ""}
 					placeholder="+359"
-					onChange={(e) => onChange?.({ phone: e.target.value })}
+					onChange={(e) => onChange?.({ phoneNumber: e.target.value })}
 					className="w-full bg-transparent border-b border-white/40 h-10 px-1 text-white outline-none"
 				/>
-				{errors.phone && <p className="mt-1 text-xs text-red-200">{errors.phone}</p>}
+				{errors.phoneNumber && <p className="mt-1 text-xs text-red-200">{errors.phoneNumber}</p>}
 			</label>
 
 			<label className="block text-sm text-white/90">

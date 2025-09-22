@@ -47,10 +47,14 @@ export default function Dashboard() {
 
 	return (
 		<div className="min-h-screen flex bg-white">
-			<CustomerSidebar />
-
-
-			<div className="flex-1 p-8 ml-12 flex flex-col gap-12">
+			
+			<CustomerSidebar className="z-20"/>
+             <div
+          className="absolute left-30 top-0 w-32 h-32 rounded-full opacity-80 z-0
+						bg-[radial-gradient(ellipse_53.95%_53.96%_at_46.56%_46.16%,_#A5438B_0%,_#351F78_100%)]"
+        />
+              
+			<div className="flex-1 p-8 ml-12 flex flex-col gap-12 z-10">
 
 
 				<div>

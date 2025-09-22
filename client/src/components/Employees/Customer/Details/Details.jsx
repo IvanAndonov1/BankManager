@@ -8,17 +8,23 @@ import ProfileForm from "./ProfileForm";
 import LoansPlaceholder from "./LoansPlaceholder";
 import RequestsPlaceholder from "./RequestPlaceholder";
 import { AuthContext } from "../../../../contexts/AuthContext";
-import { getUserDetails } from "../../../../services/userService";
+import { getUserAccount, getUserDetails } from "../../../../services/userService";
+import { Link, useParams } from "react-router";
 
 export default function CustomerMoreInfo() {
+	const { userId } = useParams();
 	const [tab, setTab] = useState("profile");
 	const { user } = use(AuthContext);
 	const [userDetails, setUserDetails] = useState({});
+	const [userAccount, setUserAccount] = useState([]);
 
 	useEffect(() => {
-		getUserDetails(user.token)
-			.then(result => console.log(result));
-	}, [user.token]);
+		getUserDetails(user.token, userId)
+			.then(result => setUserDetails(result));
+
+		getUserAccount(userId, user.token)
+			.then(result => setUserAccount(result));
+	}, [user]);
 
 	const customer = {
 		fullName: "Full Name",
@@ -43,40 +49,43 @@ export default function CustomerMoreInfo() {
 						<div className="flex flex-col items-center text-center">
 							<div className="w-20 h-20 rounded-full bg-gray-200 mb-4" />
 							<div className="space-y-0.5">
-								<h3 className="text-gray-900 font-semibold">{customer.fullName}</h3>
-								<p className="text-gray-500 text-sm">{customer.username}</p>
+								<h3 className="text-gray-900 font-semibold">{userDetails.firstName} {userDetails.lastName}</h3>
+								<p className="text-gray-500 text-sm">{userDetails.username}</p>
 							</div>
 						</div>
 
 						<div className="mt-6 space-y-3 text-sm">
-							<InfoRow label="Date of Birth" value={customer.dob} />
-							<InfoRow label="Email Address" value={customer.email} />
-							<InfoRow label="Phone Number" value={customer.phone} />
-							<InfoRow label="Home Address" value={customer.address} />
+							<InfoRow label="Date of Birth" value={userDetails.dateOfBirth} />
+							<InfoRow label="Email Address" value={userDetails.email} />
+							<InfoRow label="Phone Number" value={userDetails.phoneNumber} />
+							<InfoRow label="Home Address" value={userDetails.homeAddress} />
 						</div>
 
 						<div className="my-6 border-t" />
 
 						<div className="space-y-6">
-							<Balance
-								title="Balance - Debit"
-								value={customer.balances.debit}
-								valueClass="text-[#351F78]"
-							/>
-							<Balance
-								title="Balance - Credit"
-								value={customer.balances.credit}
-								valueClass="text-[#3a4fb6]"
-							/>
+							{userAccount.length
+								?
+								userAccount.map(x => (
+									<Balance
+										key={x.id}
+										title="Balance - Debit"
+										value={`${x.balance} EUR`}
+										valueClass="text-[#351F78]"
+									/>
+								))
+								: null
+							}
 						</div>
 
 						<div className="mt-6 pt-6 border-t text-center">
-							<button
+							<Link
+								to={`/request/report/${userId}`}
 								className="text-[#e11d48] font-medium hover:underline"
 								type="button"
 							>
 								Request Report
-							</button>
+							</Link>
 						</div>
 					</div>
 
@@ -95,7 +104,7 @@ export default function CustomerMoreInfo() {
 						<div className="mt-3 border-t" />
 
 						<div className="p-6">
-							{tab === "profile" && <ProfileForm customer={customer} />}
+							{tab === "profile" && <ProfileForm key={userDetails.id} customer={userDetails} />}
 							{tab === "loans" && <LoansPlaceholder />}
 							{tab === "requests" && <RequestsPlaceholder />}
 						</div>

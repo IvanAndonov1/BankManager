@@ -31,7 +31,7 @@ export default function Cards({
           children
         ) : (
           <>
-            <div className="flex justify-between items-start"></div>
+           
 
             <div className="flex justify-between items-end">
               <img
