@@ -32,6 +32,7 @@ public class LoanApplicationDao {
                        int termMonths,
                        LocalDate currentJobStartDate,
                        BigDecimal netSalary) {
+
         String sql = """
             INSERT INTO loan_applications
               (customer_id, requested_amount, term_months, current_job_start_date, net_salary)
@@ -169,12 +170,14 @@ public class LoanApplicationDao {
         var p = new MapSqlParameterSource("id", appId);
         return jdbc.query(sql, p, rs -> rs.next() ? rs.getLong(1) : null);
     }
-    public int saveEvaluationResult(Long applicationId, int composite, List<String> reasons, LoanApplicationStatus status) {
+    public int saveEvaluationResult(Long applicationId, int composite, List<String> reasons, LoanApplicationStatus status, EvaluationRecommendation recommendation) {
+
         String sql = """
         UPDATE loan_applications
         SET evaluation_composite = :composite,
             evaluation_reasons   = :reasons,
             evaluation_status    = :status,
+            evaluation_recommendation = :rec,
             updated_at = now()
         WHERE id = :id
     """;
@@ -183,6 +186,7 @@ public class LoanApplicationDao {
                 .addValue("composite", composite)
                 .addValue("reasons", String.join(",", reasons))
                 .addValue("status", status.name())
+                .addValue("rec", recommendation.name())
                 .addValue("id", applicationId);
 
         return jdbc.update(sql, params);

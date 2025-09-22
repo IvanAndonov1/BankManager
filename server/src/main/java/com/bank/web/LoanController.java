@@ -2,7 +2,6 @@ package com.bank.web;
 
 import com.bank.dao.LoanApplicationDao;
 import com.bank.dto.*;
-import com.bank.enums.LoanApplicationStatus;
 import com.bank.service.CreditEvaluationService;
 import com.bank.service.LoanDecisionService;
 import com.bank.service.LoanPricingService;
@@ -83,7 +82,7 @@ public class LoanController {
         var pricing = pricingService.calculate(req.requestedAmount(), req.termMonths());
 
         Long id = dao.create(
-                req.customerId(),
+                customerId,
                 req.requestedAmount(),
                 req.termMonths(),
                 req.currentJobStartDate(),
@@ -136,15 +135,26 @@ public class LoanController {
     }
 
     @PostMapping("/applications/{id}/decision")
-    public Map<String, Object> decide(@PathVariable Long id, @RequestParam Long userId, @RequestParam boolean approve) {
-
+    public Map<String, Object> decide(@PathVariable Long id,
+                                      @RequestBody DecisionRequestDto req) {
         if (isCustomer()) {
             throw new AccessDeniedException("Forbidden");
         }
 
-        boolean ok = decisionService.decide(id, userId, approve);
+        Long employeeId = currentUserId();
+
+        if (!req.approve() && (req.reasons() == null || req.reasons().isEmpty())) {
+            throw new IllegalArgumentException("Reasons are required when declining a loan application!");
+        }
+
+        boolean ok = decisionService.decide(id, employeeId, req.approve(), req.reasons());
+
         LoanApplicationDto dto = dao.findById(id);
-        return Map.of("ok", ok, "status", dto.status().name());
+
+        return Map.of(
+                "ok", ok,
+                "status", dto.status().name()
+        );
 
     }
 

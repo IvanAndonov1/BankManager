@@ -6,32 +6,31 @@ import com.bank.dto.EmployeeDto;
 import com.bank.dto.MeCustomerResponse;
 import com.bank.dto.MeEmployeeResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.bank.security.SecurityUtil.currentUserId;
+import static com.bank.security.SecurityUtil.*;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
-    private final UserDao users;
+    private final UserDirectoryDao directoryDao;
 
-    public UserController(UserDao users){
-        this.users = users;
+    public UserController(UserDirectoryDao directoryDao){
+        this.directoryDao = directoryDao;
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/me")
-    public ResponseEntity<UserProfileDto> me (Authentication auth){
+    public ResponseEntity<?> me () {
 
-        Long uid = currentUserId();
+        Long id = currentUserId();
 
-        if (uid == null) {
-            throw new AuthenticationException("No user id in token!") {};
+        if (id == null) {
+            return ResponseEntity.status(401).build();
         }
 
         if (isCustomer()) {

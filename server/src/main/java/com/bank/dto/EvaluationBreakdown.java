@@ -1,5 +1,6 @@
 package com.bank.dto;
 
+import com.bank.enums.EvaluationRecommendation;
 import com.bank.enums.LoanApplicationStatus;
 
 import java.util.List;

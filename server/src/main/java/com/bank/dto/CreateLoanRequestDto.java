@@ -5,7 +5,6 @@ import java.time.LocalDate;
 
 public record CreateLoanRequestDto(
 
-        Long customerId,
         BigDecimal requestedAmount,
         Integer termMonths,
         LocalDate currentJobStartDate,

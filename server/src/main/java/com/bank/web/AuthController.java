@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,7 +53,13 @@ public class AuthController {
 
     @PostMapping("/register/employee")
     public RegisterResponseDto registerEmployee(@RequestBody RegisterRequestDto req){
+
+        if(!SecurityUtil.isAdmin()){
+            throw new AccessDeniedException("Only Admin can register employees!");
+        }
+
         return authService.registerEmployee(req);
+
     }
 
     @PostMapping("/login")
