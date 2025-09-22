@@ -1,21 +1,20 @@
+import { useEffect, useState } from "react";
 import LoanDetailsDialog from "./LoanDetailsDialog";
-import { useState } from "react";
+import { useParams } from "react-router";
 
-function LoansPlaceholder() {
-	const loans = [
-		{
-			id: "DG 1234567",
-			type: "Consumer Loan",
-			amount: "15 000,00 EUR",
-			date: "23/04/2025",
-		},
-	];
+function LoansPlaceholder({ loanDetails }) {
 
+	const { userId } = useParams();
+	const [currentLoanDetails, setCurrentLoanDetails] = useState([]);
 	const [open, setOpen] = useState(false);
+
+	useEffect(() => {
+		setCurrentLoanDetails(loanDetails.filter(x => x.customerId == Number(userId)));
+	}, [loanDetails, userId])
 
 	return (
 		<div className="space-y-8">
-			{loans.map((ln) => (
+			{currentLoanDetails.map((ln) => (
 				<div key={ln.id} className="pt-2">
 					<div className="flex justify-between items-center py-6">
 						<span className="text-gray-600">
@@ -30,14 +29,14 @@ function LoansPlaceholder() {
 						</button>
 					</div>
 
-					<LoanDetailsDialog open={open} onClose={() => setOpen(false)} />
+					<LoanDetailsDialog open={open} onClose={() => setOpen(false)} loanDetails={currentLoanDetails} />
 
 					<div className="mt-2">
 						<div className="text-2xl md:text-[28px] font-semibold text-gray-900">
-							{ln.amount}
+							{ln.requestedAmount} {ln.currency}
 						</div>
 						<div className="mt-1 text-xs md:text-sm text-gray-500">
-							No {ln.id} <span className="mx-2">·</span> {ln.date}
+							No {ln.id} <span className="mx-2">·</span> {ln.createdAt.substr(0, 10)}
 						</div>
 					</div>
 
