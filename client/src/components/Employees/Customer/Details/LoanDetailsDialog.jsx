@@ -1,7 +1,20 @@
-// LoanDetailsDialog.jsx
 import { useEffect } from "react";
 
-export default function LoanDetailsDialog({ open, onClose }) {
+function getNextMonth(date) {
+	console.log(date);
+
+	let [day, month, year] = date.split('-').map(Number);
+
+	console.log(typeof day, typeof month, typeof year)
+
+	if (month == 12) {
+		month = 0;
+	}
+
+	return `${day}/${++month}/${year}`;
+}
+
+export default function LoanDetailsDialog({ open, onClose, loanDetails }) {
 	useEffect(() => {
 		const onEsc = (e) => e.key === "Escape" && onClose?.();
 		document.addEventListener("keydown", onEsc);
@@ -23,32 +36,36 @@ export default function LoanDetailsDialog({ open, onClose }) {
 					✕
 				</button>
 
-				<div className="flex items-center justify-between gap-4">
-					<div>
-						<div className="text-xs text-gray-500">Remaining Amount · Consumer Loan</div>
-						<div className="mt-4 text-[28px] font-semibold text-gray-900">12 837,40 EUR</div>
-					</div>
-					<button
-						className="mt-9 mr-9 text-[#6a1ea1] text-sm font-medium hover:underline"
-						type="button"
-					>
-						Edit
-					</button>
-				</div>
+				{loanDetails.map(ln => (
+					<div key={ln.id}>
+						<div className="flex items-center justify-between gap-4">
+							<div>
+								<div className="text-xs text-gray-500">Remaining Amount · Consumer Loan</div>
+								<div className="mt-4 text-[28px] font-semibold text-gray-900">{ln.disbursedAmount} {ln.currency}</div>
+							</div>
+							<button
+								className="mt-9 mr-9 text-[#6a1ea1] text-sm font-medium hover:underline"
+								type="button"
+							>
+								Edit
+							</button>
+						</div>
 
-				<div className="mt-6 flex items-center justify-between gap-4">
-					<div>
-						<div className="text-xs text-gray-500">Next Payment</div>
-						<div className="mt-1 text-[22px] font-semibold text-gray-900">350,00 EUR</div>
-						<div className="text-sm text-gray-600">10/09/2025</div>
+						<div className="mt-6 flex items-center justify-between gap-4">
+							<div>
+								<div className="text-xs text-gray-500">Next Payment</div>
+								<div className="mt-1 text-[22px] font-semibold text-gray-900">{ln.monthlyPayment} {ln.currency}</div>
+								<div className="text-sm text-gray-600">{getNextMonth(ln.decidedAt.substr(0, 10))}</div>
+							</div>
+							<button
+								className="mt-9 mr-9 text-[#6a1ea1] text-sm font-medium hover:underline"
+								type="button"
+							>
+								Edit
+							</button>
+						</div>
 					</div>
-					<button
-						className="mt-9 mr-9 text-[#6a1ea1] text-sm font-medium hover:underline"
-						type="button"
-					>
-						Edit
-					</button>
-				</div>
+				))}
 
 				<div className="mt-8 flex justify-center">
 					<button
