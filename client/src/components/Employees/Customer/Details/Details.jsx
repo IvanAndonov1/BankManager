@@ -26,17 +26,6 @@ export default function CustomerMoreInfo() {
 			.then(result => setUserAccount(result));
 	}, [user]);
 
-	const customer = {
-		fullName: "Full Name",
-		username: "Username",
-		dob: "4.09.2003",
-		email: "example1@gmail.com",
-		phone: "+359 123 456 789",
-		address: "Main Street 123",
-		egn: "**********",
-		balances: { debit: "5087,67 EUR", credit: "2034,62 EUR" },
-	};
-
 	return (
 		<div className="min-h-screen flex bg-gray-100">
 			<Sidebar />
