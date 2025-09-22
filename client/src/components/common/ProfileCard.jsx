@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 
-function ProfileCard({ avatar = null, title, subtitle, info = [], footerActionLabel, onFooterAction }) {
+function ProfileCard({ avatar = null, title, subtitle, footerActionLabel, onFooterAction, employee }) {
 	return (
 		<div className="w-96 shrink-0 bg-white rounded-2xl shadow-md p-6">
 			<div className="flex flex-col items-center text-center">
@@ -12,7 +12,7 @@ function ProfileCard({ avatar = null, title, subtitle, info = [], footerActionLa
 			</div>
 
 			<div className="mt-6 space-y-3 text-sm">
-				{info.map(({ label, value }, idx) => (
+				{Object.entries(employee).map(([label, value], idx) => (
 					<div key={idx} className="flex items-center justify-between">
 						<span className="text-gray-500">{label}</span>
 						<span className="text-gray-800">{value}</span>
@@ -24,6 +24,7 @@ function ProfileCard({ avatar = null, title, subtitle, info = [], footerActionLa
 				<>
 					<div className="mt-6 pt-6 border-t text-center">
 						<Link
+							to={'/remove/:employeeId'}
 							className="cursor-pointer text-[#e11d48] font-medium hover:underline"
 							type="button"
 							onClick={onFooterAction}
@@ -34,6 +35,7 @@ function ProfileCard({ avatar = null, title, subtitle, info = [], footerActionLa
 
 					<div className="mt-6 pt-6 border-t text-center">
 						<Link
+							to={'/promote/:employeeId'}
 							className="cursor-pointer text-green-500 font-medium hover:underline"
 							type="button"
 							onClick={onFooterAction}
