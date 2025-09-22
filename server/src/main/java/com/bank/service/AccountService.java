@@ -2,6 +2,7 @@ package com.bank.service;
 
 import com.bank.dao.AccountDao;
 import com.bank.dao.TransactionDao;
+import com.bank.dto.AccountDto;
 import com.bank.exception.AccountNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.AccessDeniedException;
@@ -9,10 +10,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class AccountService {
+
     private final AccountDao accountDao;
     private final TransactionDao transactionDao;
 
@@ -46,43 +49,70 @@ public class AccountService {
 
     }
 
+    private Long requireAccountId (String accountNumber){
+
+        Long id = accountDao.findIdByAccountNumber(accountNumber);
+
+        if(id == null) {
+            throw new AccountNotFoundException(accountNumber);
+        }
+
+        return id;
+
+    }
 
     @Transactional
-    public void deposit(Long accountId, BigDecimal amount, String description) {
-        if (!accountDao.exists(accountId)) {
-            throw new AccountNotFoundException(accountId);
+    public void deposit(String accountNumber, BigDecimal amount, String description) {
+
+        if(amount == null || amount.signum() <= 0){
+            throw new IllegalArgumentException("Amount must be positive!");
         }
+
+        Long accountId = requireAccountId(accountNumber);
 
         var balance = accountDao.getBalance(accountId);
         var newBalance = balance.add(amount);
         accountDao.updateBalance(accountId, newBalance);
 
         transactionDao.insert(accountId, "DEPOSIT", amount, description,"N/A");
+
     }
 
     @Transactional
-    public void withdraw(Long accountId, BigDecimal amount, String description) {
-        if (!accountDao.exists(accountId)) {
-            throw new AccountNotFoundException(accountId);
+    public void withdraw(String accountNumber, BigDecimal amount, String description) {
+
+        if(amount == null || amount.signum() <= 0){
+            throw new IllegalArgumentException("Amount must be positive!");
         }
+
+        Long accountId = requireAccountId(accountNumber);
 
         var balance = accountDao.getBalance(accountId);
         var newBalance = balance.subtract(amount);
-        if (newBalance.signum() < 0) throw new IllegalStateException("Insufficient funds");
+
+        if (newBalance.signum() < 0) {
+            throw new IllegalStateException("Insufficient funds");
+        }
+
         accountDao.updateBalance(accountId, newBalance);
 
         transactionDao.insert(accountId, "WITHDRAW", amount, description,"N/A");
     }
 
     @Transactional
-    public void transfer(Long fromAccountId, Long toAccountId, BigDecimal amount, String description,
-                         Long currentUserId, boolean isEmployeeOrAdmin) {
-        if (!accountDao.exists(fromAccountId)) {
-            throw new AccountNotFoundException(fromAccountId);
+    public void transfer(String fromAccountNumber,
+                         String toAccountNumber,
+                         BigDecimal amount,
+                         String description,
+                         Long currentUserId,
+                         boolean isEmployeeOrAdmin) {
+
+        if(amount == null || amount.signum() <=0){
+            throw new IllegalArgumentException("Amount must be positive!");
         }
-        if (!accountDao.exists(toAccountId)) {
-            throw new AccountNotFoundException(toAccountId);
-        }
+
+        Long fromAccountId = requireAccountId(fromAccountNumber);
+        Long toAccountId = requireAccountId(toAccountNumber);
 
         var fromBalance = accountDao.getBalance(fromAccountId);
         var toBalance = accountDao.getBalance(toAccountId);
@@ -93,7 +123,7 @@ public class AccountService {
         if (toBalance == null) {
             throw new IllegalArgumentException("Target account not found or has no balance");
         }
-        if(fromBalance.compareTo(amount)<0){
+        if(fromBalance.compareTo(amount) < 0){
             throw new IllegalArgumentException("Insufficient funds");
         }
 
@@ -103,4 +133,21 @@ public class AccountService {
         transactionDao.insert(fromAccountId, "TRANSFER_OUT", amount, description, "N/A");
         transactionDao.insert(toAccountId, "TRANSFER_IN", amount, description, "N/A");
     }
+
+    public AccountDto getById(Long accountId) {
+        return accountDao.findById(accountId)
+                .orElseThrow(() -> new AccountNotFoundException(accountId));
+    }
+    public List<AccountDto> findByCustomer(Long customerId) {
+        return accountDao.findByCustomer(customerId);
+    }
+    public AccountDto findByAccountNumber(String accountNumber) {
+        return accountDao.findByAccountNumber(accountNumber).orElse(null);
+    }
+
+    public Long findIdByAccountNumber(String accountNumber) {
+        return accountDao.findIdByAccountNumber(accountNumber);
+    }
+
+
 }

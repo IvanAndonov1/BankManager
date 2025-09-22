@@ -9,6 +9,7 @@ public record CreateLoanRequestDto(
         BigDecimal requestedAmount,
         Integer termMonths,
         LocalDate currentJobStartDate,
-        BigDecimal netSalary
+        BigDecimal netSalary,
+        String targetAccountNumber
 
 ) {}

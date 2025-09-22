@@ -11,7 +11,7 @@ const roleHome = {
 export default function RequireRole({ roles = [] }) {
 	const { user } = useContext(AuthContext);
 
-	if (!user?.id) {
+	if (!user?.token) {
 		return <Navigate to="/login" replace />;
 	}
 

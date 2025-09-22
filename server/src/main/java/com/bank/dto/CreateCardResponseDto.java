@@ -1,12 +1,9 @@
 package com.bank.dto;
 
-public record CardDto(
-        String publicId,
+public record CreateCardResponseDto(
         String maskedNumber,
         String last4,
         String type,
-        String status,
         String expiration,
-        boolean primary,
         String accountNumber
 ) {}

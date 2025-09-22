@@ -1,8 +1,10 @@
 package com.bank.web;
 
-import com.bank.dao.UserDao;
-import com.bank.dto.UserProfileDto;
-import com.bank.models.User;
+import com.bank.dao.UserDirectoryDao;
+import com.bank.dto.CustomerDto;
+import com.bank.dto.EmployeeDto;
+import com.bank.dto.MeCustomerResponse;
+import com.bank.dto.MeEmployeeResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -32,26 +34,63 @@ public class UserController {
             throw new AuthenticationException("No user id in token!") {};
         }
 
-        User u = users.findById(uid)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: id=" + uid));
+        if (isCustomer()) {
 
-        String fullName = ((u.getFirstName() != null ? u.getFirstName() : "") + " " +
-                (u.getLastName()  != null ? u.getLastName()  : "")).trim();
+            var dto = directoryDao.findCustomerById(id);
 
-        UserProfileDto dto = new UserProfileDto(
-                u.getId(),
-                u.getUsername(),
-                fullName.isEmpty() ? null : fullName,
-                u.getEmail(),
-                u.getPhoneNumber(),
-                u.getHomeAddress(),
-                u.getDateOfBirth(),
-                u.getEgn(),
-                u.getRole().name()
-        );
+            if (dto == null) {
+                return ResponseEntity.notFound().build();
+            }
 
-        return ResponseEntity.ok(dto);
+            var response = new MeCustomerResponse(
+                    dto.username(),
+                    dto.firstName(),
+                    dto.lastName(),
+                    dto.email(),
+                    dto.dateOfBirth(),
+                    dto.phoneNumber(),
+                    dto.homeAddress(),
+                    dto.egn(),
+                    dto.role(),
+                    dto.active(),
+                    dto.createdAt(),
+                    dto.accounts().stream()
+                            .map(acc -> new MeCustomerResponse.AccountView(
+                                    acc.accountNumber(),
+                                    acc.balance()
+                            ))
+                            .toList()
+            );
 
+            return ResponseEntity.ok(response);
+        }
+
+        if (isEmployee()) {
+
+            var dto = directoryDao.findEmployeeById(id);
+
+            if (dto == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            var response = new MeEmployeeResponse(
+                    dto.username(),
+                    dto.firstName(),
+                    dto.lastName(),
+                    dto.email(),
+                    dto.dateOfBirth(),
+                    dto.phoneNumber(),
+                    dto.homeAddress(),
+                    dto.egn(),
+                    dto.role(),
+                    dto.active(),
+                    dto.createdAt()
+            );
+
+            return ResponseEntity.ok(response);
+        }
+
+        return ResponseEntity.status(403).build();
     }
 
 }

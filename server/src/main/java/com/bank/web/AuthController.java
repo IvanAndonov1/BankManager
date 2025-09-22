@@ -1,7 +1,6 @@
 package com.bank.web;
 
-import com.bank.dto.RegisterRequestDto;
-import com.bank.dto.RegisterResponseDto;
+import com.bank.dto.*;
 import com.bank.security.JwtService;
 import com.bank.security.SecurityUtil;
 import com.bank.service.AuthService;
@@ -33,8 +32,22 @@ public class AuthController {
     }
 
     @PostMapping("/register/customer")
-    public RegisterResponseDto registerCustomer(@RequestBody RegisterRequestDto req) {
-        return authService.registerCustomer(req);
+    public ResponseEntity<PublicUserDto> registerCustomer(@RequestBody RegisterRequestDto req) {
+        var u = authService.registerCustomer(req);
+
+        var body = new PublicUserDto(
+                u.username(),
+                u.email(),
+                "CUSTOMER",
+                u.firstName(),
+                u.lastName(),
+                u.dateOfBirth(),
+                u.phoneNumber(),
+                u.homeAddress(),
+                u.egn()
+        );
+        return ResponseEntity.status(HttpStatus.CREATED).body(body);
+
     }
 
     @PostMapping("/register/employee")
@@ -43,8 +56,11 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody Map<String, String> body) {
-        return authService.login(body.get("username"), body.get("password"));
+    public ResponseEntity<AuthLoginResponse> login(@RequestBody LoginRequestDto req) {
+
+        AuthLoginResponse response = authService.login(req.username(), req.password());
+        return ResponseEntity.ok(response);
+
     }
 
     private final Set<String> blacklistedTokens = ConcurrentHashMap.newKeySet();

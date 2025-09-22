@@ -7,11 +7,27 @@ import java.util.List;
 public record EvaluationBreakdown(
         LoanApplicationStatus status,
         List<String> reasons,
-        int tenureScore,       // A
-        int dtiScore,          // B
-        int incomeScore,       // D
-        int accountAgeScore,   // E
-        int cushionScore,      // F
-        int recentDebtScore,   // H
-        int composite
-) {}
+        int tenureScore,
+        int dtiScore,
+        int accountAgeScore,
+        int cushionScore,
+        int recentDebtScore,
+        int composite,
+        int accumulatedPoints,
+        int maxPossiblePoints,
+        double percentageOfMax,
+        String creditScore,
+        EvaluationRecommendation recommendation // препоръка към служителя
+) {
+    public double percentageOfMax() {
+        return percentageOfMax;
+    }
+
+    public EvaluationRecommendation recommendation() {
+        return recommendation;
+    }
+
+    public String creditScoreS() {
+        return creditScore;
+    }
+}

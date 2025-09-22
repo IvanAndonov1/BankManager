@@ -1,5 +1,4 @@
 import { use, useState } from "react";
-import { useActionState } from "react";
 import { loginUser } from "../../../services/userService";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../contexts/AuthContext.jsx";
@@ -17,8 +16,8 @@ const savedCreds = (() => {
 
 const initialState = {
 	username: savedCreds?.username || "",
-	password: savedCreds?.password || "",
-	remember: localStorage.getItem('remember') || false,
+	password: "",
+	remember: Boolean(localStorage.getItem("remember")),
 	message: "",
 	messageType: "neutral",
 	errors: { username: "", password: "" },
@@ -33,68 +32,60 @@ const roles = {
 export default function Login() {
 	const { userLogin } = use(AuthContext);
 	const [showPass, setShowPass] = useState(false);
+	const [state, setState] = useState(initialState);
+	const [isPending, setIsPending] = useState(false);
 	const navigate = useNavigate();
 
-	const formHandler = async (previousState, formData) => {
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+		if (isPending) return;
+
+		const form = e.currentTarget;
+		const formData = new FormData(form);
 		const username = (formData.get("username") || "").toString().trim();
 		const password = (formData.get("password") || "").toString().trim();
 		const remember = Boolean(formData.get("remember"));
 
 		const { errors, hasErrors } = validateCredentials({ username, password });
-
 		if (hasErrors) {
-			return {
-				...previousState,
+			setState(s => ({
+				...s,
 				username,
 				password: "",
 				remember,
 				errors,
 				message: "Please fix the highlighted errors.",
 				messageType: "error",
-			};
+			}));
+			return;
 		}
 
 		try {
+			setIsPending(true);
 			const user = await loginUser({ username, password });
 
-			if (user.toString().includes('Error')) {
-				return {
-					...previousState,
+			if (!user || user.toString().includes("Error")) {
+				setState(s => ({
+					...s,
 					username,
 					password: "",
 					remember,
 					errors: { username: "", password: "" },
 					message: "Invalid username or password!",
 					messageType: "error",
-				};
+				}));
+				return;
 			}
 
-			if (!user) {
-				return {
-					...previousState,
-					username,
-					password: "",
-					remember,
-					errors: { username: "", password: "" },
-					message: "Invalid username or password!",
-					messageType: "error",
-				};
-			}
-
-			loginUser({ username, password })
-				.then(user => {
-					userLogin(user);
-					navigate(roles[user.role]);
-				});
 			userLogin(user);
 
 			if (remember) {
 				try {
 					localStorage.setItem(
 						"rememberCreds",
-						JSON.stringify({ remember: true, username, password })
+						JSON.stringify({ username })
 					);
-					localStorage.setItem('remember', 1);
+					localStorage.setItem("remember", "1");
 				} catch { }
 			} else {
 				try {
@@ -103,36 +94,38 @@ export default function Login() {
 				} catch { }
 			}
 
-			const destination = roles[user.role] || "/login";
-			setTimeout(() => navigate(destination), 0);
+			const roleKey = user.role || "";
+			const destination = roles[roleKey] || roles[user.role] || "/login";
+			console.log(destination);
+			
 
-			return {
-				...previousState,
+			navigate(destination);
+
+			setState(s => ({
+				...s,
 				username,
 				password: "",
 				remember,
 				errors: { username: "", password: "" },
 				message: "Successful login.",
 				messageType: "success",
-			};
+			}));
 		} catch (err) {
 			const apiMsg =
 				err?.response?.data?.message ||
 				err?.message ||
 				"Login failed. Please check your credentials and try again.";
 
-			return {
-				...previousState,
-				username,
-				password: "",
-				remember,
+			setState(s => ({
+				...s,
 				message: apiMsg,
 				messageType: "error",
-			};
+				password: "",
+			}));
+		} finally {
+			setIsPending(false);
 		}
 	};
-
-	const [state, formAction, isPending] = useActionState(formHandler, initialState);
 
 	const messageClasses =
 		state.messageType === "error"
@@ -144,61 +137,37 @@ export default function Login() {
 	return (
 		<main className="fixed inset-0 overflow-hidden">
 			<div className="relative h-full w-full bg-gradient-to-br from-[#6B1F78] via-[#424996] to-[#0B82BE]">
+				<div className="absolute top-6 left-6 text-white/90 font-semibold">Logo</div>
 
-
-				<div className="absolute top-6 left-6 text-white/90 font-semibold">
-					Logo
-				</div>
-				<img
-					src={redLine1}
-					alt="red lines"
-					className="pointer-events-none w-5xl h-5xl absolute inset-0 object-cover "
-				/>
-				<img
-					src={redLine2}
-					alt="red lines"
-					className="pointer-events-none w-3xl h-3xl absolute inset-0 left-[40%] object-cover "
-				/>
+				<img src={redLine1} alt="red lines" className="pointer-events-none w-5xl h-5xl absolute inset-0 object-cover " />
+				<img src={redLine2} alt="red lines" className="pointer-events-none w-3xl h-3xl absolute inset-0 left-[40%] object-cover " />
 
 				<div className="relative z-10 w-full max-w-2xl mx-auto pt-24 px-4 text-white">
-					<h1 className="text-4xl md:text-5xl font-bold text-center">
-						Banking You Want To Use
-					</h1>
+					<h1 className="text-4xl md:text-5xl font-bold text-center">Banking You Want To Use</h1>
 
-					<section
-						className="mt-10 md:mt-12 rounded-2xl
-              bg-white/12 backdrop-blur-md ring-1 ring-white/25
-              shadow-[0_30px_60px_-12px_rgba(0,0,0,.45)]
-              p-6 md:p-8 text-white/90 relative"
-					>
+					<section className="mt-10 md:mt-12 rounded-2xl bg-white/12 backdrop-blur-md ring-1 ring-white/25 shadow-[0_30px_60px_-12px_rgba(0,0,0,.45)] p-6 md:p-8 text-white/90 relative">
 						<div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-r from-white/0 via-white/10 to-white/30" />
 
-						<form action={formAction} className="relative" noValidate>
+						<form onSubmit={handleSubmit} className="relative" noValidate>
 							<label className="block mb-6">
 								<span className="block text-sm text-white/85">Username</span>
 								<input
 									type="text"
 									name="username"
-									className={`mt-2 w-full bg-transparent outline-none border-b ${state.errors.username ? "border-red-400" : "border-white/50"
-										} focus:border-white placeholder-white/60 pb-2`}
+									className={`mt-2 w-full bg-transparent outline-none border-b ${state.errors.username ? "border-red-400" : "border-white/50"} focus:border-white placeholder-white/60 pb-2`}
 									defaultValue={state.username}
 									autoComplete="username"
 									aria-invalid={Boolean(state.errors.username)}
 									aria-describedby={state.errors.username ? "username-error" : undefined}
 								/>
 								{state.errors.username ? (
-									<p id="username-error" className="mt-2 text-xs text-red-300">
-										{state.errors.username}
-									</p>
+									<p id="username-error" className="mt-2 text-xs text-red-300">{state.errors.username}</p>
 								) : null}
 							</label>
 
 							<label className="block">
 								<span className="block text-sm text-white/85">Password</span>
-								<div
-									className={`mt-2 flex items-center border-b ${state.errors.password ? "border-red-400" : "border-white/50"
-										} focus-within:border-white pb-2`}
-								>
+								<div className={`mt-2 flex items-center border-b ${state.errors.password ? "border-red-400" : "border-white/50"} focus-within:border-white pb-2`}>
 									<input
 										type={showPass ? "text" : "password"}
 										name="password"
@@ -210,17 +179,12 @@ export default function Login() {
 									/>
 									<button
 										type="button"
-										onClick={() => setShowPass((s) => !s)}
+										onClick={() => setShowPass(s => !s)}
 										className="ml-3 text-white/80 hover:text-white"
 										aria-label={showPass ? "Hide password" : "Show password"}
 										title={showPass ? "Hide password" : "Show password"}
 									>
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											viewBox="0 0 24 24"
-											className="w-5 h-5 fill-none stroke-current"
-											strokeWidth="1.8"
-										>
+										<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5 fill-none stroke-current" strokeWidth="1.8">
 											{showPass ? (
 												<>
 													<path d="M3 3l18 18" />
@@ -238,20 +202,13 @@ export default function Login() {
 									</button>
 								</div>
 								{state.errors.password ? (
-									<p id="password-error" className="mt-2 text-xs text-red-300">
-										{state.errors.password}
-									</p>
+									<p id="password-error" className="mt-2 text-xs text-red-300">{state.errors.password}</p>
 								) : null}
 							</label>
 
 							<div className="mt-4 flex items-center justify-between text-xs md:text-sm text-white/80">
 								<label className="inline-flex items-center gap-2 cursor-pointer select-none">
-									<input
-										type="checkbox"
-										name="remember"
-										defaultChecked={state.remember}
-										className="w-4 h-4 rounded-[4px] text-[#6a1ea1] focus:ring-0"
-									/>
+									<input type="checkbox" name="remember" defaultChecked={state.remember} className="w-4 h-4 rounded-[4px] text-[#6a1ea1] focus:ring-0" />
 									<span>Remember me</span>
 								</label>
 								<a className="cursor-pointer hover:underline">Forgot Password?</a>
