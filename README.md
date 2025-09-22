@@ -183,7 +183,7 @@ POST /api/cards - създава карта
     "accountNumber": "BG80BNBG96612537842339"
 }
 
-POST /api/{publicId}/reveal   - дава целия номер на картата и CVV (3те цифри), 
+POST /api/cards/{publicId}/reveal   - дава целия номер на картата и CVV (3те цифри), 
                                 като се посочи publicId, който customer може да види със следващия endpoint,     
                                 който показва всички негови карти 
 
