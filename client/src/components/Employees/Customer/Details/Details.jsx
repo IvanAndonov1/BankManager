@@ -10,6 +10,7 @@ import RequestsPlaceholder from "./RequestPlaceholder";
 import { AuthContext } from "../../../../contexts/AuthContext";
 import { getUserAccount, getUserDetails } from "../../../../services/userService";
 import { Link, useParams } from "react-router";
+import { getAllLoanDetails } from "../../../../services/employeeService";
 
 export default function CustomerMoreInfo() {
 	const { userId } = useParams();
@@ -17,6 +18,7 @@ export default function CustomerMoreInfo() {
 	const { user } = use(AuthContext);
 	const [userDetails, setUserDetails] = useState({});
 	const [userAccount, setUserAccount] = useState([]);
+	const [loanDetails, setLoanDetails] = useState([]);
 
 	useEffect(() => {
 		getUserDetails(user.token, userId)
@@ -24,6 +26,10 @@ export default function CustomerMoreInfo() {
 
 		getUserAccount(userId, user.token)
 			.then(result => setUserAccount(result));
+
+
+		getAllLoanDetails(user.token)
+			.then(result => setLoanDetails(result));
 	}, [user]);
 
 	return (
@@ -57,7 +63,7 @@ export default function CustomerMoreInfo() {
 								?
 								userAccount.map(x => (
 									<Balance
-										key={x.id}
+										key={x.accountNumber}
 										title="Balance - Debit"
 										value={`${x.balance} EUR`}
 										valueClass="text-[#351F78]"
@@ -94,7 +100,7 @@ export default function CustomerMoreInfo() {
 
 						<div className="p-6">
 							{tab === "profile" && <ProfileForm key={userDetails.id} customer={userDetails} />}
-							{tab === "loans" && <LoansPlaceholder />}
+							{tab === "loans" && <LoansPlaceholder loanDetails={loanDetails} />}
 							{tab === "requests" && <RequestsPlaceholder />}
 						</div>
 					</div>
