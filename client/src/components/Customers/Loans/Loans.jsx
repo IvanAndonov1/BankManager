@@ -3,9 +3,11 @@ import LoanCards from "./LoanCards";
 import LoansSection from "./LoansSection";
 import { useState } from "react";
 import Modal from "./LoanModal";
+import WaitingLoans from "./WaitingLoans";
 
 export default function Loans() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
     <div className="min-h-screen flex  bg-white">
       <CustomerSidebar />
