@@ -19,7 +19,7 @@ POST /api/auth/register/customer - регистриране на клиент
 body - json:
 {
   "username": "cust",
-  "password": "pasword",
+  "password": "password",
   "firstName": "cust",
   "lastName": "cust",
   "email": "cust@example.com",
@@ -576,7 +576,12 @@ body:
     "ok": true
 }
 
-GET /api/loans/applications - връща всички заявки за кредит с подробности - дотъпно само за служители и админ 
+GET /api/loans/applications - връща всички заявки за кредит с подробности - достъпно само за служители и админ 
+
+може да се слагат филтри, примерно:
+
+GET /api/loans/applications?customerId=41
+GET /api/loans/applications?customerId=41&status=APPROVED&limit=50&offset=0
 
 примерна: 
 
@@ -623,6 +628,38 @@ GET /api/accounts/{accountNumber}/transactions
 
 
 -----------------------------------------------------------------------------
+
+StaffCustomer 
+
+PUT /api/customers/{id}
+
+приема (не са нужни всички, може само едно, две,...): 
+        firstName,
+        lastName,
+        email,
+        phoneNumber,
+        homeAddress,
+        active
+
+връща: 
+
+id,
+username,
+firstName,
+lastName,
+email,
+dateOfBirth,
+phoneNumber,
+homeAddress,
+egn,
+role,
+active,
+createdAt
+
+GET api/users/credits - връща всички кредити (applications, които са APPROVED) 
+GET api/users/credits?customerId={customerId} - филтър по id на customer 
+
+---------------------------------------------------------------------------------------
 
 Analytics
 

@@ -1,8 +1,7 @@
 package com.bank.web;
 
+import com.bank.dao.AccountDao;
 import com.bank.dao.UserDirectoryDao;
-import com.bank.dto.CustomerDto;
-import com.bank.dto.EmployeeDto;
 import com.bank.dto.MeCustomerResponse;
 import com.bank.dto.MeEmployeeResponse;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
+
 import static com.bank.security.SecurityUtil.*;
 
 @RestController
@@ -18,9 +19,13 @@ import static com.bank.security.SecurityUtil.*;
 public class UserController {
 
     private final UserDirectoryDao directoryDao;
+    private final AccountDao accountDao;
 
-    public UserController(UserDirectoryDao directoryDao){
+    public UserController(UserDirectoryDao directoryDao, AccountDao accountDao){
+
         this.directoryDao = directoryDao;
+        this.accountDao = accountDao;
+
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -41,7 +46,18 @@ public class UserController {
                 return ResponseEntity.notFound().build();
             }
 
-            var response = new MeCustomerResponse(
+            var rows = accountDao.findIdNumberBalanceByCustomer(id);
+
+            var accounts = rows.stream()
+                    .map(r -> new MeCustomerResponse.AccountView(
+                            ((Number) r.get("id")).longValue(),
+                            (String) r.get("account_number"),
+                            (BigDecimal) r.get("balance")
+                    ))
+                    .toList();
+
+            var resp = new MeCustomerResponse(
+                    dto.id(),
                     dto.username(),
                     dto.firstName(),
                     dto.lastName(),
@@ -53,15 +69,9 @@ public class UserController {
                     dto.role(),
                     dto.active(),
                     dto.createdAt(),
-                    dto.accounts().stream()
-                            .map(acc -> new MeCustomerResponse.AccountView(
-                                    acc.accountNumber(),
-                                    acc.balance()
-                            ))
-                            .toList()
+                    accounts
             );
-
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(resp);
         }
 
         if (isEmployee()) {
@@ -72,7 +82,8 @@ public class UserController {
                 return ResponseEntity.notFound().build();
             }
 
-            var response = new MeEmployeeResponse(
+            var resp = new MeEmployeeResponse(
+                    dto.id(),
                     dto.username(),
                     dto.firstName(),
                     dto.lastName(),
@@ -85,11 +96,11 @@ public class UserController {
                     dto.active(),
                     dto.createdAt()
             );
-
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(resp);
         }
 
         return ResponseEntity.status(403).build();
     }
 
 }
+
