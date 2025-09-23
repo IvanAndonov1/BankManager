@@ -576,7 +576,12 @@ body:
     "ok": true
 }
 
-GET /api/loans/applications - връща всички заявки за кредит с подробности - дотъпно само за служители и админ 
+GET /api/loans/applications - връща всички заявки за кредит с подробности - достъпно само за служители и админ 
+
+може да се слагат филтри, примерно:
+
+GET /api/loans/applications?customerId=41
+GET /api/loans/applications?customerId=41&status=APPROVED&limit=50&offset=0
 
 примерна: 
 
