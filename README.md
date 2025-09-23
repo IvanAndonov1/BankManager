@@ -19,7 +19,7 @@ POST /api/auth/register/customer - регистриране на клиент
 body - json:
 {
   "username": "cust",
-  "password": "pasword",
+  "password": "password",
   "firstName": "cust",
   "lastName": "cust",
   "email": "cust@example.com",
