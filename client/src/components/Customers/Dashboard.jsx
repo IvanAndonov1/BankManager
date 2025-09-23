@@ -5,14 +5,17 @@ import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import { getBalanceData } from "../../services/cardService";
 import { getAllTransactions } from "../../services/userService";
+import { getUserAccounts } from "../../services/userService";
+
 
 
 export default function Dashboard() {
 
     const [balanceData, setBalanceData] = useState([]);
 	const [transactions, setTransactions] = useState([]); 
-	const [ setLoading] = useState(true);
-	const [ setError] = useState(null);
+	const [accounts, setAccounts] = useState([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(null);
     const { user } = useContext(AuthContext);
 
 	useEffect(() => {
@@ -32,18 +35,30 @@ export default function Dashboard() {
 
 		  const fetchTransactions = async () => {
       try {
-        const data = await getAllTransactions(user.id, user.token); 
+        const data = await getAllTransactions(user.accountNumber, user.token); 
+		
         setTransactions(data);
       } catch (err) {
         setError(err.message);
       }
     };
+
+	const fetchAccounts = async () => {
+      try {
+        const data = await getUserAccounts( user.token); 
+        setAccounts(data.map(account => account.accountNumber));
+		
+      } catch (err) {
+        setError(err.message);
+      }
+    };
 	
-		fetchBalanceData();
+	    fetchBalanceData();
 		fetchTransactions();
+		fetchAccounts();
 	  }, [user]);
 	
-	
+	console.log(accounts);
 
 	return (
 		<div className="min-h-screen flex bg-white">

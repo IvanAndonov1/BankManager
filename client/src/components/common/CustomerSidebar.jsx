@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useContext, useEffect } from "react";
 import { AuthContext } from "../../contexts/AuthContext.jsx";
-import { getUserAccount, logoutUser } from "../../services/userService.js";
+import { getUserAccounts, logoutUser } from "../../services/userService.js";
 
 function CustomerSidebar() {
   const { user, userLogin, userLogout } = useContext(AuthContext);
@@ -10,7 +10,7 @@ function CustomerSidebar() {
   useEffect(() => {
     async function fetchUser() {
       try {
-        const data = await getUserAccount();
+        const data = await getUserAccounts();
         userLogin(data); 
       } catch (err) {
         console.error("User not authenticated:", err);

@@ -8,8 +8,12 @@ export const registerUser = (data) => requester.post(`${baseUrl}/auth/register/c
 
 export const logoutUser = (token) => requester.post(`${baseUrl}/auth/logout`, {}, { 'Authorization': `Bearer ${token}` });
 
-export const getAllTransactions = (accountId, token) => requester.get(`${baseUrl}/accounts/${accountId}/transactions`, { 'Authorization': `Bearer ${token}` });
-
 export const getUserAccount = (customerId, token) => requester.get(`${baseUrl}/accounts/by-customer/${customerId}`, { 'Authorization': `Bearer ${token}` });
 
 export const getUserDetails = (token, userId) => requester.get(`${baseUrl}/customers/by-id/${userId}`, { 'Authorization': `Bearer ${token}` });
+
+export const getUserAccounts = (token) => requester.get(`${baseUrl}/accounts/me`, { 'Authorization': `Bearer ${token}` });
+
+export const getAllTransactions = (token, accountNumber) => requester.get(`${baseUrl}/accounts/${accountNumber}/transactions`, { 'Authorization': `Bearer ${token}` });
+
+
