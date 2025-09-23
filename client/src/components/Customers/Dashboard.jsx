@@ -1,6 +1,8 @@
 import CustomerSidebar from "../common/CustomerSidebar";
 import CustomerTableRow from "./CustomerTableRow";
 import Card from "./Cards";
+import { use } from "react";
+import { AuthContext } from "../../contexts/AuthContext";
 
 let data = {
 	name: "Name 1",
@@ -11,6 +13,10 @@ let data = {
 };
 
 export default function Dashboard() {
+	const { user } = use(AuthContext);
+
+	console.log(user.id);
+
 	return (
 		<div className="min-h-screen flex bg-white">
 			<CustomerSidebar />
