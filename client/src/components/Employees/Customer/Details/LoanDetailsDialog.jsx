@@ -1,11 +1,7 @@
 import { useEffect } from "react";
 
 function getNextMonth(date) {
-	console.log(date);
-
 	let [day, month, year] = date.split('-').map(Number);
-
-	console.log(typeof day, typeof month, typeof year)
 
 	if (month == 12) {
 		month = 0;

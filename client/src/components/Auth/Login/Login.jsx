@@ -96,7 +96,6 @@ export default function Login() {
 
 			const roleKey = user.role || "";
 			const destination = roles[roleKey] || roles[user.role] || "/login";
-			console.log(destination);
 			
 
 			navigate(destination);
