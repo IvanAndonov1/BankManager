@@ -28,7 +28,7 @@ export default function CustomerMoreInfo() {
 			.then(result => setUserAccount(result));
 
 
-		getAllLoanDetails(user.token)
+		getAllLoanDetails(user.token, userId)
 			.then(result => setLoanDetails(result));
 	}, [user]);
 
