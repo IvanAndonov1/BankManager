@@ -624,6 +624,35 @@ GET /api/accounts/{accountNumber}/transactions
 
 -----------------------------------------------------------------------------
 
+StaffCustomer 
+
+PUT /api/customers/{id}
+
+приема (не са нужни всички, може само едно, две,...): 
+        firstName,
+        lastName,
+        email,
+        phoneNumber,
+        homeAddress,
+        active
+
+връща: 
+
+id,
+username,
+firstName,
+lastName,
+email,
+dateOfBirth,
+phoneNumber,
+homeAddress,
+egn,
+role,
+active,
+createdAt
+
+---------------------------------------------------------------------------------------
+
 Analytics
 
 GET /api/staff/analytics/overview?from=2025-09-01&to=2025-09-21 - за посочен период 
