@@ -656,6 +656,9 @@ role,
 active,
 createdAt
 
+GET api/users/credits - връща всички кредити (applications, които са APPROVED) 
+GET api/users/credits?customerId={customerId} - филтър по id на customer 
+
 ---------------------------------------------------------------------------------------
 
 Analytics
