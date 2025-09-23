@@ -1,5 +1,9 @@
 import CustomerSidebar from "../common/CustomerSidebar";
 import CustomerTableRow from "./CustomerTableRow";
+
+import Card from "./Cards";
+import { use } from "react";
+import { AuthContext } from "../../contexts/AuthContext";
 import CardList from "./CardList";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
@@ -7,16 +11,15 @@ import { getBalanceData } from "../../services/cardService";
 import { getAllTransactions } from "../../services/userService";
 import { getUserAccounts } from "../../services/userService";
 
-
-
 export default function Dashboard() {
-
-    const [balanceData, setBalanceData] = useState([]);
+  const [balanceData, setBalanceData] = useState([]);
 	const [transactions, setTransactions] = useState([]); 
 	const [accounts, setAccounts] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
     const { user } = useContext(AuthContext);
+  
+	console.log(user.id);
 
 	useEffect(() => {
 		const fetchBalanceData = async () => {
