@@ -5,8 +5,10 @@ import com.bank.service.AiToolsService;
 import com.bank.service.AccountService;
 import com.bank.security.SecurityUtil;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -55,37 +57,59 @@ public class ApiController {
 
         Long customerId = SecurityUtil.currentUserId();
         if (customerId == null) {
-            return ResponseEntity.status(403).body(Map.of(
-                    "ok", false,
-                    "error", "User not authenticated"
-            ));
+            throw new AccessDeniedException("User not authenticated");
         }
 
         var accounts = accountService.findByCustomer(customerId);
         String accountNumber = accounts.isEmpty() ? null : accounts.get(0).accountNumber();
 
-        int limit = 3;
-        Matcher matcher = Pattern.compile("(\\d+)").matcher(prompt);
-        if (matcher.find()) {
-            limit = Integer.parseInt(matcher.group(1));
+        String answer;
+        switch (prompt.trim()) {
+            case "1" -> {
+                if (accountNumber != null) {
+                    answer = tools.getBalance(accountNumber);
+                } else {
+                    answer = "No account found.";
+                }
+            }
+            case "2" -> {
+                if (accountNumber != null) {
+                    answer = tools.getLastTransactions(accountNumber, 3);
+                } else {
+                    answer = "No account found.";
+                }
+            }
+            case "3" -> answer = tools.getLoans(customerId);
+            case "4" -> answer = tools.getCreditScore(customerId);
+            case "5" -> answer = tools.getLoanApplications(customerId);
+            case "6" -> answer = tools.getLatePayments(customerId);
+            case "7" -> {
+                if (SecurityUtil.isEmployeeOrAdmin()) {
+                    answer = tools.getAnalyticsOverview();
+                } else {
+                    answer = "This option is only available for employees or admins.";
+                }
+            }
+            case "8" -> answer = tools.getCards(customerId);
+            case "9" -> answer = tools.getProfile(customerId);
+            default -> answer = "I don’t understand the request. Do you want to connect to an employee?";
         }
 
-        String answer;
-        if (accountNumber != null && prompt.toLowerCase().contains("balance")) {
-            answer = tools.getBalance(accountNumber);
-        } else if (accountNumber != null && prompt.toLowerCase().contains("transaction")) {
-            answer = tools.getLastTransactions(accountNumber, limit);
-        } else if (prompt.toLowerCase().contains("loan")) {
-            answer = tools.getLoans(customerId);
-        }else if (prompt.toLowerCase().contains("credit score") || prompt.toLowerCase().contains("evaluation")) {
-            answer = tools.getCreditScore(customerId);
-        }
-        else {
-            answer = ollama.generate("llama3.2:3b", prompt);
-        }
+        List<String> menu = List.of(
+                "1. Show my account balances",
+                "2. Show my last 3 transactions",
+                "3. Show my active loans",
+                "4. Show my credit score",
+                "5. Show my loan applications",
+                "6. Do I have late payments?",
+                "7. Show bank overview (employees/admins only)",
+                "8. Show my cards",
+                "9. Show my profile"
+        );
 
         return ResponseEntity.ok(Map.of(
                 "ok", true,
+                "menu", menu,
                 "response", answer
         ));
     }
