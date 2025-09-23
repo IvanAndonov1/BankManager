@@ -28,7 +28,7 @@ export default function CustomerMoreInfo() {
 			.then(result => setUserAccount(result));
 
 
-		getAllLoanDetails(user.token)
+		getAllLoanDetails(user.token, userId)
 			.then(result => setLoanDetails(result));
 	}, [user]);
 
@@ -101,7 +101,7 @@ export default function CustomerMoreInfo() {
 						<div className="p-6">
 							{tab === "profile" && <ProfileForm key={userDetails.id} customer={userDetails} />}
 							{tab === "loans" && <LoansPlaceholder loanDetails={loanDetails} />}
-							{tab === "requests" && <RequestsPlaceholder />}
+							{tab === "requests" && <RequestsPlaceholder applicationDetails={loanDetails} />}
 						</div>
 					</div>
 				</div>
