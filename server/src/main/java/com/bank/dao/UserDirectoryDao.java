@@ -444,5 +444,41 @@ public class UserDirectoryDao {
 
     }
 
+    public int deactivateEmployee(Long id) {
+
+        String sql = """
+        UPDATE users
+        SET active = FALSE, updated_at = now()
+        WHERE id = :id
+          AND "role" = 'EMPLOYEE'
+          AND active = TRUE
+    """;
+
+        return jdbc.update(sql, new MapSqlParameterSource("id", id));
+
+    }
+
+    public int promoteEmployeeToAdmin(Long id) {
+
+        String sql = """
+        UPDATE users
+        SET "role" = 'ADMIN',
+            updated_at = now()
+        WHERE id = :id
+          AND "role" = 'EMPLOYEE'
+          AND active = TRUE
+        """;
+
+        return jdbc.update(sql, new MapSqlParameterSource("id", id));
+
+    }
+    public Map<String, Object> readUserStatus(Long id){
+
+        String sql = "SELECT id, name AS username, role, active FROM users WHERE id = :id";
+
+        return jdbc.queryForMap(sql, new MapSqlParameterSource("id", id));
+
+    }
+
 }
 
