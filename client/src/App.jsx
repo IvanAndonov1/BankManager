@@ -15,6 +15,7 @@ import Logout from './components/Auth/Logout/Logout';
 import RequireRole from './guards/RequireRole';
 import RequireGuest from './guards/RequireGuest';
 import RequireAuth from './guards/RequireAuth';
+import EditProfile from './components/Customers/EditProfile';
 
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
 							<Route path="/customer-dashboard" element={<Dashboard />} />
 							<Route path="/customer-loans" element={<Loans />} />
 							<Route path="/customer-transactions" element={<Transactions />} />
+							<Route path='/customer-edit' element={<EditProfile/>}/>
 						</Route>
 
 						<Route element={<RequireRole roles={["EMPLOYEE"]} />}>
