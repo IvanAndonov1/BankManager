@@ -6,6 +6,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 public record MeCustomerResponse(
+        Long id,
         String username,
         String firstName,
         String lastName,
@@ -20,6 +21,7 @@ public record MeCustomerResponse(
         List<AccountView> accounts
 ) {
     public record AccountView(
+            Long accountId,
             String accountNumber,
             BigDecimal balance
     ) {}

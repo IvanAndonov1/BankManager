@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
 public record MeEmployeeResponse(
+        Long id,
         String username,
         String firstName,
         String lastName,

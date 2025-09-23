@@ -145,4 +145,20 @@ public class AccountDao{
 
     }
 
+    public List<Map<String, Object>> findIdNumberBalanceByCustomer(Long customerId) {
+
+        String sql = """
+        SELECT id, account_number, balance
+        FROM accounts
+        WHERE customer_id = :cid
+        ORDER BY id
+    """;
+
+        return jdbc.queryForList(
+                sql,
+                new MapSqlParameterSource("cid", customerId)
+        );
+
+    }
+
 }
