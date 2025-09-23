@@ -1,12 +1,12 @@
 package com.bank.dao;
 
-import com.bank.dto.AccountDto;
-import com.bank.dto.CustomerDto;
-import com.bank.dto.EmployeeDto;
+import com.bank.dto.*;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.*;
 import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
@@ -245,7 +245,7 @@ public class UserDirectoryDao {
         final String firstName;
         final String lastName;
         final String email;
-        final java.time.LocalDate dob;
+        final LocalDate dob;
         final String phone;
         final String address;
         final String egn;
@@ -343,19 +343,106 @@ public class UserDirectoryDao {
         return BigDecimal.ZERO;
 
     }
-    private static java.time.LocalDate getLocalDate(Map<String,Object> r, String k) {
+    private static LocalDate getLocalDate(Map<String,Object> r, String k) {
 
         Object v = r.get(k);
-        if (v instanceof java.time.LocalDate ld) return ld;
+        if (v instanceof LocalDate ld) return ld;
         if (v instanceof java.sql.Date sd)       return sd.toLocalDate();
-        if (v instanceof java.util.Date ud)
+        if (v instanceof Date ud)
             return ud.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
 
         if (v instanceof String s) {
-            try { return java.time.LocalDate.parse(s); } catch (Exception ignored) {}
+            try { return LocalDate.parse(s); } catch (Exception ignored) {}
         }
 
         return null;
     }
 
+    public int updateCustomerByStaff(Long id, UpdateCustomerRequestDto req) {
+
+        Integer exists = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM users WHERE id=:id AND role='CUSTOMER'",
+                new MapSqlParameterSource("id", id),
+                Integer.class
+        );
+
+        if (exists == null || exists == 0) {
+            throw new EmptyResultDataAccessException("Customer not found", 1);
+        }
+
+        StringBuilder sql = new StringBuilder("UPDATE users SET ");
+        MapSqlParameterSource p = new MapSqlParameterSource().addValue("id", id);
+
+        int sets = 0;
+
+        if (req.firstName() != null) {
+            sql.append("first_name=:first_name, "); p.addValue("first_name", req.firstName()); sets++;
+        }
+
+        if (req.lastName() != null) {
+            sql.append("last_name=:last_name, "); p.addValue("last_name", req.lastName()); sets++;
+        }
+
+        if (req.email() != null) {
+            sql.append("email=:email, "); p.addValue("email", req.email()); sets++;
+        }
+
+        if (req.phoneNumber() != null) {
+            sql.append("phone_number=:phone, "); p.addValue("phone", req.phoneNumber()); sets++;
+        }
+
+        if (req.homeAddress() != null) {
+            sql.append("home_address=:addr, "); p.addValue("addr", req.homeAddress()); sets++;
+        }
+
+        if (req.active() != null) {
+            sql.append("active=:active, "); p.addValue("active", req.active()); sets++;
+        }
+
+        if (sets == 0) {
+            return 0;
+        }
+
+        sql.setLength(sql.length() - 2);
+        sql.append(" WHERE id=:id");
+
+        return jdbc.update(sql.toString(), p);
+
+    }
+
+    public UpdateCustomerResponseDto readCustomerForResponse(Long id) {
+
+        String sql = """
+                    SELECT id, name AS username, first_name, last_name, email,
+                    date_of_birth, phone_number, home_address, egn,
+                    role, active, created_at
+                    FROM users
+                    WHERE id=:id AND role='CUSTOMER'
+                """;
+
+        return jdbc.query(sql, new MapSqlParameterSource("id", id), rs -> {
+
+            if (!rs.next()) {
+                return null;
+            }
+
+            return new UpdateCustomerResponseDto(
+                    rs.getLong("id"),
+                    rs.getString("username"),
+                    rs.getString("first_name"),
+                    rs.getString("last_name"),
+                    rs.getString("email"),
+                    rs.getObject("date_of_birth", LocalDate.class),
+                    rs.getString("phone_number"),
+                    rs.getString("home_address"),
+                    rs.getString("egn"),
+                    rs.getString("role"),
+                    rs.getBoolean("active"),
+                    rs.getObject("created_at", OffsetDateTime.class)
+            );
+        });
+
+    }
+
 }
+
