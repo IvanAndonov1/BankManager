@@ -3,7 +3,6 @@ import CustomerTableRow from "./CustomerTableRow";
 
 import Card from "./Cards";
 import { use } from "react";
-import { AuthContext } from "../../contexts/AuthContext";
 import CardList from "./CardList";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
@@ -19,8 +18,6 @@ export default function Dashboard() {
 	const [error, setError] = useState(null);
     const { user } = useContext(AuthContext);
   
-	console.log(user.id);
-
 	useEffect(() => {
 		const fetchBalanceData = async () => {
 		  try {
