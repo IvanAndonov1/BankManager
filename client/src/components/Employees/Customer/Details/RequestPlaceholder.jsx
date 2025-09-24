@@ -8,6 +8,7 @@ import LoanFacts from "../Details Subcomponents/LoanFacts";
 import ScoreRing from "../Details Subcomponents/ScoreRing";
 import LoadingSkeleton from "../Details Subcomponents/LoadingSkeleton";
 import EmptyState from "../Details Subcomponents/EmptyState";
+import DeclineCreditModal from "../Details Subcomponents/DeclineCreditModal";
 
 import { clamp0to100 } from "../../../../utils/utils.js";
 import { approveCreditHandler, declineCreditHandler, getAllLoanDetails } from "../../../../services/employeeService.js";
@@ -42,6 +43,8 @@ export default function RequestsPlaceholder({
 	}, [customerId, urlUserId]);
 
 	const [open, setOpen] = useState(false);
+	const [isDeclineModalOpen, setIsDeclineModalOpen] = useState(false);
+	const [isDeclineLoading, setIsDeclineLoading] = useState(false);
 
 	const application = useMemo(() => {
 		if (!apps || !apps.length || !Number.isFinite(currentCustomerId)) return undefined;
@@ -95,17 +98,35 @@ export default function RequestsPlaceholder({
 			});
 	}
 
-	function declineCredit(e) {
+	function showDeclineModal(e) {
 		e.preventDefault();
+		setIsDeclineModalOpen(true);
+	}
 
-		declineCreditHandler(application.id, user.token, { "approve": false, reasons: ['Bad income.'] })
+	function handleDeclineCredit(reasons) {
+		setIsDeclineLoading(true);
+
+		declineCreditHandler(application.id, user.token, {
+			"approve": false,
+			reasons: reasons
+		})
 			.then(() => {
 				getAllLoanDetails(user.token, urlUserId)
 					.then((result) => {
 						changeLoans(result);
 						changeTab('loans');
+						setIsDeclineModalOpen(false);
 					});
+			})
+			.finally(() => {
+				setIsDeclineLoading(false);
 			});
+	}
+
+	function closeDeclineModal() {
+		if (!isDeclineLoading) {
+			setIsDeclineModalOpen(false);
+		}
 	}
 
 	return (
@@ -116,7 +137,7 @@ export default function RequestsPlaceholder({
 					open={open}
 					onToggle={() => setOpen((v) => !v)}
 					approveCredit={approveCredit}
-					declineCredit={declineCredit}
+					declineCredit={showDeclineModal}
 				/>
 			)}
 
@@ -145,6 +166,13 @@ export default function RequestsPlaceholder({
 					</div>
 				</div>
 			)}
+
+			<DeclineCreditModal
+				isOpen={isDeclineModalOpen}
+				onClose={closeDeclineModal}
+				onDecline={handleDeclineCredit}
+				isLoading={isDeclineLoading}
+			/>
 		</div>
 	);
 }
