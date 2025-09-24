@@ -10,7 +10,7 @@ import RequestsPlaceholder from "./RequestPlaceholder";
 import { AuthContext } from "../../../../contexts/AuthContext";
 import { getUserAccount, getUserDetails } from "../../../../services/userService";
 import { Link, useParams } from "react-router";
-import { getAllLoanDetails } from "../../../../services/employeeService";
+import { approveCreditHandler, getAllLoanDetails } from "../../../../services/employeeService";
 
 export default function CustomerMoreInfo() {
 	const { userId } = useParams();
@@ -101,7 +101,7 @@ export default function CustomerMoreInfo() {
 						<div className="p-6">
 							{tab === "profile" && <ProfileForm key={userDetails.id} customer={userDetails} />}
 							{tab === "loans" && <LoansPlaceholder loanDetails={loanDetails} />}
-							{tab === "requests" && <RequestsPlaceholder applicationDetails={loanDetails} />}
+							{tab === "requests" && <RequestsPlaceholder applicationDetails={loanDetails} changeTab={setTab} changeLoans={setLoanDetails} />}
 						</div>
 					</div>
 				</div>
