@@ -29,6 +29,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/customers/**").hasAnyRole("EMPLOYEE", "ADMIN")
                         .requestMatchers("/api/loans/**", "/api/accounts/**").authenticated()
                         .requestMatchers("/api/ai/**").permitAll()
+                        .requestMatchers("/api/auth/forgot-password").permitAll()
                         .requestMatchers(
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
