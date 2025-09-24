@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router';
 import Loans from './components/Customers/Loans/Loans';
-import Transactions from './components/Customers//Transactions/Transactions';
+import Transactions from './components/Customers/Transactions/Transactions';
 import Dashboard from './components/Customers/Dashboard';
 
 import CustomerMoreInfo from './components/Employees/Customer/Details/Details';

@@ -1,34 +1,46 @@
 import CustomerSidebar from "../common/CustomerSidebar";
 import CustomerTableRow from "./CustomerTableRow";
-
-import Card from "./Cards";
 import CardList from "./CardList";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import { getBalanceData } from "../../services/cardService";
-import { getAllTransactions } from "../../services/userService";
-import { getUserAccounts } from "../../services/userService";
+import { getAllTransactions, getUserAccounts } from "../../services/userService";
 
 export default function Dashboard() {
-	const [balanceData, setBalanceData] = useState([]);
-	const [transactions, setTransactions] = useState([]);
-	const [accounts, setAccounts] = useState([]);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState(null);
 	const { user } = useContext(AuthContext);
 
-
+	const [balances, setBalances] = useState([]);
+	const [transactions, setTransactions] = useState([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(null);
 
 	useEffect(() => {
-		if ((user.id && user.token) && accounts.length > 0) {
-			const fetchBalanceData = async () => {
+		if (user.id && user.token) {
+			const fetchData = async () => {
 				try {
-					const response = await getBalanceData(accounts[0], user.token);
-					if (!response.ok) throw new Error("Failed to fetch cards");
+					const accountsData = await getUserAccounts(user.token);
+					const accountNumbers = accountsData.map(account => account.accountNumber);
 
-					const data = await response.json();
+					if (accountNumbers.length > 0) {
+						const balancePromises = accountNumbers.map(async (iban) => {
+							const response = await getBalanceData(iban, user.token);
+							return {
+								accountNumber: response.accountNumber || iban,
+								balance: response.balance
+							};
+						});
 
-					setBalanceData(data);
+						const transactionPromises = accountNumbers.map(async (iban) => {
+							const data = await getAllTransactions(iban, user.token);
+							return Array.isArray(data) ? data : [];
+						});
+
+						const balanceResults = await Promise.all(balancePromises);
+						const transactionResults = await Promise.all(transactionPromises);
+
+						setBalances(balanceResults);
+						setTransactions(transactionResults.flat());
+					}
 				} catch (err) {
 					setError(err.message);
 				} finally {
@@ -36,71 +48,68 @@ export default function Dashboard() {
 				}
 			};
 
-			const fetchTransactions = async () => {
-				try {
-					const data = await getAllTransactions(accounts[0], user.token);
-
-					setTransactions(Array.isArray(data) ? data : []);
-				} catch (err) {
-					setError(err.message);
-				}
-			};
-
-			const fetchAccounts = async () => {
-				try {
-					const data = await getUserAccounts(user.token);
-					setAccounts(data.map(account => account.accountNumber));
-
-				} catch (err) {
-					setError(err.message);
-				}
-			};
-
-			fetchBalanceData();
-			fetchTransactions();
-			fetchAccounts();
+			fetchData();
 		}
 	}, [user.id, user.token]);
 
+	if (loading) {
+		return (
+			<div className="min-h-screen flex bg-white">
+				<CustomerSidebar className="z-20" />
+				<div className="flex-1 p-8 ml-12 flex flex-col gap-12 z-10">
+					<h1 className="text-2xl font-bold">Loading...</h1>
+				</div>
+			</div>
+		);
+	}
+
+	if (error) {
+		return (
+			<div className="min-h-screen flex bg-white">
+				<CustomerSidebar className="z-20" />
+				<div className="flex-1 p-8 ml-12 flex flex-col gap-6 z-10">
+					<h1 className="text-2xl font-bold text-red-600">Error</h1>
+					<p className="text-red-700">{error}</p>
+				</div>
+			</div>
+		);
+	}
+
 	return (
 		<div className="min-h-screen flex bg-white">
+			<CustomerSidebar />
 
-			<CustomerSidebar className="z-20" />
-			<div
-				className="absolute left-30 top-0 w-32 h-32 rounded-full opacity-80 z-0
-						bg-[radial-gradient(ellipse_53.95%_53.96%_at_46.56%_46.16%,_#A5438B_0%,_#351F78_100%)]"
-			/>
-
-			<div className="flex-1 p-8 ml-12 flex flex-col gap-12 z-10">
-
+			<div className="flex-1 p-8 ml-12 flex flex-col gap-12">
 
 				<div>
 					<h1 className="text-2xl font-bold mb-4">Your Cards</h1>
 
-
-					<div className="flex flex-cols-2 gap-12">
-
+					<div className="grid grid-cols-1 gap-10">
 						<CardList />
-
 					</div>
 
-
-					<div className="flex flex-cols-2 gap-10 mt-6">
-
-						{balanceData.map(x => (
-							<div key={x.id} className="w-85 h-20 rounded-2xl border-2 border-[#351F78] flex flex-col justify-center">
-								<div className="text-[#351F78] text-2xl text-center">Balance: {x.balance} EUR</div>
-								<div className="text-[#351F78] text-sm text-center">IBAN: {x.accountNumber}</div>
+					<div className="grid grid-cols-2 gap-6 mt-6">
+						{balances.map((x, i) => (
+							<div
+								key={i}
+								className={`mr-6 w-80 h-20 rounded-2xl border-2 border-[#351F78] flex flex-col justify-center ${i === 1 ? 'bg-[#351F78]' : ''
+									}`}
+							>
+								<div className={`text-2xl text-center ${i === 1 ? 'text-white' : 'text-[#351F78]'
+									}`}>
+									Balance: {x.balance} EUR
+								</div>
+								<div className={`text-sm text-center ${i === 1 ? 'text-white' : 'text-[#351F78]'
+									}`}>
+									IBAN: {x.accountNumber}
+								</div>
 							</div>
 						))}
 					</div>
 				</div>
 
-
 				<div className="w-full">
-					<h1 className="text-xl font-bold mb-6 text-[#351f78]">
-						Recent Transactions
-					</h1>
+					<h1 className="text-xl font-bold mb-6 text-[#351f78]">Recent Transactions</h1>
 					<table className="w-full text-left text-sm">
 						<thead className="text-[#707070]">
 							<tr className="border-b border-gray-300">
@@ -113,20 +122,22 @@ export default function Dashboard() {
 							</tr>
 						</thead>
 						<tbody>
-							{transactions.slice(0, 4).map((transaction, index) => (
-								<CustomerTableRow
-									key={index}
-									type={transaction.type}
-									amount={transaction.amount}
-									dateTime={transaction.dateTime}
-									description={transaction.description}
-									cardType={transaction.cardType}
-								/>
-							))}
+							{transactions
+								.sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime))
+								.slice(0, 4)
+								.map((transaction, index) => (
+									<CustomerTableRow
+										key={index}
+										type={transaction.type}
+										amount={transaction.amount}
+										dateTime={transaction.dateTime}
+										description={transaction.description}
+										cardType={transaction.cardType}
+									/>
+								))}
 						</tbody>
 					</table>
 				</div>
-
 			</div>
 		</div>
 	);

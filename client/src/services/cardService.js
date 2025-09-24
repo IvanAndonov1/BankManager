@@ -4,7 +4,7 @@ export const getAllCardsData = async (token) => {
 		headers: {
 			'authorization': `Bearer ${token}`
 		}
-	});
+	}).then(res => res.json());
 }
 
 export const getBalanceData = async (accountNumber, token) => {
@@ -13,5 +13,5 @@ export const getBalanceData = async (accountNumber, token) => {
 		headers: {
 			'authorization': `Bearer ${token}`
 		}
-	});
+	}).then(res => res.json());
 }

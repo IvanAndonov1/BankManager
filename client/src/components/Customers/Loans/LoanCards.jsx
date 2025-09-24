@@ -9,34 +9,32 @@ import { getUserAccounts } from "../../../services/userService";
 export default function LoanCards({ className = "" }) {
 
 	const [cards, setCards] = useState([]);
-	const [balanceData, setBalanceData] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 	const [accounts, setAccounts] = useState([]);
 	const { user } = useContext(AuthContext);
 
 	useEffect(() => {
+		const fetchAccounts = async () => {
+			try {
+				const data = await getUserAccounts(user.token);
+				setAccounts(Array.isArray(data) ? data : []);
+
+			} catch (err) {
+				setError(err.message);
+			}
+		};
+
+
+		fetchAccounts();
+	}, [user]);
+
+	useEffect(() => {
 		if (accounts.length > 0) {
 			const fetchCards = async () => {
 				try {
-					const response = await getAllCardsData(user.token);
-					if (!response.ok) throw new Error("Failed to fetch cards");
-
-					const data = await response.json();
-					setCards(data)
-				} catch (err) {
-					setError(err.message);
-				} finally {
-					setLoading(false);
-				}
-			};
-			const fetchBalanceData = async () => {
-				try {
-					const response = await getBalanceData(accounts[0].accountNumber, user.token);
-					if (!response.ok) throw new Error("Failed to fetch cards");
-
-					const data = await response.json();
-					setBalanceData(data);
+					const data = await getAllCardsData(user.token);
+					setCards(Array.isArray(data) ? data : []);
 				} catch (err) {
 					setError(err.message);
 				} finally {
@@ -44,23 +42,10 @@ export default function LoanCards({ className = "" }) {
 				}
 			};
 
-			const fetchAccounts = async () => {
-				try {
-					const data = await getUserAccounts(user.token);
-					setAccounts(Array.isArray(data) ? data : []);
 
-				} catch (err) {
-					setError(err.message);
-				}
-			};
-
-			fetchAccounts();
 			fetchCards();
-			fetchBalanceData();
 		}
-	}, [user]);
-
-
+	}, [accounts.length]);
 
 	if (loading) return <p>Loading cards...</p>;
 	if (error) return <p className="text-red-500">{error}</p>;
@@ -68,9 +53,9 @@ export default function LoanCards({ className = "" }) {
 		<div className={`w-3/4 h-32 rounded-2xl border border-gray-300 shadow-xl  bg-gradient-to-br from-[#351F78]/10 to-[#0B82BE]/10 text-white relative overflow-hidden ${className}`}>
 			<div className="h-full overflow-y-auto  p-4 space-y-4 text-black opacity-100">
 				{cards.map((obj, i) => {
-					return { ...obj, ...balanceData[i] };
+					return { ...obj, ...accounts[i] }
 				}).map(card => (
-					<div className=" rounded-2xl py-4 px-6 flex justify-between items-center hover:scale-105 transition-transform duration-300">
+					<div key={card.accountNumber} className=" rounded-2xl py-4 px-6 flex justify-between items-center hover:scale-105 transition-transform duration-300">
 						<div className=" origin-left ">
 
 							{
@@ -85,7 +70,7 @@ export default function LoanCards({ className = "" }) {
 						<div>
 							<p className="text-normal font-semibold">{card.cardType}</p>
 
-							<p size className="font-2xs mt-2">
+							<p size="py-2 px-2" className="font-2xs mt-2">
 								{card.accountNumber}
 							</p>
 							<p className="font-medium">{card.cardNumber} | {card.expiration}</p>

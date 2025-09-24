@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import Cards from "./Cards";
 import { AuthContext } from "../../contexts/AuthContext";
-import { useContext } from "react";
 import { getAllCardsData } from "../../services/cardService";
 
 export default function CardList() {
@@ -11,37 +10,33 @@ export default function CardList() {
 	const { user } = useContext(AuthContext);
 
 	useEffect(() => {
-		if (user.id, user.token) {
+		if (user.id && user.token) {
 			const fetchCards = async () => {
 				try {
-					const response = await getAllCardsData(user.token);
-					if (!response.ok) throw new Error("Failed to fetch cards");
-
-					const data = await response.json();
-					setCards(data);
+					const data = await getAllCardsData(user.token);
+					setCards(Array.isArray(data) ? data : []);
 				} catch (err) {
 					setError(err.message);
 				} finally {
 					setLoading(false);
 				}
 			};
-
 			fetchCards();
 		}
 	}, [user.id, user.token]);
 
 	if (loading) return <p className="text-[#351f78] font-bold">Loading cards...</p>;
 	if (error) return <p className="text-red-500">{error}</p>;
+	if (!cards.length) return <p className="text-[#351f78]">No cards found.</p>;
 
 	return (
-		<div className="flex flex-cols-1 sm:flex-cols-2 gap-16">
+		<div className="flex flex-wrap gap-68">
 			{cards.map((card, index) => (
 				<Cards
-
 					key={index}
-					cardNumber={card.cardNumber}
+					cardNumber={card.maskedNumber || card.cardNumber}
 					expiration={card.expiration}
-					cardType={card.cardType}
+					cardType={card.type || card.cardType}
 				/>
 			))}
 		</div>
