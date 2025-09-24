@@ -1,6 +1,8 @@
 package com.bank.dao;
 
 import com.bank.dto.*;
+import com.bank.models.Customer;
+import com.bank.models.User;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.*;
 import org.springframework.stereotype.Repository;
@@ -478,6 +480,37 @@ public class UserDirectoryDao {
 
         return jdbc.queryForMap(sql, new MapSqlParameterSource("id", id));
 
+    }
+    public int updatePassword(Long userId, String hashedPassword) {
+        String sql = "UPDATE users SET password = :pwd, updated_at = now() WHERE id = :id";
+        return jdbc.update(sql, new MapSqlParameterSource()
+                .addValue("pwd", hashedPassword)
+                .addValue("id", userId));
+    }
+
+    public Customer findCustomerByEmail(String email) {
+        String sql = """
+        SELECT id, name, password, first_name, last_name, email, created_at
+        FROM users
+        WHERE email = :email AND role = 'CUSTOMER'
+    """;
+
+        return jdbc.query(sql,
+                new MapSqlParameterSource("email", email),
+                rs -> {
+                    if (rs.next()) {
+                        return new Customer(
+                                rs.getLong("id"),
+                                rs.getString("name"),
+                                rs.getString("password"),
+                                rs.getString("first_name"),
+                                rs.getString("last_name"),
+                                rs.getString("email"),
+                                rs.getObject("created_at", java.time.OffsetDateTime.class)
+                        );
+                    }
+                    return null;
+                });
     }
 
 }
