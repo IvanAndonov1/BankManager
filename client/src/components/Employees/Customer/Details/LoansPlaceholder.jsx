@@ -3,18 +3,20 @@ import LoanDetailsDialog from "./LoanDetailsDialog";
 import { useParams } from "react-router";
 
 function LoansPlaceholder({ loanDetails }) {
-
 	const { userId } = useParams();
 	const [currentLoanDetails, setCurrentLoanDetails] = useState([]);
-	const [open, setOpen] = useState(false);
+	const [open, setOpen] = useState({
+		status: false,
+		id: 0
+	});
 
 	useEffect(() => {
-		setCurrentLoanDetails(loanDetails.filter(x => x.customerId == Number(userId)));
+		setCurrentLoanDetails(loanDetails.filter(x => x.customerId == Number(userId) && x.status == 'APPROVED'));
 	}, [loanDetails, userId])
 
 	return (
 		<div className="space-y-8">
-			{currentLoanDetails.map((ln) => (
+			{currentLoanDetails.map((ln, id) => (
 				<div key={ln.id} className="pt-2">
 					<div className="flex justify-between items-center py-6">
 						<span className="text-gray-600">
@@ -22,14 +24,14 @@ function LoansPlaceholder({ loanDetails }) {
 						</span>
 						<button
 							type="button"
-							onClick={() => setOpen(true)}
+							onClick={() => setOpen(state => ({ ...state, status: true, id }))}
 							className="text-[#6a1ea1] font-medium hover:underline"
 						>
 							View Details
 						</button>
 					</div>
 
-					<LoanDetailsDialog open={open} onClose={() => setOpen(false)} loanDetails={currentLoanDetails} />
+					<LoanDetailsDialog open={open.status} onClose={() => setOpen(state => ({ ...state, status: false, id: 0 }))} loanDetails={[currentLoanDetails[open.id]]} />
 
 					<div className="mt-2">
 						<div className="text-2xl md:text-[28px] font-semibold text-gray-900">
@@ -43,17 +45,6 @@ function LoansPlaceholder({ loanDetails }) {
 					<div className="mt-4 border-t" />
 				</div>
 			))}
-
-			<div className="pt-2 flex justify-center">
-				<button
-					type="button"
-					className="px-8 h-11 rounded-full text-white font-medium shadow
-                     bg-gradient-to-r from-[#351F78] via-[#3a4fb6] to-[#0b84b9]
-                     hover:opacity-95"
-				>
-					Confirm
-				</button>
-			</div>
 		</div>
 	);
 }
