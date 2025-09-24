@@ -13,7 +13,7 @@ public class PasswordResetTokenDao {
 
     public PasswordResetTokenDao(NamedParameterJdbcTemplate jdbc) {
         this.jdbc = jdbc;
-    }
+    }  
 
     public void create(Long userId, String code, OffsetDateTime expiresAt) {
         String sql = """

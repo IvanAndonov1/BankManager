@@ -20,6 +20,7 @@ public class PasswordResetService {
     private final PasswordEncoder encoder;
     private final JavaMailSender mailSender;
 
+
     private final Random random = new SecureRandom();
 
     public PasswordResetService(PasswordResetTokenDao tokenDao,

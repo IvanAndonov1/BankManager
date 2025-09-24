@@ -20,6 +20,7 @@ public class PasswordResetController {
         this.userDao = userDao;
     }
 
+
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgot(@RequestBody Map<String, String> body) {
         String email = body.get("email");
