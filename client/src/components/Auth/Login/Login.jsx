@@ -98,7 +98,7 @@ export default function Login() {
 			const roleKey = user.role || "";
 			const destination = roles[roleKey] || roles[user.role] || "/login";
 			console.log(destination);
-			
+
 
 			navigate(destination);
 
@@ -213,7 +213,7 @@ export default function Login() {
 									<span>Remember me</span>
 								</label>
 								<Link to="/verify-code" className=" hover:underline ">
-								<a className="cursor-pointer hover:underline">Forgot Password?</a>
+									Forgot Password?
 								</Link>
 							</div>
 
