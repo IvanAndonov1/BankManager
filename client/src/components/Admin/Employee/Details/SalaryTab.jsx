@@ -1,8 +1,20 @@
-import { useState } from "react";
-import { Link } from "react-router";
+import { use, useState } from "react";
+import { editEmployeeInformation } from "../../../../services/adminService";
+import { useParams } from "react-router";
+import { AuthContext } from "../../../../contexts/AuthContext";
 
-export default function SalaryTab({ value = 1500 }) {
+export default function SalaryTab({ value = 1500, employee, setter }) {
+	const { employeeId } = useParams();
+	const { user } = use(AuthContext);
 	const [salary, setSalary] = useState(value);
+
+	function updateSalary() {
+		const payload = { ...employee, salary: salary };
+
+		editEmployeeInformation(employeeId, user.token, payload)
+			.then((res) => setter(res));
+	}
+
 	return (
 		<div className="p-10 flex flex-col items-center gap-10">
 			<div className="flex items-center justify-center gap-16 mt-10">
@@ -10,7 +22,12 @@ export default function SalaryTab({ value = 1500 }) {
 				<div className="text-3xl">{salary} EUR</div>
 				<button type="button" aria-label="increase" onClick={() => setSalary((s) => s + 50)} className="cursor-pointer w-12 h-12 rounded-full ring-2 ring-[#351F78] text-[#351F78] text-3xl flex items-center justify-center">+</button>
 			</div>
-			<Link className="px-8 p-2 cursor-pointer h-11 rounded-full text-white font-medium shadow bg-gradient-to-r from-[#351F78] via-[#3a4fb6] to-[#0b84b9] hover:opacity-95">Update</Link>
+			<button
+				onClick={updateSalary}
+				className="px-8 p-2 cursor-pointer h-11 rounded-full text-white font-medium shadow bg-gradient-to-r from-[#351F78] via-[#3a4fb6] to-[#0b84b9] hover:opacity-95"
+			>
+				Update
+			</button>
 		</div>
 	);
 } 

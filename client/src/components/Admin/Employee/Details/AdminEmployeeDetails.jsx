@@ -50,7 +50,7 @@ export default function AdminEmployeeDetails() {
 						<Tabs items={[{ key: "profile", label: "Profile" }, { key: "salary", label: "Salary" }, { key: "history", label: "Salary History" }]} activeKey={tab} onChange={setTab} />
 						<div className="mt-3 border-t" />
 						{tab === "profile" && <ProfileTab key={employee.username} employee={employee} setter={setEmployeeDetails} />}
-						{tab === "salary" && <SalaryTab value={1500} />}
+						{tab === "salary" && <SalaryTab value={employee.salary} employee={employee} setter={setEmployeeDetails} />}
 						{tab === "history" && <SalaryHistoryTab />}
 					</div>
 				</div>
