@@ -3,9 +3,11 @@ import UserHeader from "../../common/UserHeader";
 import FilterCard from "../../common/FilterCard";
 import DataTable from "../../common/DataTable";
 import AdminTableRow from "./AdminTableRow";
+import EmployeeRegisterModal from "./EmployeeRegistrationModal";
 import { use, useEffect, useMemo, useState } from "react";
 import { AuthContext } from "../../../contexts/AuthContext";
 import { getAllEmployees } from "../../../services/adminService";
+import { Plus } from "lucide-react";
 
 const n = (v) => (v ?? "").toString().trim().toLowerCase();
 
@@ -34,6 +36,7 @@ export default function AdminDashboard() {
 	const { user } = use(AuthContext);
 	const [employees, setEmployees] = useState([]);
 	const [filters, setFilters] = useState(null);
+	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	useEffect(() => {
 		if (!user?.token) return;
@@ -67,20 +70,39 @@ export default function AdminDashboard() {
 					/>
 				</div>
 
-				<div className="bg-white rounded-xl shadow p-4 overflow-x-auto">
-					<DataTable headers={["User", "Date", "Status", "Details"]}>
-						{visible.length > 0 ? (
-							visible.map((x) => <AdminTableRow key={x.id ?? JSON.stringify(x)} {...x} />)
-						) : (
-							<tr>
-								<td colSpan={4} className="py-6 text-center text-gray-500">
-									No data available!
-								</td>
-							</tr>
-						)}
-					</DataTable>
+				<div className="bg-white rounded-xl shadow p-4">
+					<div className="flex justify-end mb-4">
+						<button
+							onClick={() => setIsModalOpen(true)}
+							className="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-md text-white hover:opacity-90 transition-opacity"
+							style={{ backgroundColor: '#351f78' }}
+						>
+							<Plus size={20} />
+							Add Employee
+						</button>
+					</div>
+
+					<div className="overflow-x-auto">
+						<DataTable headers={["User", "Date", "Status", "Details"]}>
+							{visible.length > 0 ? (
+								visible.map((x) => <AdminTableRow key={x.id ?? JSON.stringify(x)} {...x} />)
+							) : (
+								<tr>
+									<td colSpan={4} className="py-6 text-center text-gray-500">
+										No data available!
+									</td>
+								</tr>
+							)}
+						</DataTable>
+					</div>
 				</div>
 			</div>
+
+			<EmployeeRegisterModal
+				isOpen={isModalOpen}
+				onClose={() => setIsModalOpen(false)}
+				setter={setEmployees}
+			/>
 		</div>
 	);
 }
