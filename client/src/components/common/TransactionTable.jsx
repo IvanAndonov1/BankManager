@@ -4,7 +4,7 @@ import { useContext } from "react";
 import { getAllTransactions, getUserAccount, getUserAccounts } from "../../services/userService";
 import { useEffect, useState } from "react";
 
-export default function TransactionTable({ showAll = false }) {
+export default function TransactionTable({ showAll = false, isModalOpen }) {
 	const [transactions, setTransactions] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
@@ -35,7 +35,7 @@ export default function TransactionTable({ showAll = false }) {
 
 			fetchData();
 		}
-	}, [user.id, user.token]);
+	}, [user.id, user.token, isModalOpen]);
 
 	if (loading) return <p className="text-[#351f78] font-bold">Loading transactions...</p>;
 	if (error) return <p className="text-red-500">{error}</p>;

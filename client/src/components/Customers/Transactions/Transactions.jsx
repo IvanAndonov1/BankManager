@@ -34,7 +34,7 @@ export default function Transactions() {
 						<input className='mt-4 w-96 p-3 text-gray-400 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-[#351f78] rounded-3xl' placeholder='Search transactions...' type="text" />
 					</div>
 
-					<TransactionsTable showAll={showAll} />
+					<TransactionsTable showAll={showAll} isModalOpen={isModalOpen} />
 					<div className="flex justify-end mt-8">
 						<button className="bg-[#351f78] rounded-3xl p-2 px-6 text-white"
 							onClick={() => setShowAll(!showAll)}
