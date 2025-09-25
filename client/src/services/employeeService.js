@@ -9,3 +9,5 @@ export const getAllLoanDetails = (token, userId) => requester.get(`${baseUrl}/lo
 export const approveCreditHandler = (creditId, token, data) => requester.post(`${baseUrl}/loans/applications/${creditId}/decision`, data, { 'Authorization': `Bearer ${token}` });
 
 export const declineCreditHandler = (creditId, token, data) => requester.post(`${baseUrl}/loans/applications/${creditId}/decision`, data, { 'Authorization': `Bearer ${token}` });
+
+export const editCustomerInfo = (customerId, token, data) => requester.put(`${baseUrl}/customers/${customerId}`, { 'Authorization': `Bearer ${token}` }, data);
