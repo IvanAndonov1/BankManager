@@ -85,12 +85,12 @@ export default function Dashboard() {
 				<div>
 					<h1 className="text-2xl font-bold mb-4">Your Cards</h1>
 
-					<div className="flex items-center mb-6 cursor-pointer">
+					<div className="flex items-center mb-6 cursor-pointer gap-8">
                  
 					<div className="grid grid-cols-1 gap-10">
 						<CardList />
 					</div> 
-					<button className="ml-8 rounded-full bg-gradient-to-b from-[#351F78] to-[#0B82BE] w-8 h-8 text-white text-center pt-[1px] font-bold text-xl">+</button>
+					<button className=" rounded-full bg-gradient-to-b from-[#351F78] to-[#0B82BE] w-8 h-8 text-white text-center pt-[1px] font-bold text-xl">+</button>
 					</div>
 
 					<div className="grid grid-cols-2 gap-4 mt-6">

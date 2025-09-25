@@ -4,6 +4,7 @@ import TransactionsTable from '../../common/TransactionTable';
 import { useState } from 'react';
 import Modal from './TransactionModal';
 import AnotherAccount from './ToAntoherAccount';
+import AiChatBot from '../../common/aiChatBot';
 
 
 
@@ -15,6 +16,8 @@ export default function Transactions() {
 	return (
 		<div className="min-h-screen flex  bg-white">
 			<CustomerSidebar />
+			
+			<AiChatBot />
 			<div className="flex-1 p-8 ml-12 flex flex-col gap-12">
 				<h1 className="text-3xl font-bold mb-4 mt-4">Make Transactions</h1>
 				<div className="grid grid-cols-2 gap-2">

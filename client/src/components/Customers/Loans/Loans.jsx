@@ -4,6 +4,7 @@ import { use, useEffect, useState, useCallback } from "react";
 import Modal from "./LoanModal";
 import { AuthContext } from "../../../contexts/AuthContext";
 import { getLoanApplications } from "../../../services/loanService";
+import AiChatBot from "../../common/aiChatBot";
 
 const fmtMoney = (n, cur = "EUR") =>
 	typeof n === "number"
@@ -58,6 +59,7 @@ export default function Loans() {
 	return (
 		<div className="min-h-screen flex bg-white">
 			<CustomerSidebar />
+			<AiChatBot />
 			<div className="flex-1 items-center justify-center p-12 space-y-12 ml-24">
 				<div className="w-full flex justify-between items-center">
 					<h2 className="text-2xl font-bold mb-4">Your Credits</h2>

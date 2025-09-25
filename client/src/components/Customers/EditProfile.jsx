@@ -75,9 +75,9 @@ export default function EditProfile() {
         <h2 className="text-2xl font-bold mb-4">Edit Profile</h2>
 
         <form className="grid grid-cols-1 md:grid-cols-2 gap-8" onSubmit={handleSubmit}>
-  {/* Left Column */}
+ 
   <div className="space-y-6">
-    {/* Username (disabled) 👇 */}
+   
     <div>
       <label className="block text-sm font-medium text-gray-700">
         Username
@@ -127,7 +127,7 @@ export default function EditProfile() {
     </div>
   </div>
 
-  {/* Right Column */}
+  
   <div className="space-y-6">
     <div>
       <label className="block text-sm font-medium text-gray-700">
@@ -159,7 +159,7 @@ export default function EditProfile() {
       </label>
       <input
         type="date"
-        className="mt-1 block w-full border border-gray-300 rounded-full shadow-sm p-2"
+        className="mt-1 block w-full border border-gray-300 rounded-full shadow-sm p-2 bg-gray-100 text-gray-500 cursor-not-allowed"
         value={dateOfBirth || ""}
         onChange={(e) => setDateOfBirth(e.target.value)}
       />
@@ -192,7 +192,7 @@ export default function EditProfile() {
     </div>
   </div>
 
-  {/* Save Button below both columns 👇 */}
+
   <div className="col-span-1 md:col-span-2 flex justify-end mt-6">
     <button
       type="submit"
