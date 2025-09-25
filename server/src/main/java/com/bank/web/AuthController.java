@@ -52,7 +52,7 @@ public class AuthController {
     }
 
     @PostMapping("/register/employee")
-    public RegisterResponseDto registerEmployee(@RequestBody RegisterRequestDto req){
+    public RegisterEmployeeResponseDto registerEmployee(@RequestBody RegisterEmployeeRequestDto req){
 
         if(!SecurityUtil.isAdmin()){
             throw new AccessDeniedException("Only Admin can register employees!");

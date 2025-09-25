@@ -66,7 +66,8 @@ public class UserDirectoryDao {
         String sql = """
                     SELECT u.id, u.name AS username, u.first_name, u.last_name, u.email,
                     u.date_of_birth, u.phone_number, u.home_address, u.egn,
-                    u.role, u.active, u.created_at
+                    u.role, u.active, u.created_at,
+                    u.salary
                     FROM users u
                     WHERE u.id = :id AND u.role = 'EMPLOYEE'
                 """;
@@ -81,7 +82,8 @@ public class UserDirectoryDao {
         String sql = """
                     SELECT u.id, u.name AS username, u.first_name, u.last_name, u.email,
                     u.date_of_birth, u.phone_number, u.home_address, u.egn,
-                    u.role, u.active, u.created_at
+                    u.role, u.active, u.created_at,
+                    u.salary
                     FROM users u
                     WHERE u.name = :uname AND u.role = 'EMPLOYEE'
                 """;
@@ -131,7 +133,8 @@ public class UserDirectoryDao {
         String sql = """
                 SELECT u.id, u.name AS username, u.first_name, u.last_name, u.email,
                        u.date_of_birth, u.phone_number, u.home_address, u.egn,
-                       u.role, u.active, u.created_at
+                       u.role, u.active, u.created_at,
+                       u.salary
                 FROM users u
                 WHERE u.role = 'EMPLOYEE'
                   AND ( :activeFilter = false OR u.active = :active )
@@ -230,7 +233,8 @@ public class UserDirectoryDao {
                 getStr(r, "egn"),
                 getStr(r, "role"),
                 getBool(r, "active"),
-                getOffset(r, "created_at")
+                getOffset(r, "created_at"),
+                getBigDec(r, "salary")
         );
 
     }
@@ -481,6 +485,12 @@ public class UserDirectoryDao {
             sets++;
         }
 
+        if(req.salary() != null){
+            sql.append("salary=:salary, ");
+            p.addValue("salary", req.salary());
+            sets++;
+        }
+
         if (sets == 0) return 0;
         sql.setLength(sql.length() - 2);
         sql.append(" WHERE id=:id");
@@ -496,7 +506,8 @@ public class UserDirectoryDao {
             var rows = jdbc.queryForList("""
         SELECT u.id, u.name AS username, u.first_name, u.last_name, u.email,
                u.date_of_birth, u.phone_number, u.home_address, u.egn,
-               u.role, u.active, u.created_at
+               u.role, u.active, u.created_at,
+               u.salary
         FROM users u
         WHERE u.id = :id AND u.role = 'EMPLOYEE'
         """, p);

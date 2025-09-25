@@ -2,20 +2,17 @@ package com.bank.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 
-public record EmployeeDto(
+public record RegisterEmployeeResponseDto(
         Long id,
         String username,
+        String email,
+        String role,
         String firstName,
         String lastName,
-        String email,
         LocalDate dateOfBirth,
         String phoneNumber,
         String homeAddress,
         String egn,
-        String role,
-        boolean active,
-        OffsetDateTime createdAt,
         BigDecimal salary
 ) {}
