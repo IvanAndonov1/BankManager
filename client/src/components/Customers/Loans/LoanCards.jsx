@@ -1,19 +1,10 @@
 import Card from "../Cards";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../../../contexts/AuthContext";
-import { useContext } from "react";
 import { getAllCardsData } from "../../../services/cardService";
 import { getUserAccounts } from "../../../services/userService";
 
-export default function LoanCards({
-	className = "",
-	isSelectable = false,
-	selectedCard = null,
-	onCardSelect = null,
-	excludeCard = null,
-	displayMode = "scroll",
-	cardSize = "normal"
-}) {
+export default function LoanCards({ className = "", onSelect }) {
 	const [cards, setCards] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
@@ -48,106 +39,64 @@ export default function LoanCards({
 
 			fetchCards();
 		}
-	}, [accounts.length]);
+	}, [accounts.length, user.token]);
 
 	if (loading) return <p>Loading cards...</p>;
 	if (error) return <p className="text-red-500">{error}</p>;
 
-	const combinedCards = cards.map((obj, i) => {
-		return { ...obj, ...accounts[i] }
-	});
-
-	if (displayMode === "grid") {
-		return (
-			<div className={`space-y-2 ${className}`}>
-				{combinedCards.map(card => (
-					<div
-						key={card.accountNumber}
-						className={`
-							rounded-xl p-3 cursor-pointer transition-all duration-300 
-							flex justify-between items-center
-							${isSelectable && selectedCard?.accountNumber === card.accountNumber
-								? "border-3 border-[#351F78] bg-purple-50/30 scale-102 shadow-md"
-								: "border border-gray-200 hover:border-gray-300 hover:scale-101"
-							}
-						`}
-						onClick={() => isSelectable && onCardSelect?.(card)}
-					>
-						<div className="flex items-center gap-4">
-							<div className="flex-shrink-0">
-								<Card
-									width="w-20"
-									height="h-12"
-									textSize="text-[6px]"
-									logoSize="w-3 h-2"
-									size="py-1 px-2"
-									margin="mt-1"
-									{...card}
-								/>
+	return (
+		<div
+			className={`w-full h-full rounded-2xl border border-gray-300 shadow-xl text-white relative overflow-hidden ${className}`}
+		>
+			<div className="h-full p-4 space-y-4 text-black opacity-100">
+				{cards
+					.map((obj, i) => ({ ...obj, ...accounts[i] }))
+					.map((card) => (
+						<div
+							key={card.accountNumber}
+							className="rounded-2xl py-4 px-2 gap-4 flex justify-between items-center hover:scale-105 transition-transform duration-300 cursor-pointer"
+							onClick={() => onSelect?.(card)} 
+						>
+							<div className="origin-left">
+								{card.cardType === "Debit Visa" ? (
+									<Card
+										width="w-32"
+										height="h-20"
+										textSize="text-[5px]"
+										logoSize="w-4 h-2"
+										size="py-2 px-2"
+										margin="mt-2"
+										className="bg-gradient-to-br from-[#351F78]/10 to-[#0B82BE]/10 border border-gray-300"
+										{...card}
+									/>
+								) : (
+									<Card
+										width="w-32"
+										height="h-20"
+										textSize="text-[5px]"
+										logoSize="w-4 h-2"
+										size="py-2 px-2"
+										margin="mt-2"
+										{...card}
+									/>
+								)}
 							</div>
 							<div>
-								<p className="text-sm font-medium text-gray-800">
-									{card.accountNumber}
-								</p>
-								<p className="text-xs text-gray-600">
+								<p className="text-normal font-semibold">{card.cardType}</p>
+								<p className="font-2xs mt-2">{card.accountNumber}</p>
+								<p className="font-medium">
 									{card.cardNumber} | {card.expiration}
 								</p>
 							</div>
-						</div>
 
-						<div className="text-right">
-							<p className="text-xs text-gray-600">Balance</p>
-							<p className="text-lg font-semibold text-gray-800">
-								{card.balance} EUR
-							</p>
+							<div className="text-right border-l-2 border-gray-300 pl-6">
+								<p className="text-lg text-black font-normal text-left">Balance</p>
+								<p className="text-xl text-gray-600 font-semibold mt-2 text-left">
+									{card.balance} EUR
+								</p>
+							</div>
 						</div>
-					</div>
-				))}
-			</div>
-		);
-	}
-
-	return (
-		<div className={`w-3/4 h-32 rounded-2xl border border-gray-300 shadow-xl bg-gradient-to-br from-[#351F78]/10 to-[#0B82BE]/10 text-white relative overflow-hidden ${className}`}>
-			<div className="h-full overflow-y-auto p-4 space-y-4 text-black opacity-100">
-				{combinedCards.map(card => (
-					<div
-						key={card.accountNumber}
-						className={`
-							rounded-2xl py-4 px-6 flex justify-between items-center transition-transform duration-300
-							${isSelectable ? "cursor-pointer hover:scale-105" : "hover:scale-105"}
-							${isSelectable && selectedCard?.accountNumber === card.accountNumber
-								? "bg-purple-100 border-2 border-[#351F78]"
-								: ""
-							}
-						`}
-						onClick={() => isSelectable && onCardSelect?.(card)}
-					>
-						<div className="origin-left">
-							{card.cardType == 'Debit Visa' ?
-								<Card width="w-32" height="h-20" textSize="text-[5px]" logoSize="w-4 h-2"
-									size="py-2 px-2" margin="mt-2" {...card}></Card>
-								:
-								<Card width="w-32" height="h-20" textSize="text-[5px]" logoSize="w-4 h-2"
-									size="py-2 px-2" margin="mt-2" {...card}></Card>
-							}
-						</div>
-						<div>
-							<p className="text-normal font-semibold">{card.cardType}</p>
-							<p size="py-2 px-2" className="font-2xs mt-2">
-								{card.accountNumber}
-							</p>
-							<p className="font-medium">{card.cardNumber} | {card.expiration}</p>
-						</div>
-
-						<div className="text-right border-l-2 border-gray-300 pl-6">
-							<p className="text-lg text-black font-normal text-left">Balance</p>
-							<p className="text-xl text-gray-600 font-semibold mt-2 text-left">
-								{card.balance} EUR
-							</p>
-						</div>
-					</div>
-				))}
+					))}
 			</div>
 		</div>
 	);

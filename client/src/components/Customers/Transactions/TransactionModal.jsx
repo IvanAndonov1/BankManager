@@ -1,5 +1,6 @@
 import { use, useEffect, useState } from "react";
 import LoanCards from "../Loans/LoanCards";
+import Card from "../Cards";
 import { FaCircleCheck } from "react-icons/fa6";
 import { AuthContext } from "../../../contexts/AuthContext";
 import { transferMoneyBetweenCards } from "../../../services/cardService";
@@ -63,6 +64,16 @@ export default function Modal({ isOpen, onClose, children }) {
 	}, [isOpen, onClose]);
 
 	if (!isOpen) return null;
+
+	const handleSelectAccount = (account, type) => {
+		if (type === "from") {
+			setFromAccount(account);
+			setShowFromSelector(false);
+		} else {
+			setToAccount(account);
+			setShowToSelector(false);
+		}
+	};
 
 	return (
 		<div
@@ -157,6 +168,34 @@ export default function Modal({ isOpen, onClose, children }) {
 					{children ? <div className="mt-4">{children}</div> : null}
 				</div>
 			</div>
+
+			
+			{showFromSelector && (
+				<div className="fixed inset-0 flex items-center justify-center z-50">
+					<div
+						className="absolute inset-0 bg-black opacity-50"
+						onClick={() => setShowFromSelector(false)}
+					></div>
+					<div className="relative bg-white rounded-2xl shadow-lg p-6 z-10 w-[600px]">
+						<h2 className="text-xl mb-4">Select From Account</h2>
+						<LoanCards onSelect={(account) => handleSelectAccount(account, "from")} />
+					</div>
+				</div>
+			)}
+
+			{showToSelector && (
+				<div className="fixed inset-0 flex items-center justify-center z-50">
+					<div
+						className="absolute inset-0 bg-black opacity-50"
+						onClick={() => setShowToSelector(false)}
+					></div>
+					<div className="relative bg-white rounded-2xl shadow-lg p-6 z-10 w-[600px]">
+						<h2 className="text-xl mb-4">Select To Account</h2>
+						<LoanCards onSelect={(account) => handleSelectAccount(account, "to")} />
+					</div>
+				</div>
+			)}
 		</div>
 	);
 }
+
