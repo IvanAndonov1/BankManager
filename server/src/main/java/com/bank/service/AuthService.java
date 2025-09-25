@@ -1,9 +1,7 @@
 package com.bank.service;
 
 import com.bank.dao.BlacklistedTokenDao;
-import com.bank.dto.AuthLoginResponse;
-import com.bank.dto.RegisterRequestDto;
-import com.bank.dto.RegisterResponseDto;
+import com.bank.dto.*;
 import com.bank.security.JwtService;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -98,21 +96,25 @@ public class AuthService {
 }
 
     @Transactional
-    public RegisterResponseDto registerEmployee(RegisterRequestDto req){
+    public RegisterEmployeeResponseDto registerEmployee(RegisterEmployeeRequestDto req){
 
         if (req.username() == null || req.password() == null ||
-                req.firstName() == null || req.lastName() == null || req.email() == null) {
+                req.firstName() == null || req.lastName() == null || req.email() == null || req.salary() == null) {
             throw new IllegalArgumentException("All fields are required");
+        }
+
+        if(req.salary().signum() < 0){
+            throw new IllegalArgumentException("Invalid salary (must be >= 0)");
         }
 
         String hashed = encoder.encode(req.password());
 
         Long id = jdbc.queryForObject("""
                 INSERT INTO users(name, password, first_name, last_name, email, role, created_at, active,
-                date_of_birth, phone_number, home_address, egn
+                date_of_birth, phone_number, home_address, egn, salary
                 )
                 VALUES (:u, :p, :f, :l, :e, 'EMPLOYEE', now(), true,
-                :dob, :phone, :addr, :egn)
+                :dob, :phone, :addr, :egn, :salary)
                 RETURNING id
                 """,
                 new MapSqlParameterSource()
@@ -124,10 +126,11 @@ public class AuthService {
                         .addValue("dob", req.dateOfBirth())
                         .addValue("phone", req.phoneNumber())
                         .addValue("addr", req.homeAddress())
-                        .addValue("egn", req.egn()),
+                        .addValue("egn", req.egn())
+                        .addValue("salary", req.salary()),
                 Long.class);
 
-        return new RegisterResponseDto(
+            return new RegisterEmployeeResponseDto(
                 id,
                 req.username(),
                 req.email(),
@@ -137,7 +140,8 @@ public class AuthService {
                 req.dateOfBirth(),
                 req.phoneNumber(),
                 req.homeAddress(),
-                req.egn()
+                req.egn(),
+                req.salary()
         );
 
     }
