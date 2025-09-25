@@ -54,7 +54,8 @@ body - json:
   "dateOfBirth": "1993-05-07",
   "phoneNumber": "+359888111222",
   "homeAddress": "Sofia, Test 1",
-  "egn": "9305070000"
+  "egn": "9305070000",
+  "salary": "1800.00"
 }
 връща:
 {
@@ -67,7 +68,8 @@ body - json:
     "dateOfBirth": "1993-05-07",
     "phoneNumber": "+359888111222",
     "homeAddress": "Sofia, Test 1",
-    "egn": "9305070000"
+    "egn": "9305070000",
+    "salary": "1800.00"
 }
 
 POST /api/auth/login
