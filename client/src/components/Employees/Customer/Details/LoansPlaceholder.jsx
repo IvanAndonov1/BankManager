@@ -65,6 +65,8 @@ function LoansPlaceholder({ loanDetails }) {
 				</div>
 			))}
 
+			{currentLoans.length <= 0 && <h1>No loans data.</h1>}
+
 			<LoanDetailsDialog
 				open={open.status}
 				onClose={() => setOpen({ status: false, index: -1 })}
