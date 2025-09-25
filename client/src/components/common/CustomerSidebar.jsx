@@ -36,7 +36,7 @@ function CustomerSidebar() {
 		"bg-white/10 backdrop-blur-xl border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.2)] before:absolute before:inset-0 before:rounded-3xl before:bg-gradient-to-t before:from-white/20 before:to-transparent before:border-t before:border-white/40 overflow-hidden";
 
 	return (
-		<div className="w-80 min-h-screen bg-gradient-to-b from-[#351F78] to-[#0B82BE] rounded-r-3xl">
+		<div className="w-52 min-h-screen bg-gradient-to-b from-[#351F78] to-[#0B82BE] rounded-r-3xl">
 			<div className="flex flex-col text-white items-center py-12">
 				<div className="container w-24 h-24 rounded-full bg-white p-4" />
 				<h1 className="text-3xl font-semibold mt-4">
