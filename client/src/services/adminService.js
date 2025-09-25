@@ -11,3 +11,5 @@ export const editEmployeeInformation = (employeeId, token, data) => requester.pu
 export const promoteEmployee = (employeeId, token) => requester.put(`${baseUrl}/employees/${employeeId}/promote`, { 'Authorization': `Bearer ${token}` }, {});
 
 export const fireEmployee = (employeeId, token) => requester.put(`${baseUrl}/employees/${employeeId}/fire`, { 'Authorization': `Bearer ${token}` }, {});
+
+export const registerEmployee = (token, data) => requester.post(`${baseUrl}/auth/register/employee`, data, { 'Authorization': `Bearer ${token}` });
