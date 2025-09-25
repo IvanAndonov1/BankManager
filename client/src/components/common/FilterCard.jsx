@@ -1,21 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 
-/**
- * Props:
- * - fields?: Array<{
- *     key: string;
- *     label: string;
- *     type: "text" | "number" | "select" | "radio";
- *     placeholder?: string;
- *     options?: string[]; // for select/radio
- *   }>
- * - initialValues?: Record<string, any>
- * - onApply?: (values) => void
- * - onReset?: () => void
- *
- * Ако НЕ подадеш `fields`, компонентът работи в стар режим:
- *  { accountType, username, email, egn, idNumber }
- */
 export default function FilterCard({
 	initialValues = {},
 	onApply,
@@ -74,7 +58,6 @@ export default function FilterCard({
 
 	return (
 		<div className="space-y-4">
-			{/* Header */}
 			<div className="flex items-center justify-between">
 				<div className="flex items-center gap-2 font-medium text-gray-700">
 					<span style={{ color: "#351f78" }}>Filter</span>
@@ -100,7 +83,6 @@ export default function FilterCard({
 				)}
 			</div>
 
-			{/* Grid inputs */}
 			<div className="grid grid-cols-1 md:grid-cols-2 gap-5">
 				{usedFields
 					.filter((f) => !(f.key === "accountType" && f.type === "radio"))
@@ -140,7 +122,6 @@ export default function FilterCard({
 					})}
 			</div>
 
-			{/* Actions */}
 			<div className="flex items-center justify-end gap-2">
 				<button
 					type="button"
