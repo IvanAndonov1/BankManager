@@ -1,20 +1,12 @@
-import requester from "./requester"; // your fetch wrapper
-const baseUrl = "http://localhost:8080/api/loans";
+import requester from "./requester";
+const baseUrl = "http://localhost:8080/api";
 
-// Function to request a loan quote
-export const getLoanQuote = async (loanData, token) => {
-  const body = {
-    customerId: loanData.customerId,
-    requestedAmount: loanData.requestedAmount,
-    termMonths: loanData.termMonths,
-    currentJobStartDate: loanData.currentJobStartDate,
-    netSalary: loanData.netSalary
-  };
+export const getLoanQuote = (loanData, token) =>
+	requester.get(`${baseUrl}/loans/quote?requestedAmount=${loanData.requestedAmount}&termMonths=${loanData.termMonths}`,
+		{ 'Authorization': `Bearer ${token}` });
 
-  // Add Authorization header if your backend requires a token
-  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+export const submitLoanApplication = (loanData, token) =>
+	requester.post(`${baseUrl}/loans/applications`, loanData, { 'Authorization': `Bearer ${token}` });
 
-  // requester.post automatically parses JSON and sends body
-  const result = await requester.post(`${baseUrl}/quote`, body, headers);
-  return result; // will be the JSON response from backend
-};
+export const getLoanApplications = (token) =>
+	requester.get(`${baseUrl}/loans/applications/mine`, { 'Authorization': `Bearer ${token}` });

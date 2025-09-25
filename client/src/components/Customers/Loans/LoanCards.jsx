@@ -53,9 +53,9 @@ export default function LoanCards({ className = "", onSelect }) {
 					.map((obj, i) => ({ ...obj, ...accounts[i] }))
 					.map((card) => (
 						<div
-							key={card.accountNumber}
+							key={card.publicId}
 							className="rounded-2xl py-4 px-2 gap-4 flex justify-between items-center hover:scale-105 transition-transform duration-300 cursor-pointer"
-							onClick={() => onSelect?.(card)} 
+							onClick={() => onSelect?.(card)}
 						>
 							<div className="origin-left">
 								{card.cardType === "Debit Visa" ? (
