@@ -7,7 +7,7 @@ function AdminTableRow(props) {
 		<tr className="hover:bg-gray-50">
 			<td className="py-3">{props.username}</td>
 			<td className="py-3">{date || 'date'}</td>
-			<td className="py-3 text-green-600">{props.active ? 'active' : 'disabled'}</td>
+			<td className={`${props.active ? 'py-3 text-green-600' : 'py-3 text-red-600'}`}>{props.active ? 'active' : 'disabled'}</td>
 			<td className="py-3">
 				<Link
 					to={`/admin/employee/${props.id}`}
