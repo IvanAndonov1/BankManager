@@ -22,29 +22,26 @@ public class DirectoryController {
     }
 
     @GetMapping("/customers/all")
-    public List<CustomerDto> customersAll(@RequestParam(defaultValue = "0") int page,
-                                                  @RequestParam(defaultValue = "20") int size,
-                                                  @RequestParam(required = false) String query,
-                                                  @RequestParam(required = false) Boolean active) {
+    public List<CustomerDto> customersAll(@RequestParam(required = false) String query,
+                                          @RequestParam(required = false) Boolean active) {
+
         if (!isEmployeeOrAdmin()) {
             throw new AccessDeniedException("Forbidden");
         }
 
-        return dao.listCustomersDetailed(page, size, query, active);
+        return dao.listCustomersDetailed(query, active);
 
     }
 
     @GetMapping("/employees/all")
-    public List<EmployeeDto> employeesAll(@RequestParam(defaultValue = "0") int page,
-                                          @RequestParam(defaultValue = "20") int size,
-                                          @RequestParam(required = false) String query,
+    public List<EmployeeDto> employeesAll(@RequestParam(required = false) String query,
                                           @RequestParam(required = false) Boolean active) {
 
         if (!isAdmin()) {
             throw new AccessDeniedException("Forbidden");
         }
 
-        return dao.listEmployeesDetailed(page, size, query, active);
+        return dao.listEmployeesDetailed(query, active);
 
     }
 

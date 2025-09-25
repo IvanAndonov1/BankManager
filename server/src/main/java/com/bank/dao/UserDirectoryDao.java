@@ -4,6 +4,7 @@ import com.bank.dto.*;
 import com.bank.models.Customer;
 import com.bank.models.User;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.*;
 import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
@@ -90,73 +91,67 @@ public class UserDirectoryDao {
 
     }
 
-    public List<CustomerDto> listCustomersDetailed(int page, int size, String query, Boolean active) {
-
-        int limit = Math.max(1, Math.min(100, size));
-        int offset = Math.max(0, page) * limit;
+    public List<CustomerDto> listCustomersDetailed(String query, Boolean active) {
 
         boolean qFilter = (query != null && !query.isBlank());
+
         String qLike = qFilter ? "%" + query + "%" : null;
 
         String sql = """
-            SELECT u.id, u.name AS username, u.first_name, u.last_name, u.email,
-            u.date_of_birth, u.phone_number, u.home_address, u.egn,
-            u.role, u.active, u.created_at,
-            a.id AS account_id, a.account_number, a.balance
-            FROM users u
-            INNER JOIN customers c ON c.id = u.id
-            LEFT JOIN accounts a ON a.customer_id = u.id
-            WHERE u.role = 'CUSTOMER'
-              AND ( :activeFilter = false OR u.active = :active )
-              AND ( :qFilter = false OR u.name ILIKE :qLike OR u.email ILIKE :qLike )
-            ORDER BY u.created_at DESC, u.id DESC, a.id
-            LIMIT :limit OFFSET :offset
+        SELECT u.id, u.name AS username, u.first_name, u.last_name, u.email,
+               u.date_of_birth, u.phone_number, u.home_address, u.egn,
+               u.role, u.active, u.created_at,
+               a.id AS account_id, a.account_number, a.balance
+        FROM users u
+        INNER JOIN customers c ON c.id = u.id
+        LEFT JOIN accounts a ON a.customer_id = u.id
+        WHERE u.role = 'CUSTOMER'
+          AND ( :activeFilter = false OR u.active = :active )
+          AND ( :qFilter = false OR u.name ILIKE :qLike OR u.email ILIKE :qLike )
+        ORDER BY u.created_at DESC, u.id DESC, a.id
         """;
 
         var p = new MapSqlParameterSource()
                 .addValue("activeFilter", active != null)
                 .addValue("active", active)
                 .addValue("qFilter", qFilter)
-                .addValue("qLike", qLike)
-                .addValue("limit", limit)
-                .addValue("offset", offset);
+                .addValue("qLike", qLike);
 
         List<Map<String,Object>> rows = jdbc.queryForList(sql, p);
         return groupRowsToCustomers(rows);
 
     }
 
-    public List<EmployeeDto> listEmployeesDetailed(int page, int size, String query, Boolean active) {
-
-        int limit = Math.max(1, Math.min(100, size));
-        int offset = Math.max(0, page) * limit;
+    public List<EmployeeDto> listEmployeesDetailed(String query, Boolean active) {
 
         boolean qFilter = (query != null && !query.isBlank());
+
         String qLike = qFilter ? "%" + query + "%" : null;
 
         String sql = """
-            SELECT u.id, u.name AS username, u.first_name, u.last_name, u.email,
-            u.date_of_birth, u.phone_number, u.home_address, u.egn,
-            u.role, u.active, u.created_at
-            FROM users u
-            WHERE u.role = 'EMPLOYEE'
-              AND ( :activeFilter = false OR u.active = :active )
-              AND ( :qFilter = false OR u.name ILIKE :qLike OR u.email ILIKE :qLike )
-            ORDER BY u.created_at DESC, u.id DESC
-            LIMIT :limit OFFSET :offset
+        SELECT u.id, u.name AS username, u.first_name, u.last_name, u.email,
+               u.date_of_birth, u.phone_number, u.home_address, u.egn,
+               u.role, u.active, u.created_at
+        FROM users u
+        WHERE u.role = 'EMPLOYEE'
+          AND ( :activeFilter = false OR u.active = :active )
+          AND ( :qFilter = false OR u.name ILIKE :qLike OR u.email ILIKE :qLike )
+        ORDER BY u.created_at DESC, u.id DESC
         """;
 
         var p = new MapSqlParameterSource()
                 .addValue("activeFilter", active != null)
                 .addValue("active", active)
                 .addValue("qFilter", qFilter)
-                .addValue("qLike", qLike)
-                .addValue("limit", limit)
-                .addValue("offset", offset);
+                .addValue("qLike", qLike);
 
         var rows = jdbc.queryForList(sql, p);
         List<EmployeeDto> out = new ArrayList<>();
-        for (Map<String,Object> r : rows) out.add(mapRowToEmployee(r));
+
+        for (Map<String,Object> r : rows) {
+            out.add(mapRowToEmployee(r));
+        }
+
         return out;
 
     }
@@ -506,7 +501,7 @@ public class UserDirectoryDao {
                                 rs.getString("first_name"),
                                 rs.getString("last_name"),
                                 rs.getString("email"),
-                                rs.getObject("created_at", java.time.OffsetDateTime.class)
+                                rs.getObject("created_at", OffsetDateTime.class)
                         );
                     }
                     return null;
