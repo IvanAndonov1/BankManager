@@ -73,7 +73,7 @@ export default function CustomerMoreInfo() {
 							}
 						</div>
 
-						<div className="mt-6 pt-6 border-t text-center">
+						{/* <div className="mt-6 pt-6 border-t text-center">
 							<Link
 								to={`/request/report/${userId}`}
 								className="text-[#e11d48] font-medium hover:underline"
@@ -81,7 +81,7 @@ export default function CustomerMoreInfo() {
 							>
 								Request Report
 							</Link>
-						</div>
+						</div> */}
 					</div>
 
 					<div className="flex-1 min-w-0 bg-white rounded-2xl shadow-md overflow-hidden">
@@ -99,9 +99,9 @@ export default function CustomerMoreInfo() {
 						<div className="mt-3 border-t" />
 
 						<div className="p-6">
-							{tab === "profile" && <ProfileForm key={userDetails.id} customer={userDetails} />}
+							{tab === "profile" && <ProfileForm key={userDetails.id} customer={userDetails} setUserDetails={setUserDetails} />}
 							{tab === "loans" && <LoansPlaceholder loanDetails={loanDetails} />}
-							{tab === "requests" && <RequestsPlaceholder applicationDetails={loanDetails} />}
+							{tab === "requests" && <RequestsPlaceholder applicationDetails={loanDetails} changeTab={setTab} changeLoans={setLoanDetails} />}
 						</div>
 					</div>
 				</div>

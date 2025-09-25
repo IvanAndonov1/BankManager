@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { use, useMemo, useState } from "react";
 import { useParams } from "react-router";
 
 import LoanHeader from "../Details Subcomponents/LoanHeader";
@@ -8,24 +8,30 @@ import LoanFacts from "../Details Subcomponents/LoanFacts";
 import ScoreRing from "../Details Subcomponents/ScoreRing";
 import LoadingSkeleton from "../Details Subcomponents/LoadingSkeleton";
 import EmptyState from "../Details Subcomponents/EmptyState";
+import DeclineCreditModal from "../Details Subcomponents/DeclineCreditModal";
 
 import { clamp0to100 } from "../../../../utils/utils.js";
+import { approveCreditHandler, declineCreditHandler, getAllLoanDetails } from "../../../../services/employeeService.js";
+import { AuthContext } from "../../../../contexts/AuthContext.jsx";
 
 export default function RequestsPlaceholder({
 	applications,
 	applicationDetails,
 	isLoading = false,
 	customerId,
+	changeTab,
+	changeLoans
 }) {
 	const params = useParams?.() || {};
 	const urlUserId = Number(params?.userId);
+	const { user } = use(AuthContext);
 
 	const apps = useMemo(() => {
 		const src =
 			(Array.isArray(applications) && applications.length > 0
 				? applications
 				: Array.isArray(applicationDetails)
-					? applicationDetails
+					? applicationDetails.filter(x => x.status == 'PENDING')
 					: []) || [];
 		return src;
 	}, [applications, applicationDetails]);
@@ -37,6 +43,8 @@ export default function RequestsPlaceholder({
 	}, [customerId, urlUserId]);
 
 	const [open, setOpen] = useState(false);
+	const [isDeclineModalOpen, setIsDeclineModalOpen] = useState(false);
+	const [isDeclineLoading, setIsDeclineLoading] = useState(false);
 
 	const application = useMemo(() => {
 		if (!apps || !apps.length || !Number.isFinite(currentCustomerId)) return undefined;
@@ -78,6 +86,49 @@ export default function RequestsPlaceholder({
 		Number.isFinite(currentCustomerId) &&
 		!!application;
 
+	function approveCredit(e) {
+		e.preventDefault();
+		approveCreditHandler(application.id, user.token, { "approve": true })
+			.then(() => {
+				getAllLoanDetails(user.token, urlUserId)
+					.then((result) => {
+						changeLoans(result);
+						changeTab('loans');
+					});
+			});
+	}
+
+	function showDeclineModal(e) {
+		e.preventDefault();
+		setIsDeclineModalOpen(true);
+	}
+
+	function handleDeclineCredit(reasons) {
+		setIsDeclineLoading(true);
+
+		declineCreditHandler(application.id, user.token, {
+			"approve": false,
+			reasons: reasons
+		})
+			.then(() => {
+				getAllLoanDetails(user.token, urlUserId)
+					.then((result) => {
+						changeLoans(result);
+						changeTab('loans');
+						setIsDeclineModalOpen(false);
+					});
+			})
+			.finally(() => {
+				setIsDeclineLoading(false);
+			});
+	}
+
+	function closeDeclineModal() {
+		if (!isDeclineLoading) {
+			setIsDeclineModalOpen(false);
+		}
+	}
+
 	return (
 		<div className="space-y-8">
 			{showHeader && (
@@ -85,12 +136,14 @@ export default function RequestsPlaceholder({
 					title="Customer Loan"
 					open={open}
 					onToggle={() => setOpen((v) => !v)}
+					approveCredit={approveCredit}
+					declineCredit={showDeclineModal}
 				/>
 			)}
 
 			{showLoading && <LoadingSkeleton />}
 
-			{showNoData && <EmptyState text="No loan applications data loaded." />}
+			{showNoData && <EmptyState text="No loan applications data." />}
 
 			{showNoCustomerId && (
 				<EmptyState text="Missing customer id (no :userId in URL and no customerId prop)." />
@@ -113,6 +166,13 @@ export default function RequestsPlaceholder({
 					</div>
 				</div>
 			)}
+
+			<DeclineCreditModal
+				isOpen={isDeclineModalOpen}
+				onClose={closeDeclineModal}
+				onDecline={handleDeclineCredit}
+				isLoading={isDeclineLoading}
+			/>
 		</div>
 	);
 }

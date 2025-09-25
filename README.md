@@ -13,6 +13,8 @@ proxy: {
 ---
     2) Основни ендпойнтове
 
+http://localhost:8080/swagger-ui/index.html#/ -- for all of the endpoints (when the server is running)
+
 Authentication
 
 POST /api/auth/register/customer - регистриране на клиент

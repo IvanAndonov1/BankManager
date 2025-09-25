@@ -15,6 +15,9 @@ import Logout from './components/Auth/Logout/Logout';
 import RequireRole from './guards/RequireRole';
 import RequireGuest from './guards/RequireGuest';
 import RequireAuth from './guards/RequireAuth';
+import EditProfile from './components/Customers/EditProfile';
+import VerifyCode from './components/Auth/Login/VerifyCode';
+import UpdatePassword from './components/Auth/Login/UpdatePassword';
 
 
 function App() {
@@ -26,6 +29,8 @@ function App() {
 						<Route path="/" element={<Home />} />
 						<Route path="/login" element={<Login />} />
 						<Route path="/register" element={<Register />} />
+						<Route path="/verify-code" element={<VerifyCode />} />
+						<Route path="/update-password" element={<UpdatePassword />} />
 					</Route>
 
 					<Route element={<RequireAuth />}>
@@ -33,6 +38,7 @@ function App() {
 							<Route path="/customer-dashboard" element={<Dashboard />} />
 							<Route path="/customer-loans" element={<Loans />} />
 							<Route path="/customer-transactions" element={<Transactions />} />
+							<Route path='/customer-edit' element={<EditProfile/>}/>
 						</Route>
 
 						<Route element={<RequireRole roles={["EMPLOYEE"]} />}>

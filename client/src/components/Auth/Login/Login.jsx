@@ -6,6 +6,7 @@ import { validateCredentials } from "../../../utils/validations.js";
 import redLine1 from "../../../assets/red-line1.svg";
 import redLine2 from "../../../assets/red-line2.svg";
 
+
 const savedCreds = (() => {
 	try {
 		return JSON.parse(localStorage.getItem("rememberCreds")) || null;
@@ -96,7 +97,6 @@ export default function Login() {
 
 			const roleKey = user.role || "";
 			const destination = roles[roleKey] || roles[user.role] || "/login";
-			
 
 			navigate(destination);
 
@@ -210,7 +210,9 @@ export default function Login() {
 									<input type="checkbox" name="remember" defaultChecked={state.remember} className="w-4 h-4 rounded-[4px] text-[#6a1ea1] focus:ring-0" />
 									<span>Remember me</span>
 								</label>
-								<a className="cursor-pointer hover:underline">Forgot Password?</a>
+								<Link to="/verify-code" className=" hover:underline ">
+									Forgot Password?
+								</Link>
 							</div>
 
 							{state.message && (

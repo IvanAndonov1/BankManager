@@ -3,6 +3,7 @@ import LoanCards from "./LoanCards";
 import LoansSection from "./LoansSection";
 import { useState } from "react";
 import Modal from "./LoanModal";
+import WaitingLoans from "./WaitingLoans";
 
 export default function Loans() {
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -20,8 +21,6 @@ export default function Loans() {
 
 					<LoanCards />
 				</div>
-
-
 
 				<div className="flex gap-32 ml-2 mt-6">
 					<button className="bg-[#351f78] text-white px-10 py-2 rounded-3xl"

@@ -7,6 +7,7 @@ import com.bank.dto.RegisterResponseDto;
 import com.bank.security.JwtService;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -150,11 +151,16 @@ public class AuthService {
         Map<String,Object> user;
         try {
             user = jdbc.queryForMap(
-                    "SELECT id, name, password, role FROM users WHERE name=:u",
+                    "SELECT id, name, password, role, active FROM users WHERE name=:u",
                     new MapSqlParameterSource("u", username)
             );
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid username or password!");
+        }
+
+        Boolean active = (Boolean) user.get("active");
+        if (active == null || !active) {
+            throw new AccessDeniedException("This account has been deactivated!");
         }
 
         String stored = String.valueOf(user.get("password"));
