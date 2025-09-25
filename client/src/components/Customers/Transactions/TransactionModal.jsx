@@ -7,6 +7,8 @@ import { transferMoneyBetweenCards } from "../../../services/cardService";
 
 export default function Modal({ isOpen, onClose, children }) {
 	const { user } = use(AuthContext);
+	const [showFromSelector, setShowFromSelector] = useState(false);
+	const [showToSelector, setShowToSelector] = useState(false);
 	const [selectedFromCard, setSelectedFromCard] = useState(null);
 	const [selectedToCard, setSelectedToCard] = useState(null);
 	const [amount, setAmount] = useState("");
@@ -37,19 +39,24 @@ export default function Modal({ isOpen, onClose, children }) {
 		};
 
 		try {
-			transferMoneyBetweenCards(fromAccountNumber, payload, user.token)
-				.then(() => {
-					setSelectedFromCard(null);
-					setSelectedToCard(null);
-					setAmount('');
-					setReason('');
-					onClose?.();
-				})
+			await transferMoneyBetweenCards(fromAccountNumber, payload, user.token);
+			setSelectedFromCard(null);
+			setSelectedToCard(null);
+			setAmount("");
+			setReason("");
+			onClose?.();
 		} catch (err) {
 			console.error(err);
 			alert("Transfer error. Please, try again later.");
 		}
 	};
+
+	useEffect(() => {
+		if (isOpen) {
+			setSelectedFromCard(null);
+			setSelectedToCard(null);
+		}
+	}, [isOpen]);
 
 	useEffect(() => {
 		if (!isOpen) return;
@@ -67,10 +74,10 @@ export default function Modal({ isOpen, onClose, children }) {
 
 	const handleSelectAccount = (account, type) => {
 		if (type === "from") {
-			setFromAccount(account);
+			setSelectedFromCard(account);
 			setShowFromSelector(false);
 		} else {
-			setToAccount(account);
+			setSelectedToCard(account);
 			setShowToSelector(false);
 		}
 	};
@@ -81,11 +88,7 @@ export default function Modal({ isOpen, onClose, children }) {
 			role="dialog"
 			aria-modal="true"
 		>
-			<div
-				className="absolute inset-0 bg-black/50"
-				onClick={onClose}
-				aria-hidden="true"
-			/>
+			<div className="absolute inset-0 bg-black/50" onClick={onClose} aria-hidden="true" />
 
 			<div className="relative z-10 w-full max-w-[800px] max-h-[85vh] overflow-y-auto rounded-2xl bg-white shadow-lg">
 				<div className="sticky top-0 z-10 rounded-t-2xl bg-white/90 backdrop-blur px-6 pt-5 pb-3 border-b">
@@ -102,29 +105,67 @@ export default function Modal({ isOpen, onClose, children }) {
 
 				<div className="px-6 py-5">
 					<p className="text-normal font-light mb-3">From</p>
-					<div className="w-full border border-gray-300 rounded-2xl mb-6 p-4">
-						<LoanCards
-							className="w-full"
-							isSelectable={true}
-							selectedCard={selectedFromCard}
-							onCardSelect={setSelectedFromCard}
-							excludeCard={selectedToCard}
-							displayMode="grid"
-							cardSize="small"
-						/>
+					<div
+						className="w-full border border-gray-300 rounded-2xl mb-6 p-4 cursor-pointer hover:bg-gray-100"
+						onClick={() => setShowFromSelector(true)}
+					>
+						{selectedFromCard ? (
+							<div className="flex items-center justify-between">
+								<Card
+									width="w-24"
+									height="h-14"
+									textSize="text-[5px]"
+									logoSize="w-4 h-2"
+									size="py-1 px-1"
+									margin="mt-1"
+									rounded="rounded-lg"
+									{...selectedFromCard}
+								/>
+								<div className="ml-4 flex-1">
+									<p className="font-semibold">{selectedFromCard.cardType}</p>
+									<p className="text-sm text-gray-600">
+										IBAN: {selectedFromCard.accountNumber}
+									</p>
+								</div>
+								<p className="text-md font-bold text-[#351F78]">
+									Balance: {selectedFromCard.balance} EUR
+								</p>
+							</div>
+						) : (
+							<span className="text-gray-400">Select card</span>
+						)}
 					</div>
 
-					<p className="text-normal font-light mb-3">To</p>
-					<div className="w-full border border-[#351F78] rounded-2xl mb-6 p-4">
-						<LoanCards
-							className="w-full"
-							isSelectable={true}
-							selectedCard={selectedToCard}
-							onCardSelect={setSelectedToCard}
-							excludeCard={selectedFromCard}
-							displayMode="grid"
-							cardSize="small"
-						/>
+					<p className="text-normal font-light mb-4">To</p>
+					<div
+						className="w-full border border-gray-300 rounded-2xl mb-6 p-4 cursor-pointer hover:bg-gray-100"
+						onClick={() => setShowToSelector(true)}
+					>
+						{selectedToCard ? (
+							<div className="flex items-center justify-between">
+								<Card
+									width="w-24"
+									height="h-14"
+									textSize="text-[5px]"
+									logoSize="w-4 h-2"
+									size="py-1 px-1"
+									margin="mt-1"
+									rounded="rounded-lg"
+									{...selectedToCard}
+								/>
+								<div className="ml-4 flex-1">
+									<p className="font-semibold">{selectedToCard.cardType}</p>
+									<p className="text-sm text-gray-600">
+										IBAN: {selectedToCard.accountNumber}
+									</p>
+								</div>
+								<p className="text-md font-bold text-[#351F78]">
+									Balance: {selectedToCard.balance} EUR
+								</p>
+							</div>
+						) : (
+							<span className="text-gray-400">Select card</span>
+						)}
 					</div>
 
 					<p className="text-normal font-light mb-3">Amount</p>
@@ -169,13 +210,12 @@ export default function Modal({ isOpen, onClose, children }) {
 				</div>
 			</div>
 
-			
 			{showFromSelector && (
-				<div className="fixed inset-0 flex items-center justify-center z-50">
+				<div className="fixed inset-0 flex items-center justify-center z-[1100]">
 					<div
 						className="absolute inset-0 bg-black opacity-50"
 						onClick={() => setShowFromSelector(false)}
-					></div>
+					/>
 					<div className="relative bg-white rounded-2xl shadow-lg p-6 z-10 w-[600px]">
 						<h2 className="text-xl mb-4">Select From Account</h2>
 						<LoanCards onSelect={(account) => handleSelectAccount(account, "from")} />
@@ -184,11 +224,11 @@ export default function Modal({ isOpen, onClose, children }) {
 			)}
 
 			{showToSelector && (
-				<div className="fixed inset-0 flex items-center justify-center z-50">
+				<div className="fixed inset-0 flex items-center justify-center z-[1100]">
 					<div
 						className="absolute inset-0 bg-black opacity-50"
 						onClick={() => setShowToSelector(false)}
-					></div>
+					/>
 					<div className="relative bg-white rounded-2xl shadow-lg p-6 z-10 w-[600px]">
 						<h2 className="text-xl mb-4">Select To Account</h2>
 						<LoanCards onSelect={(account) => handleSelectAccount(account, "to")} />
@@ -198,4 +238,3 @@ export default function Modal({ isOpen, onClose, children }) {
 		</div>
 	);
 }
-
