@@ -73,7 +73,7 @@ export default function CustomerMoreInfo() {
 							}
 						</div>
 
-						<div className="mt-6 pt-6 border-t text-center">
+						{/* <div className="mt-6 pt-6 border-t text-center">
 							<Link
 								to={`/request/report/${userId}`}
 								className="text-[#e11d48] font-medium hover:underline"
@@ -81,7 +81,7 @@ export default function CustomerMoreInfo() {
 							>
 								Request Report
 							</Link>
-						</div>
+						</div> */}
 					</div>
 
 					<div className="flex-1 min-w-0 bg-white rounded-2xl shadow-md overflow-hidden">

@@ -143,14 +143,14 @@ export default function LoanDetailsDialog({ open, onClose, loan }) {
 
 				<div className="sticky bottom-0 bg-white border-t px-8 py-4">
 					<div className="flex justify-center gap-3">
-						<button
+						{/* <button
 							type="button"
 							className="px-6 h-11 rounded-full text-white font-medium shadow
                            bg-gradient-to-r from-[#351F78] via-[#3a4fb6] to-[#0b84b9]
                            hover:opacity-95"
 						>
 							Update
-						</button>
+						</button> */}
 						<button
 							type="button"
 							onClick={onClose}
