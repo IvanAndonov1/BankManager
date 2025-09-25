@@ -15,7 +15,7 @@ export default function Loans() {
 					<LoansSection />
 				</div>
 
-				<div className="w-full">
+				<div className="w-[600px]">
 					<h2 className="text-xl font-bold mb-4">Cards</h2>
 
 					<LoanCards />
@@ -23,15 +23,13 @@ export default function Loans() {
 
 
 
-				<div className="flex gap-24 ml-2 mt-6">
+				<div className="flex gap-32 ml-2 mt-6">
 					<button className="bg-[#351f78] text-white px-10 py-2 rounded-3xl"
 						onClick={() => setIsModalOpen(true)}>
 						Request Loan
 					</button>
 					<Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-					<button className="bg-[#508443] text-white px-10 py-2 rounded-3xl">
-						Pay All
-					</button>
+				
 					<button className="bg-[#351f78] text-white px-10 py-2 rounded-3xl">
 						Waiting Loans
 					</button>

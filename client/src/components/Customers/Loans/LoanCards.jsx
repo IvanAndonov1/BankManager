@@ -1,13 +1,10 @@
 import Card from "../Cards";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../../../contexts/AuthContext";
-import { useContext } from "react";
-import { getAllCardsData, getBalanceData } from "../../../services/cardService";
+import { getAllCardsData } from "../../../services/cardService";
 import { getUserAccounts } from "../../../services/userService";
 
-
-export default function LoanCards({ className = "" }) {
-
+export default function LoanCards({ className = "", onSelect }) {
 	const [cards, setCards] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
@@ -19,12 +16,10 @@ export default function LoanCards({ className = "" }) {
 			try {
 				const data = await getUserAccounts(user.token);
 				setAccounts(Array.isArray(data) ? data : []);
-
 			} catch (err) {
 				setError(err.message);
 			}
 		};
-
 
 		fetchAccounts();
 	}, [user]);
@@ -42,49 +37,66 @@ export default function LoanCards({ className = "" }) {
 				}
 			};
 
-
 			fetchCards();
 		}
-	}, [accounts.length]);
+	}, [accounts.length, user.token]);
 
 	if (loading) return <p>Loading cards...</p>;
 	if (error) return <p className="text-red-500">{error}</p>;
+
 	return (
-		<div className={`w-3/4 h-32 rounded-2xl border border-gray-300 shadow-xl  bg-gradient-to-br from-[#351F78]/10 to-[#0B82BE]/10 text-white relative overflow-hidden ${className}`}>
-			<div className="h-full overflow-y-auto  p-4 space-y-4 text-black opacity-100">
-				{cards.map((obj, i) => {
-					return { ...obj, ...accounts[i] }
-				}).map(card => (
-					<div key={card.accountNumber} className=" rounded-2xl py-4 px-6 flex justify-between items-center hover:scale-105 transition-transform duration-300">
-						<div className=" origin-left ">
+		<div
+			className={`w-full h-full rounded-2xl border border-gray-300 shadow-xl text-white relative overflow-hidden ${className}`}
+		>
+			<div className="h-full p-4 space-y-4 text-black opacity-100">
+				{cards
+					.map((obj, i) => ({ ...obj, ...accounts[i] }))
+					.map((card) => (
+						<div
+							key={card.accountNumber}
+							className="rounded-2xl py-4 px-2 gap-4 flex justify-between items-center hover:scale-105 transition-transform duration-300 cursor-pointer"
+							onClick={() => onSelect?.(card)} 
+						>
+							<div className="origin-left">
+								{card.cardType === "Debit Visa" ? (
+									<Card
+										width="w-32"
+										height="h-20"
+										textSize="text-[5px]"
+										logoSize="w-4 h-2"
+										size="py-2 px-2"
+										margin="mt-2"
+										className="bg-gradient-to-br from-[#351F78]/10 to-[#0B82BE]/10 border border-gray-300"
+										{...card}
+									/>
+								) : (
+									<Card
+										width="w-32"
+										height="h-20"
+										textSize="text-[5px]"
+										logoSize="w-4 h-2"
+										size="py-2 px-2"
+										margin="mt-2"
+										{...card}
+									/>
+								)}
+							</div>
+							<div>
+								<p className="text-normal font-semibold">{card.cardType}</p>
+								<p className="font-2xs mt-2">{card.accountNumber}</p>
+								<p className="font-medium">
+									{card.cardNumber} | {card.expiration}
+								</p>
+							</div>
 
-							{
-								card.cardType == 'Debit Visa' ?
-									<Card width="w-32" height="h-20" textSize="text-[5px]" logoSize="w-4 h-2"
-										size="py-2 px-2" margin="mt-2" {...card}></Card>
-									:
-									<Card width="w-32" height="h-20" textSize="text-[5px]" logoSize="w-4 h-2"
-										size="py-2 px-2" margin="mt-2" {...card}></Card>
-							}
+							<div className="text-right border-l-2 border-gray-300 pl-6">
+								<p className="text-lg text-black font-normal text-left">Balance</p>
+								<p className="text-xl text-gray-600 font-semibold mt-2 text-left">
+									{card.balance} EUR
+								</p>
+							</div>
 						</div>
-						<div>
-							<p className="text-normal font-semibold">{card.cardType}</p>
-
-							<p size="py-2 px-2" className="font-2xs mt-2">
-								{card.accountNumber}
-							</p>
-							<p className="font-medium">{card.cardNumber} | {card.expiration}</p>
-						</div>
-
-						<div className="text-right border-l-2 border-gray-300 pl-6">
-							<p className="text-lg text-black font-normal text-left">Balance</p>
-							<p className="text-xl text-gray-600 font-semibold mt-2 text-left">
-								{card.balance} EUR
-							</p>
-						</div>
-					</div>
-				))}
-
+					))}
 			</div>
 		</div>
 	);
