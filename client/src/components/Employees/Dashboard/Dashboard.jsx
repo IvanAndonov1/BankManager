@@ -7,10 +7,9 @@ import Sidebar from "../../common/Sidebar";
 import EmployeeTableRow from "./EmployeeTableRow";
 
 const n = v => (v ?? "").toString().trim().toLowerCase();
+
 const isEmpty = f =>
-	!f ||
-	((f.accountType === "ALL" || !f.accountType) &&
-		!n(f.username) && !n(f.email) && !n(f.egn) && !n(f.idNumber));
+	!f || (!n(f.username) && !n(f.email) && !n(f.egn));
 
 const get = (obj, ...keys) => {
 	for (const k of keys) {
@@ -21,14 +20,9 @@ const get = (obj, ...keys) => {
 };
 
 const buildPredicate = f => c => {
-	if (f.accountType && f.accountType !== "ALL") {
-		const accType = get(c, "accountType", "accountTypeName", "account?.type");
-		if ((accType || "").toString().toUpperCase() !== f.accountType) return false;
-	}
 	if (f.username && !n(get(c, "name", "username")).includes(n(f.username))) return false;
 	if (f.email && !n(get(c, "email", "emailAddress")).includes(n(f.email))) return false;
 	if (f.egn && !n(get(c, "egn")).includes(n(f.egn))) return false;
-	if (f.idNumber && !n(get(c, "idNumber", "id", "id_card")).includes(n(f.idNumber))) return false;
 	return true;
 };
 
@@ -92,6 +86,19 @@ export default function Dashboard() {
 		return filtered;
 	}, [filtered, pendingByCustomer, view]);
 
+	// 👉 филтърът съдържа САМО username, email, egn
+	const filterFields = [
+		{ key: "username", label: "Username", type: "text", placeholder: "Username" },
+		{ key: "email", label: "Email", type: "text", placeholder: "Email" },
+		{ key: "egn", label: "EGN", type: "text", placeholder: "EGN" },
+	];
+
+	const initialFilterValues = {
+		username: "",
+		email: "",
+		egn: "",
+	};
+
 	return (
 		<div className="min-h-screen flex bg-gradient-to-br from-[#0B82BE]/10 to-[#351F78]/10 overflow-hidden">
 			<Sidebar />
@@ -100,7 +107,8 @@ export default function Dashboard() {
 
 				<div className="bg-white rounded-xl shadow p-6 space-y-6">
 					<FilterCard
-						initialValues={{ accountType: "ALL", username: "", email: "", egn: "", idNumber: "" }}
+						fields={filterFields}
+						initialValues={initialFilterValues}
 						onApply={(f) => setFilters(isEmpty(f) ? null : f)}
 						onReset={() => setFilters(null)}
 					/>
