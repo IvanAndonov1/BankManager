@@ -16,3 +16,11 @@ body {
   font-optical-sizing: auto;
   font-variation-settings: "wdth" 100;
 }
+
+.glassEffect {
+border-radius: 60px;
+background: rgba(0, 0, 0, 0.00);
+background: color(display-p3 0 0 0 / 0.00);
+box-shadow: 0 4px 4px 0 rgba(255, 255, 255, 0.25) inset;
+box-shadow: 0 4px 4px 0 color(display-p3 1 1 1 / 0.25) inset;
+}
