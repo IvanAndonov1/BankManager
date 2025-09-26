@@ -2,6 +2,7 @@ import { NavLink, useNavigate, Link } from "react-router-dom";
 import { useContext, useEffect } from "react";
 import { AuthContext } from "../../contexts/AuthContext.jsx";
 import { getUserAccount, logoutUser } from "../../services/userService.js";
+import logoWhite from "../../assets/logo.svg";
 
 function CustomerSidebar() {
 	const { user, userLogin, userLogout } = useContext(AuthContext);
@@ -36,8 +37,12 @@ function CustomerSidebar() {
 		"bg-white/10 backdrop-blur-xl border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.2)] before:absolute before:inset-0 before:rounded-3xl before:bg-gradient-to-t before:from-white/20 before:to-transparent before:border-t before:border-white/40 overflow-hidden";
 
 	return (
+		
 		<div className="w-52 min-h-screen bg-gradient-to-b from-[#351F78] to-[#0B82BE] rounded-r-3xl">
-			<div className="flex flex-col text-white items-center py-12">
+				<span className="fixed top-6 left-18 flex flex-col items-end z-50 h-12 w-18">
+												  <img src={logoWhite} alt="logo" className=" object-cover " />
+										</span>
+			<div className="flex flex-col text-white items-center py-12 mt-12">
 				
 				<h1 className="text-2xl font-semibold my-4 pr-4 max-w-52">👋Hi! &nbsp;
 					{user?.firstName || "firstName"}

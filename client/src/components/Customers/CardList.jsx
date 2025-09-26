@@ -30,7 +30,8 @@ export default function CardList() {
 	if (!cards.length) return <p className="text-[#351f78]">No cards found.</p>;
 
 	return (
-		<div className="flex flex-wrap gap-30">
+		
+  <div className="flex gap-6">
 			{cards.map((card, index) => (
 				<Cards
 					key={index}
@@ -40,5 +41,6 @@ export default function CardList() {
 				/>
 			))}
 		</div>
+		
 	);
 }

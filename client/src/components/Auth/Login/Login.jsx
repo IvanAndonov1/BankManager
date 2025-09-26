@@ -5,6 +5,7 @@ import { AuthContext } from "../../../contexts/AuthContext.jsx";
 import { validateCredentials } from "../../../utils/validations.js";
 import redLine1 from "../../../assets/red-line1.svg";
 import redLine2 from "../../../assets/red-line2.svg";
+import logoWhite from "../../../assets/white-logo.svg";
 
 
 const savedCreds = (() => {
@@ -135,8 +136,11 @@ export default function Login() {
 
 	return (
 		<main className="fixed inset-0 overflow-hidden">
+			<span className="fixed top-6 left-6 flex flex-col items-end z-50 h-28 w-42">
+							  <img src={logoWhite} alt="logo" className=" object-cover" />
+					</span>
 			<div className="relative h-full w-full bg-gradient-to-br from-[#6B1F78] via-[#424996] to-[#0B82BE]">
-				<div className="absolute top-6 left-6 text-white/90 font-semibold">Logo</div>
+			
 
 				<img src={redLine1} alt="red lines" className="pointer-events-none w-5xl h-5xl absolute inset-0 object-cover " />
 				<img src={redLine2} alt="red lines" className="pointer-events-none w-3xl h-3xl absolute inset-0 left-[40%] object-cover " />

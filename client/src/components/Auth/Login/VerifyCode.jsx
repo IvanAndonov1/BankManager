@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { IoIosArrowForward } from "react-icons/io";
 import { forgotPassword, verifyCode } from "../../../services/passwordService";
 import { useRef, useState } from "react";
+import logoWhite from "../../../assets/white-logo.svg";
 
 export default function VerifyCode() {
   const [email, setEmail] = useState("");
@@ -82,8 +83,11 @@ export default function VerifyCode() {
 
   return (
     <main className="fixed inset-0 overflow-hidden">
+      <span className="fixed top-6 left-6 flex flex-col items-end z-50 h-28 w-42">
+                      <img src={logoWhite} alt="logo" className=" object-cover opacity-70" />
+                </span>
       <div className="relative h-full w-full bg-gradient-to-br from-[#6B1F78] via-[#424996] to-[#0B82BE]">
-        <div className="absolute top-6 left-6 text-white/90 font-semibold">Logo</div>
+    
 
         <div className="relative z-10 w-full max-w-2xl mx-auto pt-20 px-4 text-white">
           <h1 className="text-4xl md:text-5xl font-bold text-center">

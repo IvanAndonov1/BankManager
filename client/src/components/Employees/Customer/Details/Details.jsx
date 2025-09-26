@@ -114,7 +114,7 @@ export default function CustomerMoreInfo() {
             <div className="my-6 border-t" />
 
             <div className="space-y-6">
-              <div className="flex items-center justify-center gap-16 mt-10">
+              <div className="flex flex-col items-center justify-center gap-16 mt-10">
                
                 {pendingBalances.length
                   ? pendingBalances.map(x => (

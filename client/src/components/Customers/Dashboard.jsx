@@ -87,17 +87,17 @@ export default function Dashboard() {
 
 					<div className="flex items-center mb-6 cursor-pointer gap-8">
                  
-					<div className="grid grid-cols-1 gap-10">
+					<div className="flex gap-4">
 						<CardList />
 					</div> 
-					<button className=" rounded-full bg-gradient-to-b from-[#351F78] to-[#0B82BE] w-8 h-8 text-white text-center pt-[1px] font-bold text-xl">+</button>
+					{/*<button className=" rounded-full bg-gradient-to-b from-[#351F78] to-[#0B82BE] w-8 h-8 text-white text-center pt-[1px] font-bold text-xl">+</button>*/}
 					</div>
 
-					<div className="grid grid-cols-2 gap-4 mt-6">
+					<div className="flex gap-6 mt-6">
 						{balances.map((x, i) => (
 							<div
 								key={i}
-								className={`mr-6 w-80 h-20 rounded-2xl border-2 border-[#351F78] flex flex-col justify-center ${i === 1 ? 'bg-[#351F78]' : ''
+								className={` w-80 h-20 rounded-2xl border-2 border-[#351F78] flex flex-col justify-center ${i === 1 ? 'bg-[#351F78]' : ''
 									}`}
 							>
 								<div className={`text-2xl text-center ${i === 1 ? 'text-white' : 'text-[#351F78]'
