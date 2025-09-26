@@ -39,10 +39,10 @@ function CustomerSidebar() {
 	return (
 		
 		<div className="w-52 min-h-screen bg-gradient-to-b from-[#351F78] to-[#0B82BE] rounded-r-3xl">
-				<span className="fixed top-6 left-18 flex flex-col items-end z-50 h-12 w-18">
+				<span className=" mt-8 ml-16 flex flex-col items-end z-50 h-12 w-18">
 												  <img src={logoWhite} alt="logo" className=" object-cover " />
 										</span>
-			<div className="flex flex-col text-white items-center py-12 mt-12">
+			<div className="flex flex-col text-white items-center py-10 ">
 				
 				<h1 className="text-2xl font-semibold my-4 pr-4 max-w-52">👋Hi! &nbsp;
 					{user?.firstName || "firstName"}
