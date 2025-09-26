@@ -51,16 +51,12 @@ export default function Transactions() {
 							onChange={(e) => setSearchTerm(e.target.value)}
 						/>
 					</div>
-					
-					<TransactionsTable
-						showAll={showAll}
-						isModalOpen={isModalOpen}
-						searchTerm={searchTerm}
-					/>
 
-					<div className="flex justify-end mt-8">
-						<button
-							className="bg-[#351f78] rounded-3xl p-2 px-6 text-white"
+					<TransactionsTable 
+					
+					showAll={showAll} isModalOpen={isModalOpen} />
+					<div className="flex justify-start mt-4">
+						<button className="bg-[#351f78] rounded-3xl p-2 px-6 text-white"
 							onClick={() => setShowAll(!showAll)}
 						>
 							{showAll ? "See Less" : "See All History"}

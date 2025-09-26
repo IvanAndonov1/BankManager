@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import lines from "../../assets/welcome-lines.svg";
 import chip from "../../assets/chip.svg";
+import logoWhite from "../../assets/white-logo.svg";
 
 export default function Home() {
   return (
@@ -27,8 +28,8 @@ export default function Home() {
                         bg-[radial-gradient(circle_at_30%_30%,#8a2c9a, #5b1d91_60%, #2b0b3f_100%)]
                         opacity-90"
         />
-        <span className="absolute left-12 top-16 text-white/90 font-semibold text-lg">
-          Logo
+        <span className="fixed top-6 left-6 flex flex-col items-end z-50 h-28 w-42">
+                  <img src={logoWhite} alt="logo" className=" object-cover " />
         </span>
 
         <div
@@ -40,7 +41,7 @@ export default function Home() {
                         bg-[radial-gradient(circle_at_30%_30%,#8a2c9a,#5b1d91_60%,#2b0b3f)]"
         />
         <div
-          className="absolute -left-10 -top-10 w-48 h-48 rounded-full
+          className="absolute -left-10 -top-20 w-64 h-64 rounded-full
 						bg-[radial-gradient(ellipse_53.95%_53.96%_at_46.56%_46.16%,_#A5438B_0%,_#351F78_100%)]"
         />
 
@@ -52,11 +53,10 @@ export default function Home() {
 
         <section className="relative z-20 pl-16 pt-64 max-w-xl text-white">
           <h1 className="text-[44px] leading-tight font-semibold drop-shadow-[0_4px_20px_rgba(0,0,0,.25)]">
-            Welcome page
+           Redefining how you spend, borrow, and grow
           </h1>
           <p className="mt-4 text-white/90 text-md leading-6 font-medium pr-4">
-            A short description of what this website is about. A short
-            description of what this website is about.
+            Helping you take control of your credit and make smarter financial choices every day.
           </p>
           <Link
             to="/login"
@@ -78,7 +78,7 @@ export default function Home() {
 		
         <div className="pointer-events-none absolute right-[20%] top-[20%] -rotate-[20deg] py-6">
           <div
-            className="relative -rotate-[20deg] -translate-y-4 translate-x-24 w-[320px] h-52 
+            className="absolute -rotate-[20deg] -translate-y-4 translate-x-24 w-[320px] h-52 
                           bg-gradient-to-br from-white/0 to-white/40 rounded-3xl
 						  border border-white/20 
 						  outline outline-4 outline-white/0 backdrop-blur-xl"
@@ -99,7 +99,7 @@ export default function Home() {
           </div>
 
           <div
-            className="relative mt-6 w-[320px] h-52 rounded-2xl
+            className="relative mt-48 w-[320px] h-52 rounded-2xl
                           bg-white/10 
             backdrop-blur-xl 
             border border-white/20 
@@ -108,7 +108,7 @@ export default function Home() {
             before:rounded-2xl 
             before:bg-gradient-to-t before:from-white/20 before:to-transparent 
             before:border-t before:border-white/40 
-            overflow-hidden"
+            overflow-hidden z-10"
           >
             <div className="absolute right-5 top-5 text-white/70 text-base font-semibold">
               VISA
