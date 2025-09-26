@@ -26,13 +26,21 @@ export default function UpdatePassword() {
     setMessage("");
 
     try {
-     
-      await resetPassword(null, { email, code, newPassword });
-      setMessage("✅ Password successfully reset!");
-      setTimeout(() => navigate("/login"), 1500); 
+      const res = await resetPassword({
+        email,
+        code,
+        newPassword,
+      });
+
+      if (res.ok) {
+        setMessage("✅ Password successfully reset!");
+        setTimeout(() => navigate("/login"), 1500);
+      } else {
+        setMessage(res.error || "⚠️ Failed to reset password. Invalid or expired code.");
+      }
     } catch (err) {
       console.error(err);
-      setMessage("⚠️ Failed to reset password. Check your code or try again.");
+      setMessage("⚠️ Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -44,31 +52,33 @@ export default function UpdatePassword() {
         <div className="absolute top-6 left-6 text-white/90 font-semibold">Logo</div>
 
         <div className="relative z-10 w-full max-w-2xl mx-auto pt-24 px-4 text-white">
-          <h1 className="text-4xl md:text-5xl font-bold text-center">Update Your Password</h1>
+          <h1 className="text-4xl md:text-5xl font-bold text-center">
+            Update Your Password
+          </h1>
 
-          <section className="mt-10 rounded-2xl bg-white/12 backdrop-blur-md ring-1 ring-white/25 shadow-lg p-6 text-white/90 relative">
+          <section className="mt-10 md:mt-12 rounded-2xl bg-white/12 backdrop-blur-md ring-1 ring-white/25 shadow-lg p-6 md:p-8 text-white/90 relative">
             <label className="block">
-              <span className="block text-sm text-white/85">New Password</span>
+              <span className="block text-sm text-white/85">Enter new password</span>
               <div className="mt-2 flex items-center border-b focus-within:border-white pb-2">
                 <input
                   type="password"
+                  className="w-full bg-transparent outline-none placeholder-white/60"
                   placeholder="New password"
                   autoComplete="new-password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full bg-transparent outline-none placeholder-white/60"
                 />
               </div>
 
-              <span className="block text-sm text-white/85 mt-8">Confirm Password</span>
+              <span className="block text-sm text-white/85 mt-8">Repeat password</span>
               <div className="mt-2 flex items-center border-b focus-within:border-white pb-2">
                 <input
                   type="password"
-                  placeholder="Confirm password"
+                  className="w-full bg-transparent outline-none placeholder-white/60"
+                  placeholder="Confirm new password"
                   autoComplete="new-password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full bg-transparent outline-none placeholder-white/60"
                 />
               </div>
             </label>
@@ -90,5 +100,3 @@ export default function UpdatePassword() {
     </main>
   );
 }
-
-

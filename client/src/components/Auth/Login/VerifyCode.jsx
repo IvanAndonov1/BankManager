@@ -1,32 +1,36 @@
 import { useNavigate } from "react-router-dom";
 import { IoIosArrowForward } from "react-icons/io";
-import { forgotPassword, resetPassword } from "../../../services/passwordService";
-import { useState, useContext } from "react";
-import { AuthContext } from "../../../contexts/AuthContext";
+import { forgotPassword, verifyCode } from "../../../services/passwordService";
+import { useRef, useState } from "react";
 
 export default function VerifyCode() {
-  const { user } = useContext(AuthContext);
   const [email, setEmail] = useState("");
-  const [code, setCode] = useState(Array(6).fill("")); 
+  const [code, setCode] = useState(Array(6).fill(""));
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [codeSent, setCodeSent] = useState(false);
 
   const navigate = useNavigate();
+  const inputRef = useRef(null);
+  const CODE_LENGTH = 6;
 
+  const focusInput = () => inputRef.current?.focus();
+  
   const handleSendCode = async () => {
-    if (!email) {
-      setMessage("⚠️ Please enter your email.");
-      return;
-    }
+    if (!email) return setMessage("⚠️ Please enter your email.");
 
     setLoading(true);
     setMessage("");
 
     try {
-      await forgotPassword(user?.token, { email });
-      setMessage("✅ Verification code sent to your email!");
-      setCodeSent(true);
+      const res = await forgotPassword({ email });
+      if (res.ok) {
+        setMessage("✅ Verification code sent to your email!");
+        setCodeSent(true);
+        setCode("");
+      } else {
+        setMessage(res.error || "⚠️ Failed to send code.");
+      }
     } catch (err) {
       console.error(err);
       setMessage("⚠️ Failed to send code. Try again.");
@@ -35,17 +39,23 @@ export default function VerifyCode() {
     }
   };
 
-  const handleCodeChange = (value, idx) => {
-    if (/^[0-9]?$/.test(value)) {
-      const newCode = [...code];
-      newCode[idx] = value;
-      setCode(newCode);
+
+  const handleCodeChange = (e) => {
+      const value = e.target.value.replace(/\D/g, "").slice(0, CODE_LENGTH); 
+    setCode(value);
+    
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Backspace" && code.length > 0) {
+      setCode(code.slice(0, -1));
+      e.preventDefault();
     }
   };
 
+
   const handleVerify = async () => {
-    const enteredCode = code.join("");
-    if (enteredCode.length < 6) {
+    if (code.length < CODE_LENGTH) {
       setMessage("⚠️ Please enter all 6 digits.");
       return;
     }
@@ -54,23 +64,17 @@ export default function VerifyCode() {
     setMessage("");
 
     try {
-   
-      await resetPassword(null, {
-        email,
-        code: enteredCode,
-        newPassword: "TEMP_VALIDATION_PASS"
-      });
+      const res = await verifyCode({ email, code });
+      
 
-    
-      navigate("/update-password", { state: { email, code: enteredCode } });
-      if (!email || !code) {
-  setMessage("⚠️ Missing verification data. Please start the reset process again.");
-  return;
-}
-
+      if (res.ok) {
+        navigate("/update-password", { state: { email, code } });
+      } else {
+        setMessage(res.error || "❌ Invalid or expired code.");
+      }
     } catch (err) {
       console.error(err);
-      setMessage("❌ Invalid code. Please try again.");
+      setMessage("⚠️ Something went wrong. Try again.");
     } finally {
       setLoading(false);
     }
@@ -90,17 +94,19 @@ export default function VerifyCode() {
             <input
               type="email"
               placeholder="Email address"
+              value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="flex-1 bg-transparent outline-none"
             />
             <button
               onClick={handleSendCode}
               disabled={loading}
-              className="w-10 h-10 bg-[#351F78] ml-2 hover:bg-[#4e3196] text-white rounded-full transition-colors duration-300 flex items-center justify-center"
+              className="w-10 h-10 bg-[#351F78] ml-2 hover:bg-[#4e3196] text-white rounded-full flex items-center justify-center"
             >
               {loading ? "..." : <IoIosArrowForward />}
             </button>
           </div>
+
           {message && <p className="text-center mt-2 text-sm">{message}</p>}
 
           {codeSent && (
@@ -108,28 +114,45 @@ export default function VerifyCode() {
               <div className="text-center font-semibold text-lg mb-8">
                 Enter your 6-digit code
               </div>
-              <div className="flex justify-center gap-6">
-                {code.map((digit, idx) => (
-                  <input
+                            <div
+                className="flex justify-center gap-4 cursor-text"
+                onClick={focusInput}
+              >
+                {Array.from({ length: CODE_LENGTH }).map((_, idx) => (
+                  <div
                     key={idx}
-                    type="text"
-                    maxLength={1}
-                    value={digit}
-                    onChange={(e) => handleCodeChange(e.target.value, idx)}
-                    className="w-12 h-12 bg-white/70 rounded-2xl text-[#351F78] text-center text-lg font-bold"
-                  />
+                    className="w-12 h-12 bg-white/70 rounded-2xl text-[#351F78] text-center text-lg font-bold flex items-center justify-center"
+                  >
+                    {code[idx] || ""}
+                  </div>
                 ))}
               </div>
+
+             
+              <input
+                ref={inputRef}
+                type="text"
+                value={code}
+                onChange={handleCodeChange}
+                onKeyDown={handleKeyDown}
+                maxLength={CODE_LENGTH}
+                className="absolute opacity-0 pointer-events-none"
+                autoFocus
+              />
+
               <h4 className="text-center text-sm mt-8 text-white/90">
                 Didn't receive the code?{" "}
-                <span 
-                  onClick={handleSendCode} 
-                  className="text-[#FF6A6A] cursor-pointer">Resend</span>
+                <span
+                  onClick={handleSendCode}
+                  className="text-[#FF6A6A] cursor-pointer"
+                >
+                  Resend
+                </span>
               </h4>
               <button
                 onClick={handleVerify}
                 disabled={loading}
-                className="mt-10 w-full bg-[#351F78] hover:bg-[#4e3196] text-white font-semibold py-3 rounded-2xl transition-colors duration-300"
+                className="mt-10 w-full bg-[#351F78] hover:bg-[#4e3196] text-white font-semibold py-3 rounded-2xl"
               >
                 Verify
               </button>
