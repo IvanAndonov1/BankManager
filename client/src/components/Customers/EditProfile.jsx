@@ -8,7 +8,7 @@ import { AuthContext } from "../../contexts/AuthContext";
 
 export default function EditProfile() {
 
-    const { user } = useContext(AuthContext);
+    const { user, patchUser } = useContext(AuthContext);
 
     const [username, setUsername] = useState("");
     const [firstName, setFirstName] = useState("");
@@ -62,6 +62,8 @@ export default function EditProfile() {
       setDateOfBirth(updatedUser.dateOfBirth);
       setPhoneNumber(updatedUser.phoneNumber);
       setHomeAddress(updatedUser.homeAddress);
+
+	  patchUser(updatedUser);
 
     } catch (err) {
       console.error("Failed to update profile", err);
