@@ -11,12 +11,18 @@ export const AuthProvider = ({ children }) => {
 	const userLogin = (userData) => setAuth(userData);
 	const userLogout = () => setAuth({});
 
+	const patchUser = (partial) =>
+		setData(prev => ({ ...prev, ...partial }));
+
 	useEffect(() => {
-		if (auth?.token && auth.role == 'CUSTOMER' || auth.role == 'EMPLOYEE') {
+		if (auth?.token && (auth.role === "CUSTOMER" || auth.role === "EMPLOYEE")) {
 			getCurrentUser(auth?.token)
-				.then(result => setData(result));
+				.then(result => setData(result))
+				.catch(() => {
+					userLogout();
+				});
 		}
-	}, [auth?.token])
+	}, [auth?.token]);
 
 	return (
 		<AuthContext.Provider
@@ -24,6 +30,7 @@ export const AuthProvider = ({ children }) => {
 				user: { ...auth, ...data },
 				userLogin,
 				userLogout,
+				patchUser
 			}}
 		>
 			{children}
