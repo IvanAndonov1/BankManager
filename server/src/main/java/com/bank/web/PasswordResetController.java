@@ -32,6 +32,30 @@ public class PasswordResetController {
         return ResponseEntity.ok(Map.of("ok", true, "message", "If the email exists, a code was sent."));
     }
 
+    @PostMapping("/verify-reset-code")
+    public ResponseEntity<?> verify(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+        String code = body.get("code");
+
+        if (email == null || code == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Missing fields"));
+        }
+
+        Customer user = userDao.findCustomerByEmail(email);
+        if (user == null) {
+            return ResponseEntity.ok(Map.of("ok", true)); // fake success
+        }
+
+        boolean valid = resetService.verifyCode(user.getId(), code);
+        if (!valid) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Invalid or expired code"));
+        }
+
+        // Option A: issue a short-lived reset token (JWT/session) to be used at reset step
+        // Option B: just return ok=true, client uses email+code again at reset
+        return ResponseEntity.ok(Map.of("ok", true, "message", "Code is valid"));
+    }
+
     @PostMapping("/reset-password")
     public ResponseEntity<?> reset(@RequestBody Map<String, String> body) {
         String email = body.get("email");
@@ -44,10 +68,13 @@ public class PasswordResetController {
 
         Customer user = userDao.findCustomerByEmail(email);
         if (user == null) {
-            return ResponseEntity.ok(Map.of("ok", true)); // fake success, не издаваме дали email съществува
+            return ResponseEntity.ok(Map.of("ok", true));
         }
 
+        // Still verify code here to be safe
         resetService.resetPassword(user.getId(), code, newPassword);
+
         return ResponseEntity.ok(Map.of("ok", true, "message", "Password changed successfully"));
     }
+
 }
