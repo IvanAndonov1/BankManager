@@ -4,13 +4,13 @@ import FilterCard from "../../common/FilterCard";
 import DataTable from "../../common/DataTable";
 import AdminTableRow from "./AdminTableRow";
 import EmployeeRegisterModal from "./EmployeeRegistrationModal";
+import AnalyticsModal from "./Analytics/AnalyticsModal";
 import { use, useEffect, useMemo, useState } from "react";
 import { AuthContext } from "../../../contexts/AuthContext";
 import { getAllEmployees } from "../../../services/adminService";
-import { Plus } from "lucide-react";
+import { Plus, BarChart3 } from "lucide-react";
 
 const n = (v) => (v ?? "").toString().trim().toLowerCase();
-
 const get = (obj, ...keys) => {
 	for (const k of keys) {
 		const v = obj?.[k];
@@ -18,7 +18,6 @@ const get = (obj, ...keys) => {
 	}
 	return "";
 };
-
 const buildPredicate = (f) => (item) => {
 	if (f.username && !n(get(item, "name", "username")).includes(n(f.username))) {
 		return false;
@@ -37,6 +36,7 @@ export default function AdminDashboard() {
 	const [employees, setEmployees] = useState([]);
 	const [filters, setFilters] = useState(null);
 	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [isAnalyticsOpen, setIsAnalyticsOpen] = useState(false);
 
 	useEffect(() => {
 		if (!user?.token) return;
@@ -51,7 +51,6 @@ export default function AdminDashboard() {
 	return (
 		<div className="min-h-screen flex bg-gray-100">
 			<Sidebar />
-
 			<div className="flex-1 p-6 space-y-6">
 				<UserHeader roleLabel="Admin" email="admin@company.com" />
 
@@ -63,19 +62,28 @@ export default function AdminDashboard() {
 							{ key: "egn", label: "EGN", type: "text", placeholder: "EGN" },
 						]}
 						initialValues={{ username: "", email: "", egn: "" }}
-						onApply={(f) => setFilters(
-							n(f.username) || n(f.email) || n(f.egn) ? f : null
-						)}
+						onApply={(f) =>
+							setFilters(n(f.username) || n(f.email) || n(f.egn) ? f : null)
+						}
 						onReset={() => setFilters(null)}
 					/>
 				</div>
 
 				<div className="bg-white rounded-xl shadow p-4">
-					<div className="flex justify-end mb-4">
+					<div className="flex justify-between mb-4">
+						<button
+							onClick={() => setIsAnalyticsOpen(true)}
+							className="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-md text-white hover:opacity-90 transition-opacity"
+							style={{ backgroundColor: "#007bff" }}
+						>
+							<BarChart3 size={20} />
+							{'Analytics'}
+						</button>
+
 						<button
 							onClick={() => setIsModalOpen(true)}
 							className="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-md text-white hover:opacity-90 transition-opacity"
-							style={{ backgroundColor: '#351f78' }}
+							style={{ backgroundColor: "#351f78" }}
 						>
 							<Plus size={20} />
 							Add Employee
@@ -85,7 +93,9 @@ export default function AdminDashboard() {
 					<div className="overflow-x-auto">
 						<DataTable headers={["User", "Date", "Status", "Details"]}>
 							{visible.length > 0 ? (
-								visible.map((x) => <AdminTableRow key={x.id ?? JSON.stringify(x)} {...x} />)
+								visible.map((x) => (
+									<AdminTableRow key={x.id ?? JSON.stringify(x)} {...x} />
+								))
 							) : (
 								<tr>
 									<td colSpan={4} className="py-6 text-center text-gray-500">
@@ -102,6 +112,11 @@ export default function AdminDashboard() {
 				isOpen={isModalOpen}
 				onClose={() => setIsModalOpen(false)}
 				setter={setEmployees}
+			/>
+
+			<AnalyticsModal
+				isOpen={isAnalyticsOpen}
+				onClose={() => setIsAnalyticsOpen(false)}
 			/>
 		</div>
 	);
