@@ -12,6 +12,7 @@
   "dependencies": {
     "@heroui/react": "^2.8.4",
     "@heroui/slider": "^2.4.23",
+    "jspdf": "^3.0.3",
     "lucide-react": "^0.543.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
