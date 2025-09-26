@@ -1,6 +1,15 @@
 import { Link } from "react-router";
 
-function ProfileCard({ avatar = null, title, subtitle, footerActionLabel, onFooterAction, employee }) {
+function ProfileCard({ 
+	avatar = null, 
+	title, 
+	subtitle, 
+	footerActionLabel, 
+	employee, 
+	promoteAccount, 
+	demoteAccount 
+}) {
+	employee = { ...employee, createdAt: employee.createdAt?.substr(0, 10) };
 	return (
 		<div className="w-96 shrink-0 bg-white rounded-2xl shadow-md p-6">
 			<div className="flex flex-col items-center text-center">
@@ -23,25 +32,23 @@ function ProfileCard({ avatar = null, title, subtitle, footerActionLabel, onFoot
 			{footerActionLabel && (
 				<>
 					<div className="mt-6 pt-6 border-t text-center">
-						<Link
-							to={'/remove/:employeeId'}
+						<button
 							className="cursor-pointer text-[#e11d48] font-medium hover:underline"
 							type="button"
-							onClick={onFooterAction}
+							onClick={demoteAccount}
 						>
 							{footerActionLabel}
-						</Link>
+						</button>
 					</div>
 
 					<div className="mt-6 pt-6 border-t text-center">
-						<Link
-							to={'/promote/:employeeId'}
+						<button
 							className="cursor-pointer text-green-500 font-medium hover:underline"
 							type="button"
-							onClick={onFooterAction}
+							onClick={promoteAccount}
 						>
 							Promote Account
-						</Link>
+						</button>
 					</div>
 				</>
 

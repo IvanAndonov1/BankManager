@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
 	const userLogout = () => setAuth({});
 
 	useEffect(() => {
-		if (auth?.token) {
+		if (auth?.token && auth.role == 'CUSTOMER' || auth.role == 'EMPLOYEE') {
 			getCurrentUser(auth?.token)
 				.then(result => setData(result));
 		}
