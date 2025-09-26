@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, Link } from "react-router-dom";
 import { useContext, useEffect } from "react";
 import { AuthContext } from "../../contexts/AuthContext.jsx";
 import { getUserAccount, logoutUser } from "../../services/userService.js";
@@ -36,15 +36,18 @@ function CustomerSidebar() {
 		"bg-white/10 backdrop-blur-xl border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.2)] before:absolute before:inset-0 before:rounded-3xl before:bg-gradient-to-t before:from-white/20 before:to-transparent before:border-t before:border-white/40 overflow-hidden";
 
 	return (
-		<div className="w-80 min-h-screen bg-gradient-to-b from-[#351F78] to-[#0B82BE] rounded-r-3xl">
+		<div className="w-52 min-h-screen bg-gradient-to-b from-[#351F78] to-[#0B82BE] rounded-r-3xl">
 			<div className="flex flex-col text-white items-center py-12">
-				<div className="container w-24 h-24 rounded-full bg-white p-4" />
-				<h1 className="text-3xl font-semibold mt-4">
+				
+				<h1 className="text-2xl font-semibold my-4 pr-4 max-w-52">👋Hi! &nbsp;
 					{user?.firstName || "firstName"}
 				</h1>
 				<h4 className="text-md font-semibold">
 					{user?.username || "Username"}
 				</h4>
+				<Link to="/customer-edit">
+				<h4 className="text-md font-light">Edit Profile</h4>
+				</Link>
 
 				<ul className="p-4 text-xl space-y-4 my-12">
 					<li>

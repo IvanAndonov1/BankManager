@@ -1,6 +1,7 @@
 import CustomerSidebar from "../common/CustomerSidebar";
 import CustomerTableRow from "./CustomerTableRow";
 import CardList from "./CardList";
+import AiChatBot from "../common/aiChatBot";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import { getBalanceData } from "../../services/cardService";
@@ -78,17 +79,21 @@ export default function Dashboard() {
 	return (
 		<div className="min-h-screen flex bg-white">
 			<CustomerSidebar />
+		
 
 			<div className="flex-1 p-8 ml-12 flex flex-col gap-12">
-
 				<div>
 					<h1 className="text-2xl font-bold mb-4">Your Cards</h1>
 
+					<div className="flex items-center mb-6 cursor-pointer gap-8">
+                 
 					<div className="grid grid-cols-1 gap-10">
 						<CardList />
+					</div> 
+					<button className=" rounded-full bg-gradient-to-b from-[#351F78] to-[#0B82BE] w-8 h-8 text-white text-center pt-[1px] font-bold text-xl">+</button>
 					</div>
 
-					<div className="grid grid-cols-2 gap-6 mt-6">
+					<div className="grid grid-cols-2 gap-4 mt-6">
 						{balances.map((x, i) => (
 							<div
 								key={i}
@@ -107,6 +112,8 @@ export default function Dashboard() {
 						))}
 					</div>
 				</div>
+
+	<AiChatBot />
 
 				<div className="w-full">
 					<h1 className="text-xl font-bold mb-6 text-[#351f78]">Recent Transactions</h1>
