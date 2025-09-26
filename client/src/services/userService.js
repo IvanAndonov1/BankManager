@@ -17,3 +17,4 @@ export const getUserAccount = (customerId, token) => requester.get(`${baseUrl}/a
 export const getUserDetails = (token, userId) => requester.get(`${baseUrl}/customers/by-id/${userId}`, { 'Authorization': `Bearer ${token}` });
 
 export const getUserAccounts = (token) => requester.get(`${baseUrl}/accounts/me`, { 'Authorization': `Bearer ${token}` });
+

@@ -9,3 +9,17 @@ export const makeTransfer = (fromAccountNumber, token, data) => {
     { Authorization: `Bearer ${token}` }
   );
 };
+
+export const depositMoney = (accountNumber, token, amount, description = "Deposit") =>
+    requester.post(
+        `${baseUrl}/accounts/${accountNumber}/deposit`,
+        { amount, description },
+        { 'Authorization': `Bearer ${token}` }
+    );
+
+export const withdrawMoney = (accountNumber, token, amount, description = "Withdraw") =>
+    requester.post(
+        `${baseUrl}/accounts/${accountNumber}/withdraw`,
+        { amount, description },
+        { 'Authorization': `Bearer ${token}` }
+    );
