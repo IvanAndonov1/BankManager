@@ -32,3 +32,32 @@ The frontend communicates with the backend via REST API requests (`/api` proxy �
 
 ---
 
+## 📁 Project Structure
+
+```text
+client/
+├─ index.html
+├─ package.json
+├─ vite.config.js
+└─ src/
+   ├─ main.jsx                # Entry point (Router, Providers)
+   ├─ App.jsx                 # Root layout and route definitions
+   ├─ contexts/
+   │  └─ AuthContext.jsx      # { user, token, role, login(), logout() }
+   ├─ services/
+   │  ├─ authService.js       # Authentication (login, register, logout)
+   │  ├─ userService.js       # User accounts, transactions
+   │  ├─ loanService.js       # Loan quotes and applications
+   │  ├─ analyticsService.js  # Analytics data (overview, top declines, cashflow)
+   │  ├─ employeeService.js   # Employee actions (approvals, client management)
+   ├─ components/
+   │  ├─ Dashboard/           # Customer dashboard (balances, transactions)
+   │  ├─ Loans/               # Loan modals, loan cards, loan details
+   │  ├─ Analytics/           # Analytics overview, charts, PDF export
+   │  ├─ Employees/           # Employee table, profile, register modal
+   │  ├─ common/              # Shared components (Sidebar, Header, Modal, etc.)
+   └─ styles/                 # Tailwind/global CSS
+```
+
+---
+
