@@ -145,6 +145,7 @@ public class AccountService {
         String last4 = resolveLast4(fromAccountId);
         transactionDao.insert(fromAccountId, "TRANSFER_OUT", amount, description, last4);
         transactionDao.insert(toAccountId, "TRANSFER_IN", amount, description, "N/A");
+
     }
 
     public AccountDto getById(Long accountId) {

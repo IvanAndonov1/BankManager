@@ -199,7 +199,4 @@ public class CardDao {
         return jdbc.query(sql, params, rs -> rs.next() ? rs.getString("last4") : null);
     }
 
-
-
-
 }
