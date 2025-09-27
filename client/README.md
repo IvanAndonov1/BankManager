@@ -19,3 +19,16 @@ The frontend communicates with the backend via REST API requests (`/api` proxy �
 
 ---
 
+## 🛠️ Tech Stack
+
+- **React + Vite** – development server & build tool.  
+- **React Router v6** – SPA navigation with role-based route protection.  
+- **Context API** – global state management for authentication (`AuthContext`).  
+- **Tailwind CSS** – utility-first styling.  
+- **lucide-react / react-icons** – icons for UI components.  
+- **Chart components** – for analytics dashboards.  
+- **PDF export** – generate reports directly from analytics/loan data.  
+- **Service layer** – API abstraction in `src/services/*`.  
+
+---
+
