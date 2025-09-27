@@ -1,5 +1,5 @@
 import requester from "./requester";
-const baseUrl = "http://localhost:8080/api";
+const baseUrl = "https://credian-api.netlify.app/api";
 
 export const getLoanQuote = (loanData, token) =>
 	requester.get(`${baseUrl}/loans/quote?requestedAmount=${loanData.requestedAmount}&termMonths=${loanData.termMonths}`,

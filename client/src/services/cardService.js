@@ -1,5 +1,5 @@
 export const getAllCardsData = async (token) => {
-	return fetch(`http://localhost:8080/api/cards/mine`, {
+	return fetch(`https://credian-api.netlify.app/api/cards/mine`, {
 		method: 'GET',
 		headers: {
 			'authorization': `Bearer ${token}`
@@ -8,7 +8,7 @@ export const getAllCardsData = async (token) => {
 }
 
 export const getBalanceData = async (accountNumber, token) => {
-	return fetch(`http://localhost:8080/api/accounts/${accountNumber}`, {
+	return fetch(`https://credian-api.netlify.app/api/accounts/${accountNumber}`, {
 		method: 'GET',
 		headers: {
 			'authorization': `Bearer ${token}`
@@ -17,7 +17,7 @@ export const getBalanceData = async (accountNumber, token) => {
 }
 
 export const transferMoneyBetweenCards = (from, data, token) => {
-	return fetch(`http://localhost:8080/api/accounts/${from}/transfer`, {
+	return fetch(`https://credian-api.netlify.app/api/accounts/${from}/transfer`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',

@@ -1,6 +1,6 @@
 import requester from "./requester";
 
-const baseUrl = 'http://localhost:8080/api/auth';
+const baseUrl = 'https://credian-api.netlify.app/api/auth';
 
 export const forgotPassword = (data) => 
   requester.post(`${baseUrl}/forgot-password`, data);

@@ -1,6 +1,6 @@
 import requester from './requester';
 
-const baseUrl = 'http://localhost:8080/api/staff/analytics';
+const baseUrl = 'https://credian-api.netlify.app/api/staff/analytics';
 
 export const getAnalyticsOverview = (token) =>
 	requester.get(`${baseUrl}/overview`, {
