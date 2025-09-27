@@ -79,18 +79,18 @@ export default function Dashboard() {
 	return (
 		<div className="min-h-screen flex bg-white">
 			<CustomerSidebar />
-		
+
 
 			<div className="flex-1 p-8 ml-12 flex flex-col gap-12">
 				<div>
 					<h1 className="text-2xl font-bold mb-4">Your Cards</h1>
 
 					<div className="flex items-center mb-6 cursor-pointer gap-8">
-                 
-					<div className="flex gap-4">
-						<CardList />
-					</div> 
-					{/*<button className=" rounded-full bg-gradient-to-b from-[#351F78] to-[#0B82BE] w-8 h-8 text-white text-center pt-[1px] font-bold text-xl">+</button>*/}
+
+						<div className="flex gap-4">
+							<CardList />
+						</div>
+						{/*<button className=" rounded-full bg-gradient-to-b from-[#351F78] to-[#0B82BE] w-8 h-8 text-white text-center pt-[1px] font-bold text-xl">+</button>*/}
 					</div>
 
 					<div className="flex gap-6 mt-6">
@@ -113,9 +113,9 @@ export default function Dashboard() {
 					</div>
 				</div>
 
-	<AiChatBot />
+				<AiChatBot />
 
-				<div className="w-full">
+				<div className="w-3/4">
 					<h1 className="text-xl font-bold mb-6 text-[#351f78]">Recent Transactions</h1>
 					<table className="w-full text-left text-sm">
 						<thead className="text-[#707070]">
@@ -129,19 +129,29 @@ export default function Dashboard() {
 							</tr>
 						</thead>
 						<tbody>
-							{transactions
-								.sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime))
-								.slice(0, 4)
-								.map((transaction, index) => (
-									<CustomerTableRow
-										key={index}
-										type={transaction.type}
-										amount={transaction.amount}
-										dateTime={transaction.dateTime}
-										description={transaction.description}
-										cardType={transaction.cardType}
-									/>
-								))}
+							{transactions.length > 0 ? (
+								transactions
+									.sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime))
+									.slice(0, 4)
+									.map((transaction, index) => (
+										<CustomerTableRow
+											key={index}
+											type={transaction.type}
+											amount={transaction.amount}
+											dateTime={transaction.dateTime}
+											description={transaction.description}
+											cardType={transaction.cardType}
+										/>
+									))
+							) : (
+								(
+									<tr>
+										<td colSpan={6} className="py-4 text-center text-gray-500">
+											No transactions found
+										</td>
+									</tr>
+								)
+							)}
 						</tbody>
 					</table>
 				</div>

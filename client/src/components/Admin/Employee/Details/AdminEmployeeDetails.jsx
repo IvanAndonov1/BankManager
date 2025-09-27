@@ -47,11 +47,11 @@ export default function AdminEmployeeDetails() {
 						demoteAccount={demoteAccount}
 					/>
 					<div className="flex-1 min-w-0 bg-white rounded-2xl shadow-md overflow-hidden">
-						<Tabs items={[{ key: "profile", label: "Profile" }, { key: "salary", label: "Salary" }, { key: "history", label: "Salary History" }]} activeKey={tab} onChange={setTab} />
+						<Tabs items={[{ key: "profile", label: "Profile" }, { key: "salary", label: "Salary" }]} activeKey={tab} onChange={setTab} />
 						<div className="mt-3 border-t" />
 						{tab === "profile" && <ProfileTab key={employee.username} employee={employee} setter={setEmployeeDetails} />}
 						{tab === "salary" && <SalaryTab value={employee.salary} employee={employee} setter={setEmployeeDetails} />}
-						{tab === "history" && <SalaryHistoryTab />}
+						{/* {tab === "history" && <SalaryHistoryTab />} */}
 					</div>
 				</div>
 			</div>

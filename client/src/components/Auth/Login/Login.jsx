@@ -99,6 +99,9 @@ export default function Login() {
 			const roleKey = user.role || "";
 			const destination = roles[roleKey] || roles[user.role] || "/login";
 
+			console.log(destination);
+			
+
 			navigate(destination);
 
 			setState(s => ({
@@ -143,7 +146,7 @@ export default function Login() {
 			
 
 				<img src={redLine1} alt="red lines" className="pointer-events-none w-5xl h-5xl absolute inset-0 object-cover " />
-				<img src={redLine2} alt="red lines" className="pointer-events-none w-3xl h-3xl absolute inset-0 left-[40%] object-cover " />
+				<img src={redLine2} alt="red lines" className="pointer-events-none w-5xl h-3xl absolute inset-0 left-[40%] object-cover " />
 
 				<div className="relative z-10 w-full max-w-2xl mx-auto pt-24 px-4 text-white">
 					<h1 className="text-4xl md:text-5xl font-bold text-center">Banking You Want To Use</h1>
