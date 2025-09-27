@@ -61,3 +61,10 @@ client/
 
 ---
 
+## 🔑 Core Concepts
+
+- **Authentication**  
+  - `AuthContext` stores the user’s token, ID, and role.  
+  - Service requests include the token in headers.  
+  - Login/Register pages update the context and persist token locally.  
+
