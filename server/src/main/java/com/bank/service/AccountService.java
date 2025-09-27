@@ -1,6 +1,7 @@
 package com.bank.service;
 
 import com.bank.dao.AccountDao;
+import com.bank.dao.CardDao;
 import com.bank.dao.TransactionDao;
 import com.bank.dto.AccountDto;
 import com.bank.exception.AccountNotFoundException;
@@ -18,10 +19,12 @@ public class AccountService {
 
     private final AccountDao accountDao;
     private final TransactionDao transactionDao;
+    private final CardDao cardDao;
 
-    public AccountService(AccountDao accountDao, TransactionDao transactionDao) {
+    public AccountService(AccountDao accountDao, TransactionDao transactionDao,CardDao cardDao) {
         this.accountDao = accountDao;
         this.transactionDao = transactionDao;
+        this.cardDao = cardDao;
     }
 
     private String generateAccountNumber(){
@@ -30,6 +33,13 @@ public class AccountService {
         return "BG80BNBG9661" + String.format("%010d", tail);
 
     }
+    private String resolveLast4(Long accountId) {
+        String last4 = cardDao.findLast4ByAccountId(accountId);
+        System.out.println("DEBUG resolveLast4 accountId=" + accountId + " -> last4=" + last4);
+        return (last4 != null) ? last4 : "N/A";
+    }
+
+
 
     public Long createAccount(Long customerId){
 
@@ -74,7 +84,8 @@ public class AccountService {
         var newBalance = balance.add(amount);
         accountDao.updateBalance(accountId, newBalance);
 
-        transactionDao.insert(accountId, "DEPOSIT", amount, description,"N/A");
+        String last4 = resolveLast4(accountId);
+        transactionDao.insert(accountId, "DEPOSIT", amount, description,last4);
 
     }
 
@@ -96,7 +107,8 @@ public class AccountService {
 
         accountDao.updateBalance(accountId, newBalance);
 
-        transactionDao.insert(accountId, "WITHDRAW", amount, description,"N/A");
+        String last4 = resolveLast4(accountId);
+        transactionDao.insert(accountId, "WITHDRAW", amount, description,last4);
     }
 
     @Transactional
@@ -130,7 +142,8 @@ public class AccountService {
         accountDao.updateBalance(fromAccountId, fromBalance.subtract(amount));
         accountDao.updateBalance(toAccountId, toBalance.add(amount));
 
-        transactionDao.insert(fromAccountId, "TRANSFER_OUT", amount, description, "N/A");
+        String last4 = resolveLast4(fromAccountId);
+        transactionDao.insert(fromAccountId, "TRANSFER_OUT", amount, description, last4);
         transactionDao.insert(toAccountId, "TRANSFER_IN", amount, description, "N/A");
     }
 

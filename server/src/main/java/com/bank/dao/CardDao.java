@@ -184,5 +184,22 @@ public class CardDao {
         return Boolean.TRUE.equals(jdbc.queryForObject(sql, Map.of("pan", pan), Boolean.class));
 
     }
+    public String findLast4ByAccountId(Long accountId) {
+        String sql = """
+        SELECT last4
+        FROM cards
+        WHERE account_id = :accId
+        ORDER BY id DESC
+        LIMIT 1
+    """;
+
+        var params = new MapSqlParameterSource()
+                .addValue("accId", accountId);
+
+        return jdbc.query(sql, params, rs -> rs.next() ? rs.getString("last4") : null);
+    }
+
+
+
 
 }
