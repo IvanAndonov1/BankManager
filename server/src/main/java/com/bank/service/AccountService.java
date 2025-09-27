@@ -27,7 +27,7 @@ public class AccountService {
     private String generateAccountNumber(){
 
         long tail = ThreadLocalRandom.current().nextLong(0, 1_000_000_0000L);
-        return "BG80BNBG9661" + String.format("%010d", tail);
+        return "BG80CRDN9661" + String.format("%010d", tail);
 
     }
 
