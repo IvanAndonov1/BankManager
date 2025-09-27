@@ -82,3 +82,20 @@ client/
 
 ---
 
+## ▶️ Running the Client
+
+### Prerequisites
+- Node.js >= 18  
+- Backend running at `http://localhost:8080`  
+
+### Install dependencies
+```bash
+cd client
+npm install
+```
+
+### Start development server
+```bash
+npm run dev
+```
+
