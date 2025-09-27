@@ -154,8 +154,14 @@ public class AuthService {
 
         Map<String,Object> user;
         try {
-            user = jdbc.queryForMap(
-                    "SELECT id, name, password, role, active FROM users WHERE name=:u",
+
+            user = jdbc.queryForMap("""
+    SELECT id, name, password, role, active
+    FROM users
+    WHERE name = :u
+    ORDER BY created_at DESC, id DESC
+    LIMIT 1
+    """,
                     new MapSqlParameterSource("u", username)
             );
         } catch (Exception e) {
