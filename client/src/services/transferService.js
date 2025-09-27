@@ -1,6 +1,6 @@
 import requester from "./requester";
 
-const baseUrl = "https://bankmanager-2.onrender.com";
+const baseUrl = "https://bankmanager-2.onrender.com/api";
 
 export const makeTransfer = (fromAccountNumber, token, data) => {
   return requester.post(

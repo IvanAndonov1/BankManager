@@ -1,6 +1,6 @@
 import requester from './requester';
 
-const baseUrl = 'https://bankmanager-2.onrender.com';
+const baseUrl = 'https://bankmanager-2.onrender.com/api';
 
 export const getAllCustomers = (token) => requester.get(`${baseUrl}/customers/all`, { 'Authorization': `Bearer ${token}` });
 

@@ -1,5 +1,5 @@
 export const getAllCardsData = async (token) => {
-	return fetch(`https://bankmanager-2.onrender.com/cards/mine`, {
+	return fetch(`https://bankmanager-2.onrender.com/api/cards/mine`, {
 		method: 'GET',
 		headers: {
 			'authorization': `Bearer ${token}`
@@ -8,7 +8,7 @@ export const getAllCardsData = async (token) => {
 }
 
 export const getBalanceData = async (accountNumber, token) => {
-	return fetch(`https://bankmanager-2.onrender.com/accounts/${accountNumber}`, {
+	return fetch(`https://bankmanager-2.onrender.com/api/accounts/${accountNumber}`, {
 		method: 'GET',
 		headers: {
 			'authorization': `Bearer ${token}`
@@ -17,7 +17,7 @@ export const getBalanceData = async (accountNumber, token) => {
 }
 
 export const transferMoneyBetweenCards = (from, data, token) => {
-	return fetch(`https://bankmanager-2.onrender.com/accounts/${from}/transfer`, {
+	return fetch(`https://bankmanager-2.onrender.com/api/accounts/${from}/transfer`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
