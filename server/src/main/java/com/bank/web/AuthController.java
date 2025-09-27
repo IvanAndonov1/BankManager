@@ -4,6 +4,7 @@ import com.bank.dto.*;
 import com.bank.security.JwtService;
 import com.bank.security.SecurityUtil;
 import com.bank.service.AuthService;
+import com.bank.service.RegistrationValidator;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -24,16 +25,31 @@ public class AuthController {
 
     private final PasswordEncoder encoder;
     private final AuthService authService;
+    private final RegistrationValidator registrationValidator;
 
-    public AuthController(PasswordEncoder encoder, AuthService authService) {
+    public AuthController(PasswordEncoder encoder, AuthService authService, RegistrationValidator registrationValidator) {
 
         this.encoder = encoder;
         this.authService = authService;
+        this.registrationValidator = registrationValidator;
 
     }
 
     @PostMapping("/register/customer")
-    public ResponseEntity<PublicUserDto> registerCustomer(@RequestBody RegisterRequestDto req) {
+    public ResponseEntity<?> registerCustomer(@RequestBody RegisterRequestDto req) {
+
+        var errors = registrationValidator.validateCustomer(
+                req.username(),
+                req.password(),
+                req.email(),
+                req.egn(),
+                req.phoneNumber()
+        );
+
+        if(!errors.isEmpty()){
+            return ResponseEntity.badRequest().body(new ValidationErrorResponse(errors));
+        }
+
         var u = authService.registerCustomer(req);
 
         var body = new PublicUserDto(
