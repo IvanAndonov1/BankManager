@@ -106,3 +106,10 @@ npm run build
 
 ---
 
+## 📊 Features
+
+- **Customer Dashboard** – balances, transactions, and cards overview.  
+- **Loan Applications** – apply with sliders (amount/term), view approvals/declines.  
+- **Employee Portal** – approve or reject loans, access client details.  
+- **Analytics (Admin/Employee)** – daily loan stats, decline reasons, cashflow trends.  
+- **PDF Reports** – export analytics dashboards as PDF.
