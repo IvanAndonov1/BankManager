@@ -679,5 +679,49 @@ public class UserDirectoryDao {
                 });
     }
 
-}
+    public boolean existsByUsername(String username) {
 
+        Boolean b = jdbc.queryForObject(
+                "SELECT EXISTS(SELECT 1 FROM users WHERE name=:u)",
+                new MapSqlParameterSource("u", username),
+                Boolean.class
+        );
+
+        return Boolean.TRUE.equals(b);
+    }
+
+    public boolean existsByEmail(String email) {
+
+        Boolean b = jdbc.queryForObject(
+                "SELECT EXISTS(SELECT 1 FROM users WHERE email=:e)",
+                new MapSqlParameterSource("e", email),
+                Boolean.class
+        );
+
+        return Boolean.TRUE.equals(b);
+    }
+
+    public boolean existsByEgn(String egn) {
+
+        Boolean b = jdbc.queryForObject(
+                "SELECT EXISTS(SELECT 1 FROM users WHERE egn=:e)",
+                new MapSqlParameterSource("e", egn),
+                Boolean.class
+        );
+
+        return Boolean.TRUE.equals(b);
+    }
+
+    public boolean existsByPhone(String phone) {
+
+        Boolean b = jdbc.queryForObject(
+                "SELECT EXISTS(SELECT 1 FROM users WHERE phone_number=:p)",
+                new MapSqlParameterSource("p", phone),
+                Boolean.class
+        );
+
+        return Boolean.TRUE.equals(b);
+    }
+
+
+}
