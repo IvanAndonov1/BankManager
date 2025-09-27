@@ -1,6 +1,6 @@
 import requester from './requester';
 
-const baseUrl = 'https://credian-api.netlify.app/api/staff/analytics';
+const baseUrl = 'https://bankmanager-2.onrender.com/staff/analytics';
 
 export const getAnalyticsOverview = (token) =>
 	requester.get(`${baseUrl}/overview`, {

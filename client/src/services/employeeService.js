@@ -1,6 +1,6 @@
 import requester from './requester';
 
-const baseUrl = 'https://credian-api.netlify.app/api';
+const baseUrl = 'https://bankmanager-2.onrender.com';
 
 export const getAllCustomers = (token) => requester.get(`${baseUrl}/customers/all`, { 'Authorization': `Bearer ${token}` });
 
