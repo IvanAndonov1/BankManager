@@ -15,7 +15,7 @@ public class CorsConfig {
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration cfg = new CorsConfiguration();
-        cfg.setAllowedOriginPatterns(List.of("http://localhost:5173")); // Vite dev
+        cfg.setAllowedOriginPatterns(List.of("http://localhost:5173","https://credian.onrender.com/","https://credian-api.netlify.app")); // Vite dev
         cfg.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
         cfg.setAllowedHeaders(List.of("*"));
         cfg.setAllowCredentials(true);
