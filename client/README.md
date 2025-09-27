@@ -68,3 +68,17 @@ client/
   - Service requests include the token in headers.  
   - Login/Register pages update the context and persist token locally.  
 
+- **Routing & Access Control**  
+  - Public routes: login, register.  
+  - Private routes: dashboard, transfers, loans.  
+  - Role-based access:  
+    - Customer → Accounts, Loans, Transfers.  
+    - Employee → Loan approvals, Customer details.  
+    - Admin → Employee management, Analytics.  
+
+- **API Layer**  
+  - Abstracted in `services/*`.  
+  - Handles domain-specific logic (users, loans, analytics, employees).  
+
+---
+
