@@ -1,12 +1,109 @@
-# React + Vite
+# Credian – Client (Frontend)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 🧭 Overview
 
-Currently, two official plugins are available:
+The **client** is a Single Page Application (SPA) for **Credian**, a digital banking platform with roles for **Customers**, **Employees**, and **Admins**.  
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+It provides functionality for:  
+- **Customers**: secure login, account and card management, transfers, loan applications, transaction history.  
+- **Employees**: review and approve/decline loan requests, access customer details, manage accounts.  
+- **Admins**: oversee employees, monitor analytics dashboards, manage system-wide operations.  
 
-## Expanding the ESLint configuration
+The frontend communicates with the backend via REST API requests (`/api` proxy → `http://localhost:8080`).
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## 🛠️ Tech Stack
+
+- **React + Vite** – development server & build tool.  
+- **React Router v6** – SPA navigation with role-based route protection.  
+- **Context API** – global state management for authentication (`AuthContext`).  
+- **Tailwind CSS** – utility-first styling.  
+- **lucide-react / react-icons** – icons for UI components.  
+- **Chart components** – for analytics dashboards.  
+- **PDF export** – generate reports directly from analytics/loan data.  
+- **Service layer** – API abstraction in `src/services/*`.  
+
+---
+
+## 📁 Project Structure
+
+```text
+client/
+├─ index.html
+├─ package.json
+├─ vite.config.js
+└─ src/
+   ├─ main.jsx                # Entry point (Router, Providers)
+   ├─ App.jsx                 # Root layout and route definitions
+   ├─ contexts/
+   │  └─ AuthContext.jsx      # { user, token, role, login(), logout() }
+   ├─ services/
+   │  ├─ authService.js       # Authentication (login, register, logout)
+   │  ├─ userService.js       # User accounts, transactions
+   │  ├─ loanService.js       # Loan quotes and applications
+   │  ├─ analyticsService.js  # Analytics data (overview, top declines, cashflow)
+   │  ├─ employeeService.js   # Employee actions (approvals, client management)
+   ├─ components/
+   │  ├─ Dashboard/           # Customer dashboard (balances, transactions)
+   │  ├─ Loans/               # Loan modals, loan cards, loan details
+   │  ├─ Analytics/           # Analytics overview, charts, PDF export
+   │  ├─ Employees/           # Employee table, profile, register modal
+   │  ├─ common/              # Shared components (Sidebar, Header, Modal, etc.)
+   └─ styles/                 # Tailwind/global CSS
+```
+
+---
+
+## 🔑 Core Concepts
+
+- **Authentication**  
+  - `AuthContext` stores the user’s token, ID, and role.  
+  - Service requests include the token in headers.  
+  - Login/Register pages update the context and persist token locally.  
+
+- **Routing & Access Control**  
+  - Public routes: login, register.  
+  - Private routes: dashboard, transfers, loans.  
+  - Role-based access:  
+    - Customer → Accounts, Loans, Transfers.  
+    - Employee → Loan approvals, Customer details.  
+    - Admin → Employee management, Analytics.  
+
+- **API Layer**  
+  - Abstracted in `services/*`.  
+  - Handles domain-specific logic (users, loans, analytics, employees).  
+
+---
+
+## ▶️ Running the Client
+
+### Prerequisites
+- Node.js >= 18  
+- Backend running at `http://localhost:8080`  
+
+### Install dependencies
+```bash
+cd client
+npm install
+```
+
+### Start development server
+```bash
+npm run dev
+```
+
+### Build for production
+```bash
+npm run build
+```
+
+---
+
+## 📊 Features
+
+- **Customer Dashboard** – balances, transactions, and cards overview.  
+- **Loan Applications** – apply with sliders (amount/term), view approvals/declines.  
+- **Employee Portal** – approve or reject loans, access client details.  
+- **Analytics (Admin/Employee)** – daily loan stats, decline reasons, cashflow trends.  
+- **PDF Reports** – export analytics dashboards as PDF.
