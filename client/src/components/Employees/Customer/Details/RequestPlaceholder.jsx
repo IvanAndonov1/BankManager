@@ -1,4 +1,4 @@
-import { use, useMemo, useState } from "react";
+import { use, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router";
 
 import LoanHeader from "../Details Subcomponents/LoanHeader";
@@ -13,6 +13,7 @@ import DeclineCreditModal from "../Details Subcomponents/DeclineCreditModal";
 import { clamp0to100 } from "../../../../utils/utils.js";
 import { approveCreditHandler, declineCreditHandler, getAllLoanDetails } from "../../../../services/employeeService.js";
 import { AuthContext } from "../../../../contexts/AuthContext.jsx";
+import { getLoanFeedback } from "../../../../services/loanService.js";
 
 export default function RequestsPlaceholder({
 	applications,
@@ -25,6 +26,7 @@ export default function RequestsPlaceholder({
 }) {
 	const params = useParams?.() || {};
 	const urlUserId = Number(params?.userId);
+	const [loanFeedback, setLoanFeedback] = useState({});
 	const { user } = use(AuthContext);
 
 	const apps = useMemo(() => {
@@ -36,6 +38,13 @@ export default function RequestsPlaceholder({
 					: []) || [];
 		return src;
 	}, [applications, applicationDetails]);
+
+	useEffect(() => {
+		const firstId = applicationDetails?.[0]?.id;
+		if (user?.token && firstId) {
+			getLoanFeedback(user.token, firstId).then(res => setLoanFeedback(res));
+		}
+	}, [user?.token, applicationDetails]);
 
 	const currentCustomerId = useMemo(() => {
 		if (Number.isFinite(customerId)) return Number(customerId);
@@ -197,6 +206,19 @@ export default function RequestsPlaceholder({
 					<div className="flex md:justify-center">
 						<ScoreRing percent={percent} />
 					</div>
+
+					{loanFeedback?.feedback && (
+						<div className="md:col-span-3">
+							<p
+								className="text-center text-white text-lg font-medium rounded-xl px-6 py-4"
+								style={{
+									background: "linear-gradient(90deg, #6D28D9, #9333EA)",
+								}}
+							>
+								{loanFeedback.feedback}
+							</p>
+						</div>
+					)}
 				</div>
 			)}
 
