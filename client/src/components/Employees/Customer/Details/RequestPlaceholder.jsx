@@ -20,7 +20,8 @@ export default function RequestsPlaceholder({
 	isLoading = false,
 	customerId,
 	changeTab,
-	changeLoans
+	changeLoans,
+	userDetails
 }) {
 	const params = useParams?.() || {};
 	const urlUserId = Number(params?.userId);
@@ -95,6 +96,38 @@ export default function RequestsPlaceholder({
 						changeLoans(result);
 						changeTab('loans');
 					});
+
+				const firstName = userDetails.firstName;
+				const email = userDetails.email;
+				const amount = applicationDetails[0].requestedAmount;
+				const currency = applicationDetails[0].currency;
+
+				const SERVICE_ID = 'service_yvf7owy';
+				const TEMPLATE_ID = 'template_17d0j97';
+				const PUBLIC_KEY = '6jEAcDTvmyGWOTMwZ';
+				const ACCESS_TOKEN = '4L4ZDWNeTXGMoe8qCiYrd';
+
+				const templateParams = {
+					email,
+					firstName,
+					email,
+					amount,
+					currency
+				}
+
+				fetch('https://api.emailjs.com/api/v1.0/email/send', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({
+						service_id: SERVICE_ID,
+						template_id: TEMPLATE_ID,
+						user_id: PUBLIC_KEY,
+						accessToken: ACCESS_TOKEN,
+						template_params: templateParams
+					})
+				});
 			});
 	}
 
