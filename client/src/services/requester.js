@@ -34,11 +34,17 @@ const requester = {
 			if (!res.ok) {
 				throw new Error(`Request failed with status: ${res.status}`);
 			} else {
-				if (res.url.includes('download')) {
-					return res.blob();
-				} else {
-					return res.json();
+				if (res.url.includes('download') || res.headers.get('content-disposition')) {
+					return await res.blob();
 				}
+				if (res.status === 204 || res.status === 205) {
+					return null;
+				}
+				const ct = res.headers.get('content-type') || '';
+				if (ct.includes('application/json')) {
+					return await res.json();
+				}
+				return await res.text();
 			}
 		} catch (err) {
 			return err;
