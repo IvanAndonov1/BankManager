@@ -1,9 +1,6 @@
 import requester from './requester';
 
-const baseUrl = 'http://localhost:8080/api';
-
-// const baseUrl = 'https://bankmanager-2.onrender.com/api';
-
+const baseUrl = 'https://bankmanager-2.onrender.com/api';
 
 export const getAllEmployees = (token) => requester.get(`${baseUrl}/employees/all`, { 'Authorization': `Bearer ${token}` });
 
@@ -17,4 +14,4 @@ export const fireEmployee = (employeeId, token) => requester.put(`${baseUrl}/emp
 
 export const registerEmployee = (token, data) => requester.post(`${baseUrl}/auth/register/employee`, data, { 'Authorization': `Bearer ${token}` });
 
-export const getAIApplicationForecast = (token) => requester.get(`${baseUrl}/staff/analytics/ai/forecast`, { 'Authorization': `Bearer ${token}` });
+export const getAIApplicationForecast = (token) => requester.get(`http://localhost:8080/api/staff/analytics/ai/forecast`, { 'Authorization': `Bearer ${token}` });
