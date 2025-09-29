@@ -4,8 +4,8 @@ import CardList from "./CardList";
 import AiChatBot from "../common/aiChatBot";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
-import { getBalanceData } from "../../services/cardService";
-import { getAllTransactions, getUserAccounts } from "../../services/userService";
+import { getAllCardsData, getBalanceData } from "../../services/cardService";
+import { addCardToAccount, getAllTransactions, getUserAccounts } from "../../services/userService";
 
 export default function Dashboard() {
 	const { user } = useContext(AuthContext);
@@ -15,19 +15,24 @@ export default function Dashboard() {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 
+	const [isLinkCardModalOpen, setIsLinkCardModalOpen] = useState(false);
+	const [selectedAccountIban, setSelectedAccountIban] = useState("");
+	const [cardsData, setAllCardsData] = useState([]);
+
+
 	useEffect(() => {
 		if (user.id && user.token) {
 			const fetchData = async () => {
 				try {
 					const accountsData = await getUserAccounts(user.token);
-					const accountNumbers = accountsData.map(account => account.accountNumber);
+					const accountNumbers = accountsData.map((account) => account.accountNumber);
 
 					if (accountNumbers.length > 0) {
 						const balancePromises = accountNumbers.map(async (iban) => {
 							const response = await getBalanceData(iban, user.token);
 							return {
 								accountNumber: response.accountNumber || iban,
-								balance: response.balance
+								balance: response.balance,
 							};
 						});
 
@@ -52,6 +57,30 @@ export default function Dashboard() {
 			fetchData();
 		}
 	}, [user.id, user.token]);
+
+	const openLinkCardModal = () => {
+		setSelectedAccountIban(balances?.[0]?.accountNumber || "");
+		setIsLinkCardModalOpen(true);
+	};
+
+	const handleConfirmLink = () => {
+		const payload = {
+			accountNumber: selectedAccountIban,
+			holderName: `${user.firstName} ${user.lastName}`,
+			type: 'DEBIT'
+		};
+
+		addCardToAccount(user.token, payload)
+			.then(() => {
+				getAllCardsData(user.token)
+					.then(res => setAllCardsData(res));
+			})
+		setIsLinkCardModalOpen(false);
+	};
+
+	const handleCreateAccount = () => {
+		console.log("create account");
+	};
 
 	if (loading) {
 		return (
@@ -80,36 +109,53 @@ export default function Dashboard() {
 		<div className="min-h-screen flex bg-white">
 			<CustomerSidebar />
 
-
 			<div className="flex-1 p-8 ml-12 flex flex-col gap-12">
 				<div>
 					<h1 className="text-2xl font-bold mb-4">Your Cards</h1>
 
-					<div className="flex items-center mb-6 cursor-pointer gap-8">
-
+					<div className="flex items-center mb-6 gap-4">
 						<div className="flex gap-4">
-							<CardList />
+							<CardList cardsData={cardsData} setCardsData={setAllCardsData} />
 						</div>
-						{/*<button className=" rounded-full bg-gradient-to-b from-[#351F78] to-[#0B82BE] w-8 h-8 text-white text-center pt-[1px] font-bold text-xl">+</button>*/}
+
+						<button
+							onClick={openLinkCardModal}
+							title="Link card to account"
+							className="rounded-full ml-2 bg-gradient-to-b from-[#351F78] to-[#0B82BE] w-9 h-9 text-white text-center leading-9 font-bold text-xl shadow hover:opacity-90 active:scale-95"
+						>
+							+
+						</button>
 					</div>
 
-					<div className="flex gap-6 mt-6">
+					<div className="flex items-center gap-6 mt-6 flex-wrap">
 						{balances.map((x, i) => (
 							<div
 								key={i}
-								className={` w-80 h-20 rounded-2xl border-2 border-[#351F78] flex flex-col justify-center ${i === 1 ? 'bg-[#351F78]' : ''
+								className={`w-80 h-20 rounded-2xl border-2 border-[#351F78] flex flex-col justify-center ${i === 1 ? "bg-[#351F78]" : ""
 									}`}
 							>
-								<div className={`text-2xl text-center ${i === 1 ? 'text-white' : 'text-[#351F78]'
-									}`}>
+								<div
+									className={`text-2xl text-center ${i === 1 ? "text-white" : "text-[#351F78]"
+										}`}
+								>
 									Balance: {x.balance} EUR
 								</div>
-								<div className={`text-sm text-center ${i === 1 ? 'text-white' : 'text-[#351F78]'
-									}`}>
+								<div
+									className={`text-sm text-center ${i === 1 ? "text-white" : "text-[#351F78]"
+										}`}
+								>
 									IBAN: {x.accountNumber}
 								</div>
 							</div>
 						))}
+
+						<button
+							onClick={handleCreateAccount}
+							title="Add account"
+							className="rounded-full bg-gradient-to-b from-[#351F78] to-[#0B82BE] w-9 h-9 text-white text-center leading-9 font-bold text-xl shadow hover:opacity-90 active:scale-95"
+						>
+							+
+						</button>
 					</div>
 				</div>
 
@@ -144,17 +190,88 @@ export default function Dashboard() {
 										/>
 									))
 							) : (
-								(
-									<tr>
-										<td colSpan={6} className="py-4 text-center text-gray-500">
-											No transactions found
-										</td>
-									</tr>
-								)
+								<tr>
+									<td colSpan={6} className="py-4 text-center text-gray-500">
+										No transactions found
+									</td>
+								</tr>
 							)}
 						</tbody>
 					</table>
 				</div>
+			</div>
+
+			{isLinkCardModalOpen && (
+				<Modal onClose={() => setIsLinkCardModalOpen(false)} title="Link card to account">
+					<div className="space-y-4">
+						<label className="block text-sm font-medium text-gray-700">
+							Choose account (IBAN)
+						</label>
+						<select
+							className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0B82BE]"
+							value={selectedAccountIban}
+							onChange={(e) => setSelectedAccountIban(e.target.value)}
+						>
+							{balances.map((b, idx) => (
+								<option key={idx} value={b.accountNumber}>
+									{b.accountNumber} — {b.balance} EUR
+								</option>
+							))}
+						</select>
+
+						<div className="flex justify-end gap-3 pt-2">
+							<button
+								onClick={() => setIsLinkCardModalOpen(false)}
+								className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50"
+							>
+								Cancel
+							</button>
+							<button
+								onClick={handleConfirmLink}
+								disabled={!selectedAccountIban}
+								className="px-4 py-2 rounded-lg text-white bg-gradient-to-r from-[#351F78] to-[#0B82BE] disabled:opacity-60"
+							>
+								Save selection
+							</button>
+						</div>
+					</div>
+				</Modal>
+			)}
+		</div>
+	);
+}
+
+function Modal({ title, children, onClose }) {
+	useEffect(() => {
+		const onEsc = (e) => e.key === "Escape" && onClose?.();
+		document.addEventListener("keydown", onEsc);
+		return () => document.removeEventListener("keydown", onEsc);
+	}, [onClose]);
+
+	return (
+		<div
+			className="fixed inset-0 z-50 flex items-center justify-center"
+			aria-modal="true"
+			role="dialog"
+		>
+			<div
+				className="absolute inset-0 bg-black/40"
+				onClick={onClose}
+				aria-hidden="true"
+			/>
+			<div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-6">
+				<div className="flex items-center justify-between mb-4">
+					<h3 className="text-lg font-semibold text-[#351F78]">{title}</h3>
+					<button
+						onClick={onClose}
+						className="w-8 h-8 rounded-full border border-gray-300 grid place-items-center hover:bg-gray-50"
+						aria-label="Close"
+						title="Close"
+					>
+						✕
+					</button>
+				</div>
+				{children}
 			</div>
 		</div>
 	);
