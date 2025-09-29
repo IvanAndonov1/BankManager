@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import StepOne from "./StepOne";
 import StepTwo from "./StepTwo";
-import StepThree from "./StepThree";
 import StepFour from "./StepFour";
 import { Link, useNavigate } from "react-router-dom";
 import { validateRegister, validateStep } from "../../../utils/validations";
@@ -17,12 +16,16 @@ export default function Register() {
 	const [submitError, setSubmitError] = useState("");
 	const [submitSuccess, setSubmitSuccess] = useState(false);
 
-	const steps = useMemo(() => [
-		{ key: "one", component: StepOne },
-		{ key: "two", component: StepTwo },
-		// { key: "three", component: StepThree },
-		{ key: "four", component: StepFour }
-	], []);
+	const hasErrors = errors.length > 0;
+
+	const steps = useMemo(
+		() => [
+			{ key: "one", component: StepOne },
+			{ key: "two", component: StepTwo },
+			{ key: "four", component: StepFour },
+		],
+		[]
+	);
 
 	const StepComponent = steps[step].component;
 	const progress = ((step + 1) / steps.length) * 100;
@@ -33,14 +36,64 @@ export default function Register() {
 		setErrors((e) => {
 			const copy = { ...e };
 			changed.forEach((k) => delete copy[k]);
+			queueMicrotask(() => {
+				if (Object.keys(copy).length === 0) setSubmitError("");
+			});
 			return copy;
 		});
 	}
 
+	function applyServerErrors(list = []) {
+		const fieldErrs = {};
+		const globalMsgs = [];
+
+		list.forEach((msgRaw) => {
+			const msg = String(msgRaw || "");
+
+			if (/username/i.test(msg) && /exists|taken/i.test(msg)) {
+				fieldErrs.username = "Username is already taken.";
+				return;
+			}
+
+			if (/password/i.test(msg) && /uppercase/i.test(msg) && /number|digit/i.test(msg)) {
+				fieldErrs.password = "The password must contain at least one uppercase letter and one digit.";
+				return;
+			}
+
+			if (/egn/i.test(msg) && /exists/i.test(msg)) {
+				globalMsgs.push("An account may already exist with the provided details.");
+				return;
+			}
+			if (/email/i.test(msg) && /exists/i.test(msg)) {
+				globalMsgs.push("An account may already exist with the provided details.");
+				return;
+			}
+			if (/phone/i.test(msg) && /exists/i.test(msg)) {
+				globalMsgs.push("An account may already exist with the provided details.");
+				return;
+			}
+
+			if (msg.trim()) globalMsgs.push(msg.trim());
+		});
+
+		const uniqueGlobal = [...new Set(globalMsgs)];
+
+		if (Object.keys(fieldErrs).length) setErrors((prev) => ({ ...prev, ...fieldErrs }));
+		setSubmitError(
+			uniqueGlobal.length
+				? uniqueGlobal.join(" ")
+				: (Object.keys(fieldErrs).length ? "" : "Registration failed. Please try again.")
+		);
+	}
+
 	async function handleSubmit(e) {
 		e.preventDefault();
-		setSubmitError("");
 		setSubmitSuccess(false);
+
+		if (hasErrors) {
+			setSubmitError("Please fix the highlighted fields before resubmitting.");
+			return;
+		}
 
 		const allErrs = validateRegister(values);
 		if (Object.keys(allErrs).length > 0) {
@@ -50,15 +103,30 @@ export default function Register() {
 		}
 
 		setSubmitting(true);
+		setSubmitError("");
 		try {
 			const { confirmPassword, terms, ...payload } = values;
+			const res = await registerUser(payload);
+			const data = await res.body;
 
-			registerUser(payload)
-				.then(() => navigate('/login'));
+			if (data?.errors?.length) {
+				applyServerErrors(data.errors);
+				return;
+			}
 
 			setSubmitSuccess(true);
-		} catch (e) {
-			setSubmitError(e.message || "Registration failed");
+			navigate("/login");
+		} catch (e2) {
+			const list =
+				e2?.errors ||
+				e2?.response?.data?.errors ||
+				e2?.data?.errors ||
+				(Array.isArray(e2?.message) ? e2.message : []);
+			if (Array.isArray(list) && list.length) {
+				applyServerErrors(list);
+			} else {
+				setSubmitError("Registration failed. Please try again.");
+			}
 		} finally {
 			setSubmitting(false);
 		}
@@ -91,10 +159,7 @@ export default function Register() {
 			<div className="w-full max-w-3xl">
 				<div className="text-white text-3xl font-semibold text-center mb-6">Register</div>
 				<div className="h-2 w-2/3 mx-auto bg-white/40 rounded-full overflow-hidden">
-					<div
-						className="h-full bg-[#351F78] transition-all"
-						style={{ width: `${progress}%` }}
-					/>
+					<div className="h-full bg-[#351F78] transition-all" style={{ width: `${progress}%` }} />
 				</div>
 
 				<div className="relative mt-6">
@@ -108,25 +173,22 @@ export default function Register() {
 							<div className="mt-6 flex items-center justify-between">
 								<div className="text-sm text-red-200">{submitError}</div>
 								<div className="flex items-center gap-3">
-									{submitSuccess && (
-										<span className="text-green-200 text-sm">Registered successfully</span>
-									)}
+									{submitSuccess && <span className="text-green-200 text-sm">Registered successfully</span>}
 									<button
 										type="submit"
-										disabled={submitting}
+										disabled={submitting || hasErrors}
+										title={hasErrors ? "Fix the highlighted fields first." : ""}
 										className="px-6 h-10 rounded-full bg-[#351F78] hover:opacity-95 disabled:opacity-60 text-white font-medium"
 									>
 										{submitting ? "Submitting..." : "Register"}
 									</button>
+
 								</div>
 							</div>
 						)}
 
 						<div className="mt-6 text-center text-white/90 text-sm">
-							Already have an account?{" "}
-							<Link className="underline" to="/login">
-								Login
-							</Link>
+							Already have an account? <Link className="underline" to="/login">Login</Link>
 						</div>
 					</form>
 

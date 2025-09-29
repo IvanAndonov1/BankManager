@@ -13,3 +13,5 @@ export const promoteEmployee = (employeeId, token) => requester.put(`${baseUrl}/
 export const fireEmployee = (employeeId, token) => requester.put(`${baseUrl}/employees/${employeeId}/fire`, { 'Authorization': `Bearer ${token}` }, {});
 
 export const registerEmployee = (token, data) => requester.post(`${baseUrl}/auth/register/employee`, data, { 'Authorization': `Bearer ${token}` });
+
+export const getAIApplicationForecast = (token) => requester.get(`http://localhost:8080/api/staff/analytics/ai/forecast`, { 'Authorization': `Bearer ${token}` });

@@ -211,6 +211,7 @@ export default function CustomerMoreInfo() {
 									applicationDetails={loanDetails}
 									changeTab={setTab}
 									changeLoans={setLoanDetails}
+									userDetails={userDetails}
 								/>
 							)}
 						</div>

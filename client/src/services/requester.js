@@ -32,7 +32,10 @@ const requester = {
 			});
 
 			if (!res.ok) {
-				throw new Error(`Request failed with status: ${res.status}`);
+				throw {
+					message: `Request failed with status: ${res.status}`,
+					body: res.json()
+				}
 			} else {
 				if (res.url.includes('download') || res.headers.get('content-disposition')) {
 					return await res.blob();

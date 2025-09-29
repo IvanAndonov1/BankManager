@@ -10,3 +10,6 @@ export const submitLoanApplication = (loanData, token) =>
 
 export const getLoanApplications = (token) =>
 	requester.get(`${baseUrl}/loans/applications/mine`, { 'Authorization': `Bearer ${token}` });
+
+export const getLoanFeedback = (token, loanId) =>
+	requester.get(`http://localhost:8080/api/loans/feedback/${loanId}`, { 'Authorization': `Bearer ${token}` });
