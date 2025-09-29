@@ -24,3 +24,17 @@ background: color(display-p3 0 0 0 / 0.00);
 box-shadow: 0 4px 4px 0 rgba(255, 255, 255, 0.25) inset;
 box-shadow: 0 4px 4px 0 color(display-p3 1 1 1 / 0.25) inset;
 }
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 0.9;
+    transform: translateY(0);
+  }
+}
+.animate-slide-up {
+  animation: slideUp 0.8s ease-out forwards;
+}

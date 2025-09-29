@@ -83,9 +83,11 @@ export default function Register() {
 			className="min-h-screen flex items-start justify-center pt-16"
 			style={{ background: "linear-gradient(135deg, #5b1d77 0%, #0b82be 100%)" }}
 		>
+			<Link to="/">
 			<span className="fixed top-6 left-6 flex flex-col items-end z-50 h-28 w-42">
 										  <img src={logoWhite} alt="logo" className=" object-cover opacity-70" />
 								</span>
+			</Link>
 			<div className="w-full max-w-3xl">
 				<div className="text-white text-3xl font-semibold text-center mb-6">Register</div>
 				<div className="h-2 w-2/3 mx-auto bg-white/40 rounded-full overflow-hidden">

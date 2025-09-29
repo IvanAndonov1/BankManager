@@ -115,7 +115,7 @@ export default function Dashboard() {
 
 				<AiChatBot />
 
-				<div className="w-3/4">
+				<div className="w-full">
 					<h1 className="text-xl font-bold mb-6 text-[#351f78]">Recent Transactions</h1>
 					<table className="w-full text-left text-sm">
 						<thead className="text-[#707070]">
