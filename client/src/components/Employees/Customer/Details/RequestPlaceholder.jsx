@@ -119,7 +119,6 @@ export default function RequestsPlaceholder({
 				const templateParams = {
 					email,
 					firstName,
-					email,
 					amount,
 					currency
 				}

@@ -16,6 +16,8 @@ export default function Register() {
 	const [submitError, setSubmitError] = useState("");
 	const [submitSuccess, setSubmitSuccess] = useState(false);
 
+	const hasErrors = errors.length > 0;
+
 	const steps = useMemo(
 		() => [
 			{ key: "one", component: StepOne },
@@ -34,6 +36,9 @@ export default function Register() {
 		setErrors((e) => {
 			const copy = { ...e };
 			changed.forEach((k) => delete copy[k]);
+			queueMicrotask(() => {
+				if (Object.keys(copy).length === 0) setSubmitError("");
+			});
 			return copy;
 		});
 	}
@@ -83,8 +88,12 @@ export default function Register() {
 
 	async function handleSubmit(e) {
 		e.preventDefault();
-		setSubmitError("");
 		setSubmitSuccess(false);
+
+		if (hasErrors) {
+			setSubmitError("Please fix the highlighted fields before resubmitting.");
+			return;
+		}
 
 		const allErrs = validateRegister(values);
 		if (Object.keys(allErrs).length > 0) {
@@ -94,12 +103,14 @@ export default function Register() {
 		}
 
 		setSubmitting(true);
+		setSubmitError("");
 		try {
 			const { confirmPassword, terms, ...payload } = values;
 			const res = await registerUser(payload);
+			const data = await res.body;
 
-			if (res && Array.isArray(res.errors) && res.errors.length) {
-				applyServerErrors(res.errors);
+			if (data?.errors?.length) {
+				applyServerErrors(data.errors);
 				return;
 			}
 
@@ -111,7 +122,6 @@ export default function Register() {
 				e2?.response?.data?.errors ||
 				e2?.data?.errors ||
 				(Array.isArray(e2?.message) ? e2.message : []);
-
 			if (Array.isArray(list) && list.length) {
 				applyServerErrors(list);
 			} else {
@@ -164,11 +174,13 @@ export default function Register() {
 									{submitSuccess && <span className="text-green-200 text-sm">Registered successfully</span>}
 									<button
 										type="submit"
-										disabled={submitting}
+										disabled={submitting || hasErrors}
+										title={hasErrors ? "Fix the highlighted fields first." : ""}
 										className="px-6 h-10 rounded-full bg-[#351F78] hover:opacity-95 disabled:opacity-60 text-white font-medium"
 									>
 										{submitting ? "Submitting..." : "Register"}
 									</button>
+
 								</div>
 							</div>
 						)}
