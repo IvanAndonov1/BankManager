@@ -1,6 +1,6 @@
 import requester from "./requester";
 
-const baseUrl = "https://bankmanager-2.onrender.com";
+const baseUrl = import.meta.env.VITE_API_URL;
 
 export const makeTransfer = (fromAccountNumber, token, data) => {
   return requester.post(
