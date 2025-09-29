@@ -1,6 +1,6 @@
 import requester from "./requester";
 
-const baseUrl = 'https://bankmanager-2.onrender.com/api';
+const baseUrl = 'https://credian-api.onrender.com/api';
 
 export const aiGenerate = ( token, data) => requester.post(`${baseUrl}/ai/generate`, data, { 'Authorization': `Bearer ${token}` });
 

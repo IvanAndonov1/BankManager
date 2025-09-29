@@ -1,5 +1,5 @@
 import requester from "./requester";
-const baseUrl = "https://bankmanager-2.onrender.com/api";
+const baseUrl = "https://credian-api.onrender.com/api";
 
 export const getLoanQuote = (loanData, token) =>
 	requester.get(`${baseUrl}/loans/quote?requestedAmount=${loanData.requestedAmount}&termMonths=${loanData.termMonths}`,
