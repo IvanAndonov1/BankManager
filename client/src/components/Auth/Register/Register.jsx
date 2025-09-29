@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import StepOne from "./StepOne";
 import StepTwo from "./StepTwo";
-import StepThree from "./StepThree";
 import StepFour from "./StepFour";
 import { Link, useNavigate } from "react-router-dom";
 import { validateRegister, validateStep } from "../../../utils/validations";
@@ -17,12 +16,14 @@ export default function Register() {
 	const [submitError, setSubmitError] = useState("");
 	const [submitSuccess, setSubmitSuccess] = useState(false);
 
-	const steps = useMemo(() => [
-		{ key: "one", component: StepOne },
-		{ key: "two", component: StepTwo },
-		// { key: "three", component: StepThree },
-		{ key: "four", component: StepFour }
-	], []);
+	const steps = useMemo(
+		() => [
+			{ key: "one", component: StepOne },
+			{ key: "two", component: StepTwo },
+			{ key: "four", component: StepFour },
+		],
+		[]
+	);
 
 	const StepComponent = steps[step].component;
 	const progress = ((step + 1) / steps.length) * 100;
@@ -35,6 +36,49 @@ export default function Register() {
 			changed.forEach((k) => delete copy[k]);
 			return copy;
 		});
+	}
+
+	function applyServerErrors(list = []) {
+		const fieldErrs = {};
+		const globalMsgs = [];
+
+		list.forEach((msgRaw) => {
+			const msg = String(msgRaw || "");
+
+			if (/username/i.test(msg) && /exists|taken/i.test(msg)) {
+				fieldErrs.username = "Username is already taken.";
+				return;
+			}
+
+			if (/password/i.test(msg) && /uppercase/i.test(msg) && /number|digit/i.test(msg)) {
+				fieldErrs.password = "The password must contain at least one uppercase letter and one digit.";
+				return;
+			}
+
+			if (/egn/i.test(msg) && /exists/i.test(msg)) {
+				globalMsgs.push("An account may already exist with the provided details.");
+				return;
+			}
+			if (/email/i.test(msg) && /exists/i.test(msg)) {
+				globalMsgs.push("An account may already exist with the provided details.");
+				return;
+			}
+			if (/phone/i.test(msg) && /exists/i.test(msg)) {
+				globalMsgs.push("An account may already exist with the provided details.");
+				return;
+			}
+
+			if (msg.trim()) globalMsgs.push(msg.trim());
+		});
+
+		const uniqueGlobal = [...new Set(globalMsgs)];
+
+		if (Object.keys(fieldErrs).length) setErrors((prev) => ({ ...prev, ...fieldErrs }));
+		setSubmitError(
+			uniqueGlobal.length
+				? uniqueGlobal.join(" ")
+				: (Object.keys(fieldErrs).length ? "" : "Registration failed. Please try again.")
+		);
 	}
 
 	async function handleSubmit(e) {
@@ -52,13 +96,27 @@ export default function Register() {
 		setSubmitting(true);
 		try {
 			const { confirmPassword, terms, ...payload } = values;
+			const res = await registerUser(payload);
 
-			registerUser(payload)
-				.then(() => navigate('/login'));
+			if (res && Array.isArray(res.errors) && res.errors.length) {
+				applyServerErrors(res.errors);
+				return;
+			}
 
 			setSubmitSuccess(true);
-		} catch (e) {
-			setSubmitError(e.message || "Registration failed");
+			navigate("/login");
+		} catch (e2) {
+			const list =
+				e2?.errors ||
+				e2?.response?.data?.errors ||
+				e2?.data?.errors ||
+				(Array.isArray(e2?.message) ? e2.message : []);
+
+			if (Array.isArray(list) && list.length) {
+				applyServerErrors(list);
+			} else {
+				setSubmitError("Registration failed. Please try again.");
+			}
 		} finally {
 			setSubmitting(false);
 		}
@@ -84,15 +142,12 @@ export default function Register() {
 			style={{ background: "linear-gradient(135deg, #5b1d77 0%, #0b82be 100%)" }}
 		>
 			<span className="fixed top-6 left-6 flex flex-col items-end z-50 h-28 w-42">
-										  <img src={logoWhite} alt="logo" className=" object-cover opacity-70" />
-								</span>
+				<img src={logoWhite} alt="logo" className=" object-cover opacity-70" />
+			</span>
 			<div className="w-full max-w-3xl">
 				<div className="text-white text-3xl font-semibold text-center mb-6">Register</div>
 				<div className="h-2 w-2/3 mx-auto bg-white/40 rounded-full overflow-hidden">
-					<div
-						className="h-full bg-[#351F78] transition-all"
-						style={{ width: `${progress}%` }}
-					/>
+					<div className="h-full bg-[#351F78] transition-all" style={{ width: `${progress}%` }} />
 				</div>
 
 				<div className="relative mt-6">
@@ -106,9 +161,7 @@ export default function Register() {
 							<div className="mt-6 flex items-center justify-between">
 								<div className="text-sm text-red-200">{submitError}</div>
 								<div className="flex items-center gap-3">
-									{submitSuccess && (
-										<span className="text-green-200 text-sm">Registered successfully</span>
-									)}
+									{submitSuccess && <span className="text-green-200 text-sm">Registered successfully</span>}
 									<button
 										type="submit"
 										disabled={submitting}
@@ -121,10 +174,7 @@ export default function Register() {
 						)}
 
 						<div className="mt-6 text-center text-white/90 text-sm">
-							Already have an account?{" "}
-							<Link className="underline" to="/login">
-								Login
-							</Link>
+							Already have an account? <Link className="underline" to="/login">Login</Link>
 						</div>
 					</form>
 
