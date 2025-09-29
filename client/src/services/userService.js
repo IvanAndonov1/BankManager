@@ -1,6 +1,6 @@
 import requester from './requester';
 
-const baseUrl = 'https://bankmanager-2.onrender.com/api';
+const baseUrl = import.meta.env.VITE_API_URL;
 
 export const loginUser = (data) => requester.post(`${baseUrl}/auth/login`, data);
 
@@ -18,4 +18,8 @@ export const getUserDetails = (token, userId) => requester.get(`${baseUrl}/custo
 
 export const getUserAccounts = (token) => requester.get(`${baseUrl}/accounts/me`, { 'Authorization': `Bearer ${token}` });
 
-export const editMineInfo = ( token, data) => requester.put(`${baseUrl}/customers/me`, { 'Authorization': `Bearer ${token}` }, data);
+export const editMineInfo = (token, data) => requester.put(`${baseUrl}/customers/me`, { 'Authorization': `Bearer ${token}` }, data);
+
+export const addCardToAccount = (token, data) => requester.post(`${baseUrl}/cards`, data, { 'Authorization': `Bearer ${token}` });
+
+export const addAccountForUser = (token, data) => requester.post(`${baseUrl}/accounts`, data, { 'Authorization': `Bearer ${token}` });
