@@ -111,10 +111,10 @@ export default function RequestsPlaceholder({
 				const amount = applicationDetails[0].requestedAmount;
 				const currency = applicationDetails[0].currency;
 
-				const SERVICE_ID = 'service_yvf7owy';
-				const TEMPLATE_ID = 'template_17d0j97';
-				const PUBLIC_KEY = '6jEAcDTvmyGWOTMwZ';
-				const ACCESS_TOKEN = '4L4ZDWNeTXGMoe8qCiYrd';
+				const SERVICE_ID = 'service_v7xfhgb';
+				const TEMPLATE_ID = 'template_jgdw65d';
+				const PUBLIC_KEY = '3TDMXi_EZaLYycSYW';
+				const ACCESS_TOKEN = 'yLMmLV0Fm5vlb9e2rMi1h';
 
 				const templateParams = {
 					email,

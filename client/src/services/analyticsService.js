@@ -1,6 +1,6 @@
 import requester from './requester';
 
-const baseUrl = 'https://bankmanager-2.onrender.com/api/staff/analytics';
+const baseUrl = 'https://bankmanager-2.onrender.com/staff/analytics';
 
 export const getAnalyticsOverview = (token) =>
 	requester.get(`${baseUrl}/overview`, {

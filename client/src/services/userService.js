@@ -1,6 +1,6 @@
 import requester from './requester';
 
-const baseUrl = 'https://bankmanager-2.onrender.com/api';
+const baseUrl = 'https://bankmanager-2.onrender.com';
 
 export const loginUser = (data) => requester.post(`${baseUrl}/auth/login`, data);
 
