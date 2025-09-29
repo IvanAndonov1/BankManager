@@ -5,7 +5,7 @@ import AiChatBot from "../common/aiChatBot";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import { getAllCardsData, getBalanceData } from "../../services/cardService";
-import { addCardToAccount, getAllTransactions, getUserAccounts } from "../../services/userService";
+import { addAccountForUser, addCardToAccount, getAllTransactions, getUserAccounts } from "../../services/userService";
 
 export default function Dashboard() {
 	const { user } = useContext(AuthContext);
@@ -79,7 +79,8 @@ export default function Dashboard() {
 	};
 
 	const handleCreateAccount = () => {
-		console.log("create account");
+		addAccountForUser(user.token, { customerId: user.id })
+			.then(res => setBalances(state => ([...state, res])));
 	};
 
 	if (loading) {
