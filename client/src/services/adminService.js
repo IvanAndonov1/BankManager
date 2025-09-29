@@ -1,6 +1,6 @@
 import requester from './requester';
 
-const baseUrl = 'https://credian-api.onrender.com/api';
+const baseUrl = 'https://bankmanager-2.onrender.com';
 
 export const getAllEmployees = (token) => requester.get(`${baseUrl}/employees/all`, { 'Authorization': `Bearer ${token}` });
 

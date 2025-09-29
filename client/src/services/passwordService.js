@@ -1,6 +1,6 @@
 import requester from "./requester";
 
-const baseUrl = 'https://credian-api.onrender.com/api/auth';
+const baseUrl = 'https://bankmanager-2.onrender.com/auth';
 
 export const forgotPassword = (data) => 
   requester.post(`${baseUrl}/forgot-password`, data);
