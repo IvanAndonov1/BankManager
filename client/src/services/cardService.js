@@ -1,5 +1,7 @@
+const baseUrl = import.meta.env.VITE_API_URL;
+
 export const getAllCardsData = async (token) => {
-	return fetch(`https://bankmanager-2.onrender.com/api/cards/mine`, {
+	return fetch(`${baseUrl}/cards/mine`, {
 		method: 'GET',
 		headers: {
 			'authorization': `Bearer ${token}`
@@ -8,7 +10,7 @@ export const getAllCardsData = async (token) => {
 }
 
 export const getBalanceData = async (accountNumber, token) => {
-	return fetch(`https://bankmanager-2.onrender.com/api/accounts/${accountNumber}`, {
+	return fetch(`${baseUrl}/accounts/${accountNumber}`, {
 		method: 'GET',
 		headers: {
 			'authorization': `Bearer ${token}`
@@ -17,7 +19,7 @@ export const getBalanceData = async (accountNumber, token) => {
 }
 
 export const transferMoneyBetweenCards = (from, data, token) => {
-	return fetch(`https://bankmanager-2.onrender.com/api/accounts/${from}/transfer`, {
+	return fetch(`${baseUrl}/accounts/${from}/transfer`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',

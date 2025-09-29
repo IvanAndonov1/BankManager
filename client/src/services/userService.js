@@ -1,6 +1,6 @@
 import requester from './requester';
 
-const baseUrl = 'https://bankmanager-2.onrender.com/api';
+const baseUrl = import.meta.env.VITE_API_URL;
 
 export const loginUser = (data) => requester.post(`${baseUrl}/auth/login`, data);
 

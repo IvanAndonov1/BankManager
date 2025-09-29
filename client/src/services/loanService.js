@@ -1,5 +1,6 @@
 import requester from "./requester";
-const baseUrl = "https://bankmanager-2.onrender.com/api";
+
+const baseUrl = import.meta.env.VITE_API_URL;
 
 export const getLoanQuote = (loanData, token) =>
 	requester.get(`${baseUrl}/loans/quote?requestedAmount=${loanData.requestedAmount}&termMonths=${loanData.termMonths}`,
