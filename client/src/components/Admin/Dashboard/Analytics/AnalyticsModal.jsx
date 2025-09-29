@@ -11,6 +11,7 @@ import {
 } from "../../../../services/analyticsService";
 
 import { downloadAnalyticsPdf } from "../../../../utils/analyticsPdf";
+import { getAIApplicationForecast } from "../../../../services/adminService";
 
 const fmt = (v) =>
 	typeof v === "number"
@@ -26,6 +27,7 @@ export default function AnalyticsModal({ isOpen, onClose }) {
 	const [decisionsDaily, setDecisionsDaily] = useState([]);
 	const [declinesTop, setDeclinesTop] = useState([]);
 	const [cashflowDaily, setCashflowDaily] = useState([]);
+	const [aiGeneratedData, setAIGeneratedData] = useState({});
 
 	const [loading, setLoading] = useState(false);
 	const [activeTab, setActiveTab] = useState("overview");
@@ -47,12 +49,13 @@ export default function AnalyticsModal({ isOpen, onClose }) {
 		const fetchData = async () => {
 			setLoading(true);
 			try {
-				const [ov, disb, decis, decl, cash] = await Promise.all([
+				const [ov, disb, decis, decl, cash, aiData] = await Promise.all([
 					getAnalyticsOverview(user.token),
 					getLoansDisbursedDaily(user.token),
 					getLoanDecisionsDaily(user.token),
 					getTopDeclines(user.token),
 					getCashflowDaily(user.token),
+					getAIApplicationForecast(user.token)
 				]);
 
 				setOverview(ov);
@@ -60,6 +63,7 @@ export default function AnalyticsModal({ isOpen, onClose }) {
 				setDecisionsDaily(decis);
 				setDeclinesTop(decl);
 				setCashflowDaily(cash);
+				setAIGeneratedData(aiData);
 			} catch (err) {
 				console.error("Error loading analytics:", err);
 			} finally {
@@ -104,8 +108,8 @@ export default function AnalyticsModal({ isOpen, onClose }) {
 							key={t.key}
 							onClick={() => setActiveTab(t.key)}
 							className={`px-4 py-2 text-sm font-medium ${activeTab === t.key
-									? "border-b-2 border-blue-600 text-blue-600"
-									: "text-gray-600 hover:text-gray-800"
+								? "border-b-2 border-blue-600 text-blue-600"
+								: "text-gray-600 hover:text-gray-800"
 								}`}
 						>
 							{t.label}
@@ -119,7 +123,7 @@ export default function AnalyticsModal({ isOpen, onClose }) {
 					)}
 
 					{!loading && activeTab === "overview" && overview && (
-						<OverviewTab ov={overview} />
+						<OverviewTab ov={overview} aiText={aiGeneratedData?.analysis} />
 					)}
 
 					{!loading && activeTab === "disbursed" && (
@@ -164,7 +168,7 @@ export default function AnalyticsModal({ isOpen, onClose }) {
 	);
 }
 
-function OverviewTab({ ov }) {
+function OverviewTab({ ov, aiText }) {
 	return (
 		<div className="space-y-6">
 			<div className="text-sm text-gray-500">
@@ -188,30 +192,38 @@ function OverviewTab({ ov }) {
 					<KpiCard title="Approved" value={fmt(ov.loans?.approved)} />
 					<KpiCard title="Declined" value={fmt(ov.loans?.declined)} />
 					<KpiCard title="Approval Rate" value={pct(ov.loans?.approvalRate)} />
-					<KpiCard
-						title="Disbursed Amount"
-						value={fmt(ov.loans?.disbursedAmount)}
-					/>
+					<KpiCard title="Disbursed Amount" value={fmt(ov.loans?.disbursedAmount)} />
 					<KpiCard title="Avg Ticket" value={fmt(ov.loans?.avgTicket)} />
-					<KpiCard
-						title="Open Pending Now"
-						value={fmt(ov.loans?.openPendingNow)}
-					/>
+					<KpiCard title="Open Pending Now" value={fmt(ov.loans?.openPendingNow)} />
 				</div>
 			</Section>
 
 			<Section title="Risk Proxy">
 				<div className="grid grid-cols-2 md:grid-cols-2 gap-4">
-					<KpiCard
-						title="Late Payers 30d Share"
-						value={pct(ov.riskProxy?.latePayers30dShare)}
-					/>
-					<KpiCard
-						title="Late Payers 90d Share"
-						value={pct(ov.riskProxy?.latePayers90dShare)}
-					/>
+					<KpiCard title="Late Payers 30d Share" value={pct(ov.riskProxy?.latePayers30dShare)} />
+					<KpiCard title="Late Payers 90d Share" value={pct(ov.riskProxy?.latePayers90dShare)} />
 				</div>
 			</Section>
+
+			{aiText && (
+				<div className="mt-6 p-4 rounded-lg shadow relative overflow-hidden">
+					<div className="absolute inset-0 bg-gradient-to-r from-purple-700 via-purple-500 to-purple-300 opacity-90 rounded-lg" />
+					<div className="relative text-white">
+						<div className="flex items-center gap-2 text-sm font-semibold">
+							<span className="px-2 py-0.5 rounded bg-white/20 text-white uppercase tracking-wide">
+								AI
+							</span>
+							<span>Forecast Summary</span>
+						</div>
+						<p className="mt-2 leading-relaxed whitespace-pre-line">
+							{aiText}
+						</p>
+						<p className="mt-2 text-xs text-white/70">
+							Generated automatically by the AI model based on system data.
+						</p>
+					</div>
+				</div>
+			)}
 		</div>
 	);
 }
