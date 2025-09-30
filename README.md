@@ -13,12 +13,12 @@ This application implements a full banking workflow with role-based features and
 	- Support for multiple cards per customer (debit/credit-like card representations).
 
 - Loans
-	- Customers can request loans via form (amount, term, income, age). Loan requests are routed to employees for review.
-	- Employees can approve, decline based on the information given by the user or request more info; admins can view aggregated loan analytics.
+	- Customers can request loans via form (amount, term, income, account age). Loan requests are routed to employees for review.
+	- Employees can approve/decline based on the information given by the user an AI or request more info.
 	- Loan lifecycle records are stored and available via the UI and API.
 
 - Transfers & Transactions
-	- Transfers between personal accounts or to another user; transaction history and filtering in the customer dashboard.
+	- Transfers between personal accounts or to another user; transaction history.
 	- Transaction details can be exported or printed (PDF export available in analytics/features).
 
 - Analytics & Reporting
@@ -35,7 +35,7 @@ This application implements a full banking workflow with role-based features and
 This repository contains the Credian banking application split into two main parts:
 
 - `client/` — React + Vite Single Page Application (frontend). See `client/README.md` for details.
-- `server/` — Spring Boot backend (Java 21, Maven) exposing REST APIs and handling persistence, auth, and business logic. See `server/README.md` for details.
+- `server/` — Spring Boot backend (Java 21, Maven) exposing REST APIs, auth, and business logic. See `server/README.md` for details.
 
 The client communicates with the backend via a REST API (default: http://localhost:8080).
 
@@ -43,7 +43,7 @@ The client communicates with the backend via a REST API (default: http://localho
 
 
 
-## 🛠️ Tech stack (high level)
+## 🛠️ Tech stack
 
 - Frontend: React, Vite, Tailwind CSS, React Router
 - Backend: Java 21, Spring Boot (Web, Security, Data JPA, Flyway, Mail), JWT, Caffeine
@@ -96,5 +96,13 @@ BankManager/
 ## 🧭 Where to go next
 
 - Read `client/README.md` for frontend details and running the SPA.
-- Read `server/README.md` for backend configuration, running tests, and Docker notes.
-.
+- Read `server/README.md` for backend configuration, running tests
+- Hosted on `https://credian.onrender.com/`
+
+## 🤖 Contributors
+
+- Martin Sofroniev [LinkedIn](https://www.linkedin.com/in/martinsofroniev/)
+- Ivan Andonov [LinkedIn](https://www.linkedin.com/in/ivan-andonov-77aa55182/)
+- Zhozemir Kushev [LinkedIn](https://www.linkedin.com/in/zhozemir-kushev-92bba532b/)
+- Ina Mihaylova [LinkedIn](https://www.linkedin.com/in/ina-mihaylova/)
+- Nikolay Frunze [LinkedIn](https://www.linkedin.com/in/nikolay-frunze)
