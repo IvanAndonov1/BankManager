@@ -43,6 +43,9 @@ export default function AnalyticsModal({ isOpen, onClose }) {
 		[]
 	);
 
+	console.log(overview);
+
+
 	useEffect(() => {
 		if (!isOpen || !user?.token) return;
 
@@ -191,7 +194,7 @@ function OverviewTab({ ov, aiText }) {
 					<KpiCard title="Pending" value={fmt(ov.loans?.pending)} />
 					<KpiCard title="Approved" value={fmt(ov.loans?.approved)} />
 					<KpiCard title="Declined" value={fmt(ov.loans?.declined)} />
-					<KpiCard title="Approval Rate" value={pct(ov.loans?.approvalRate)} />
+					<KpiCard title="Approval Rate" value={`${ov.loans?.approvalRate}%`} />
 					<KpiCard title="Disbursed Amount" value={fmt(ov.loans?.disbursedAmount)} />
 					<KpiCard title="Avg Ticket" value={fmt(ov.loans?.avgTicket)} />
 					<KpiCard title="Open Pending Now" value={fmt(ov.loans?.openPendingNow)} />
