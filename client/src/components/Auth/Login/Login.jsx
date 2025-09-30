@@ -66,6 +66,16 @@ export default function Login() {
 			setIsPending(true);
 			const user = await loginUser({ username, password });
 
+			console.log(user);
+			
+
+			if (!user.token) {
+				throw user;
+			} else {
+				userLogin(user);
+			}
+			
+
 			if (!user || user.toString().includes("Error")) {
 				setState(s => ({
 					...s,
@@ -115,8 +125,6 @@ export default function Login() {
 			}));
 		} catch (err) {
 			const apiMsg =
-				err?.response?.data?.message ||
-				err?.message ||
 				"Login failed. Please check your credentials and try again.";
 
 			setState(s => ({
